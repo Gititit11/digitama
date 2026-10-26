@@ -1,0 +1,9 @@
+.DS_Store
+Thumbs.db
+__pycache__/
+
+# 안드로이드 앱 빌드 찌꺼기
+digimon/android/.gradle/
+digimon/android/build/
+digimon/android/app/build/
+digimon/android/local.properties
