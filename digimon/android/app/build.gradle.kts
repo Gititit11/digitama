@@ -23,9 +23,12 @@ android {
         minSdk = 24
         // 35 로 올리면 안드로이드 15 가 화면을 상태 표시줄 밑까지 늘려서 위쪽이 가려진다
         targetSdk = 34
-        // 깃허브 액션이 빌드할 때마다 1씩 올라서, 새 APK 를 덮어 설치할 수 있다
-        versionCode = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInt()
-        versionName = "1.0." + (System.getenv("GITHUB_RUN_NUMBER") ?: "0")
+        // 깃허브 액션이 빌드할 때마다 1씩 올라서, 새 APK 를 덮어 설치할 수 있다.
+        // 예전 저장소(Gititit11/test)에서 53번까지 빌드해서 깔린 앱이 있으니, 그보다 낮아지지 않게 100 을 더한다
+        // (버전 번호가 깔린 것보다 낮으면 안드로이드가 설치를 막는다)
+        val build = 100 + (System.getenv("GITHUB_RUN_NUMBER") ?: "0").toInt()
+        versionCode = build
+        versionName = "1.0.$build"
     }
 
     signingConfigs {
