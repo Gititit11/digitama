@@ -126,6 +126,17 @@ test('새 스타터: 임프몬 · 길몬 · 레나몬', function () {
   });
 });
 
+test('스카몬: 어느 라인이든 위생 실수 6 이상이면 스카몬 → 에테몬 → 메탈에테몬', function () {
+  ['agumon', 'gabumon', 'veemon', 'impmon', 'guilmon', 'renamon'].forEach(function (k) {
+    var child = D.LINES[k].child;
+    assert.equal(to(k, 'child', child, { hygiene: 6, mistakes: 6, training: 20 }), 'sukamon', k + ' 다른 나쁜 진화보다 먼저');
+    assert.notEqual(to(k, 'child', child, { hygiene: 5 }), 'sukamon', k + ' 5 까지는 기존 진화');
+    assert.equal(to(k, 'adult', 'sukamon', { battles: 15, wins: 8 }), 'etemon', k);
+    assert.equal(to(k, 'perfect', 'etemon', { battles: 10, wins: 6, bossWins: 1 }), 'metaletemon', k);
+  });
+  assert.equal(to('agumon', 'child', 'agumon', { hygiene: 4 }), 'coelamon', '위생 4–5 는 그대로 씨라몬');
+});
+
 test('성숙기 → 완전체', function () {
   var ok = { mistakes: 2, battles: 15, wins: 9 };
   assert.equal(to('agumon', 'adult', 'greymon', ok), 'metalgreymon');

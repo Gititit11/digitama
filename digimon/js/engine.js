@@ -229,6 +229,7 @@ var Engine = (function (D) {
       case 'r3': return c.mistakes >= 6;
       case 'r4': return c.hygiene >= 4 || c.overfeed >= 6;
       case 'r34': return c.mistakes >= 6 || c.hygiene >= 4 || c.overfeed >= 6;
+      case 'r22': return c.hygiene >= 6; // 똥을 오래 방치하면 어느 라인이든 스카몬
       case 'r12': return c.sleep >= 4;
       case 'r5': case 'r13': return c.mistakes <= 2 && bat && wr >= 0.5;
       case 'r6': return c.training >= 48 && c.hungryBattles >= 5;

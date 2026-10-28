@@ -1281,7 +1281,11 @@
       ids = ids.filter(function (id) { if (used[id]) return false; used[id] = 1; return true; });
       if (ids.length) secs.push({ title: title, ids: ids });
     }
+    var anyLine = ['sukamon', 'etemon', 'metaletemon']; // 어느 라인에서든 나와서 따로 묶는다
+    anyLine.forEach(function (id) { used[id] = 1; });
     D.LINE_ORDER.forEach(function (k) { add(D.LINES[k].name + ' 라인', lineSpecies(k)); });
+    anyLine.forEach(function (id) { used[id] = 0; });
+    add('어느 라인이든 (똥 방치)', anyLine);
     ['child', 'adult', 'perfect', 'ultimate'].forEach(function (st) {
       var ids = [];
       Object.keys(D.WILD[st]).forEach(function (a) { ids = ids.concat(D.WILD[st][a]); });

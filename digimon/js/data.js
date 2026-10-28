@@ -98,6 +98,11 @@ var DigiData = (function () {
   var END = { terminal: true, mult: 1.3 };
   var ARMOR = { armor: true, bossMult: 1.5 };
 
+  // 어느 라인이든: 성장기에 똥을 오래 방치하면 스카몬 → 에테몬 → 메탈에테몬
+  sp('sukamon', '스카몬', 'adult', 'virus');
+  sp('etemon', '에테몬', 'perfect', 'virus');
+  sp('metaletemon', '메탈에테몬', 'ultimate', 'virus');
+
   // 아구몬 라인 (3 - Agumon EX)
   sp('egg_agumon', '디지타마', 'egg', 'free');
   sp('botamon', '깜몬', 'baby1', 'free');
@@ -413,6 +418,7 @@ var DigiData = (function () {
     r3: '케어 실수 6 이상',
     r4: '위생 실수 4 이상 또는 과식 6 이상',
     r34: '케어 실수 6 이상, 또는 위생 실수 4 이상, 또는 과식 6 이상',
+    r22: '위생 실수 6 이상 (어느 라인이든)',
     r12: '수면 방해 4 이상',
     r5: '케어 실수 2 이하, 배틀 15 이상, 승률 50% 이상',
     r6: '훈련 48 이상, 배고픈 채 배틀 5 이상',
@@ -431,7 +437,7 @@ var DigiData = (function () {
   };
   // 진화 종류 (연출 문구·어둡게 예고에 쓴다)
   var RULE_KIND = {
-    r1: 'normal', r21: 'hidden', r2: 'mid', r3: 'bad', r4: 'bad', r34: 'bad', r12: 'dark',
+    r1: 'normal', r21: 'hidden', r2: 'mid', r3: 'bad', r4: 'bad', r34: 'bad', r22: 'bad', r12: 'dark',
     r5: 'normal', r6: 'dark', r7: 'mid', r8: 'hidden', r13: 'purify', r14: 'dark', r18: 'mid', r20: 'mid',
     r9: 'normal', r11: 'dark', r15: 'hidden', r10: 'jogress', r19: 'mode'
   };
@@ -530,6 +536,13 @@ var DigiData = (function () {
       }
     }
   };
+  // 스카몬 길: 성장기에 똥을 오래 방치하면(위생 실수 6 이상) 어느 라인이든 스카몬이 된다. 다른 조건보다 먼저 본다
+  Object.keys(LINES).forEach(function (k) {
+    var L = LINES[k];
+    L.evo[L.child].unshift(['r22', 'sukamon']);
+    L.evo.sukamon = [['r5', 'etemon']];
+    L.evo.etemon = [['r9', 'metaletemon']];
+  });
   var LINE_ORDER = ['agumon', 'gabumon', 'veemon', 'impmon', 'guilmon', 'renamon'];
   var DIGIMENTALS = ['flame', 'thunder', 'archer', 'miracle'];
 
