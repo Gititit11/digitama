@@ -330,14 +330,14 @@ var Engine = (function (D) {
     return { ok: true, over: over };
   }
 
-  // 훈련 미니게임 한 판 = 훈련 1회. 세 번 중 두 번 맞히면 힘이 오른다.
+  // 훈련 미니게임 한 판. 세 번 중 두 번 맞히면 성공: 힘이 오르고, 진화에 세는 훈련 횟수도 그때만 1 늘어난다.
   function train(state, hits) {
     var mon = state.mon;
     if (isEgg(state)) return { ok: false, reason: 'egg' };
     if (mon.sleeping) return asleep();
     if (mon.sick) return { ok: false, reason: 'sick' };
-    mon.c.training++;
     var good = hits >= 2, lv = trainLevel(mon);
+    if (good) mon.c.training++;
     if (good && mon.strength < 4) mon.strength++;
     if (good) mon.trainOk = (mon.trainOk || 0) + 1;
     answered(mon);

@@ -585,6 +585,7 @@ test('훈련 레벨: 성공 16번마다 1레벨, 최대 10, 진화해도 남고 
   for (var i = 0; i < 15; i++) E.train(s, 2);
   E.train(s, 1); // 실패는 안 센다
   assert.equal(E.trainLevel(s.mon), 0);
+  assert.equal(s.mon.c.training, 15, '진화에 세는 훈련도 성공한 판만');
   var r = E.train(s, 3);
   assert.equal(r.levelUp, true); assert.equal(E.trainLevel(s.mon), 1);
   assert.ok(Math.abs(E.myPower(s.mon) / p0 - 1.03) < 1e-9);

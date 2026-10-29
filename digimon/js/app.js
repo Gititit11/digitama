@@ -1423,7 +1423,7 @@
     ]));
     body.appendChild(heading('이 단계에서 쌓인 값 (진화 판정에 쓰여요)'));
     body.appendChild(table([
-      ['케어 실수', c.mistakes], ['훈련', c.training], ['과식', c.overfeed],
+      ['케어 실수', c.mistakes], ['훈련 성공', c.training], ['과식', c.overfeed],
       ['위생 실수', c.hygiene], ['수면 방해', c.sleep],
       ['배틀', c.battles + '전 ' + c.wins + '승 ' + c.losses + '패' +
         (c.battles ? ' (승률 ' + Math.round(E.winRate(c) * 100) + '%)' : '')],
