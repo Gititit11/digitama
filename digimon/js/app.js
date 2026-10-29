@@ -143,6 +143,7 @@
     rows.forEach(function (mon) {
       var on = mon === state.mon, id = E.form(mon);
       var li = document.createElement('li'); li.className = 'mon-row' + (on ? ' on' : '');
+      if (LINE_THEME[mon.line]) li.setAttribute('data-theme', LINE_THEME[mon.line]); // 줄마다 자기 라인 색
       li.appendChild(Sprite.canvas(id, 56, { anim: 'idle' }));
       var tx = document.createElement('div'); tx.className = 'txt';
       var age = (on ? t : mon.pausedAt) - mon.born;
