@@ -582,10 +582,16 @@
   function startTrain() {
     tr = { round: 0, hits: [], pos: 0, speed: 1.4 + Math.random() * 0.6, raf: 0, t0: performance.now() };
     newZone();
-    $('tries').textContent = '○ ○ ○';
+    showTries();
     $('trainHit').disabled = false;
     show('train');
     tr.raf = requestAnimationFrame(trainLoop);
+  }
+  // 세 번의 기회: 빈 원 · 성공(채운 원) · 실패(X). 글자 대신 같은 크기 칸으로 그려서 결과마다 크기가 바뀌지 않게 한다
+  function showTries() {
+    $('tries').innerHTML = [0, 1, 2].map(function (i) {
+      return '<i class="' + (i < tr.hits.length ? (tr.hits[i] ? 'hit' : 'miss') : '') + '"></i>';
+    }).join('');
   }
   function newZone() {
     tr.zw = 18 + Math.random() * 8;
@@ -624,9 +630,7 @@
     tr.hits.push(ok); tr.round++;
     tr.react = { ok: ok, t: performance.now() };
     vibrate(ok ? 30 : [20, 40, 20]);
-    $('tries').textContent = [0, 1, 2].map(function (i) {
-      return i < tr.hits.length ? (tr.hits[i] ? '●' : '✕') : '○';
-    }).join(' ');
+    showTries();
     if (tr.round < 3) { tr.speed += 0.25; newZone(); return; }
     var hits = tr.hits.filter(Boolean).length;
     $('trainHit').disabled = true;

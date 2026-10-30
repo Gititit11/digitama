@@ -194,7 +194,15 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 .gauge { position: relative; height: 34px; border-radius: 10px; background: var(--card-2); border: 1px solid var(--line); overflow: hidden; }
 .zone { position: absolute; top: 0; bottom: 0; background: rgba(89,209,140,.45); border-left: 2px solid var(--good); border-right: 2px solid var(--good); }
 .marker { position: absolute; top: -2px; bottom: -2px; width: 4px; margin-left: -2px; background: #fff; box-shadow: 0 0 6px #fff; }
-.tries { font-size: 22px; letter-spacing: 6px; min-height: 30px; }
+.tries { display: flex; justify-content: center; gap: 14px; min-height: 30px; align-items: center; }
+.tries i { position: relative; width: 22px; height: 22px; border-radius: 50%; border: 2.5px solid var(--text); box-sizing: border-box; }
+.tries i.hit { background: var(--text); }
+.tries i.miss { border-color: transparent; }
+.tries i.miss::before, .tries i.miss::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 24px; height: 3px; margin: -1.5px 0 0 -12px;
+  background: var(--danger); border-radius: 2px; transform: rotate(45deg);
+}
+.tries i.miss::after { transform: rotate(-45deg); }
 
 /* 스캔 */
 .cam { position: relative; border-radius: 12px; overflow: hidden; background: #000; aspect-ratio: 4 / 3; }
