@@ -210,13 +210,14 @@
 
   // 스타팅 라인마다 판 색(테마)이 정해져 있다. 알을 고를 때처럼 키우는 디지몬이 없으면 기본 화면
   var LINE_THEME = { agumon: 'orange', gabumon: 'blue', veemon: 'mint', guilmon: 'red', impmon: 'purple', renamon: 'pink' };
-  var lcdColor = '#d7e8c4';
+  var lcdColor = '#d7e8c4', lcdInk = '#28331f';
   function applyTheme(line) {
     var t = LINE_THEME[line] || '', root = document.documentElement;
     if ((root.getAttribute('data-theme') || '') === t) return;
     if (t) root.setAttribute('data-theme', t); else root.removeAttribute('data-theme');
     var css = getComputedStyle(root);
     lcdColor = css.getPropertyValue('--lcd').trim() || '#d7e8c4';
+    lcdInk = css.getPropertyValue('--lcd-ink').trim() || '#28331f';
     document.querySelector('meta[name="theme-color"]').setAttribute('content', t ? css.getPropertyValue('--t-bg').trim() : '#0f1115');
   }
 
@@ -234,7 +235,8 @@
     $('monStage').textContent = mon.armor ? '아머체' : D.STAGE_NAMES[mon.stage];
     $('monAttr').textContent = egg ? '' : D.ATTR_NAMES[S.attr];
     $('monAge').textContent = dur(t - mon.born) + '째';
-    $('trainLv').textContent = egg ? '' : '훈련 Lv.' + E.trainLevel(mon);
+    var shownLv = lvfxShownLevel();
+    $('trainLv').textContent = egg ? '' : '훈련 Lv.' + (shownLv != null ? shownLv : E.trainLevel(mon));
     $('lcdBox').classList.toggle('off', !mon.lights);
     pips($('hunger'), mon.hunger);
     pips($('strength'), mon.strength);
@@ -322,7 +324,7 @@
   function drawLcd(ts) {
     requestAnimationFrame(drawLcd);
     var eating = effect && effect.food && ts < effect.until;
-    if (ts - lastFrame < (eating ? 50 : 220)) return; // 음식이 떨어질 때는 부드럽게
+    if (ts - lastFrame < (eating || lvfx ? 50 : 220)) return; // 음식이 떨어질 때·레벨업 때는 부드럽게
     lastFrame = ts;
     var mon = state.mon;
     if (!mon || mon.dead || $('home').hidden || stack.length) return;
@@ -335,9 +337,9 @@
     if (mon.stage === 'egg') { drawEgg(mon, W, LCD_FLOOR); return; }
     var id = E.form(mon), m = Sprite.measure(id), sw = m.w;
     var floor = LCD_FLOOR, y = floor - m.h, acting = effect && ts < effect.until && effect.anim;
-    if (!eating || Math.floor(ts / 220) !== Math.floor(lastStep / 220)) { walk.frame++; lastStep = ts; }
+    if (!(eating || lvfx) || Math.floor(ts / 220) !== Math.floor(lastStep / 220)) { walk.frame++; lastStep = ts; }
     // 기분이 좋으면 가끔 멈춰서 기뻐하고 머리 위로 하트나 음표를 띄운다
-    if (goodMood(mon) && !acting && !eating) {
+    if (goodMood(mon) && !acting && !eating && !lvfx) {
       if (!mood || ts > mood.next) mood = { t0: ts, kind: Math.random() < 0.5 ? 'heart' : 'note', next: ts + 6000 + Math.random() * 6000 };
     } else mood = null;
     var cheering = mood && ts - mood.t0 < MOOD_MS;
@@ -359,6 +361,7 @@
     if (eating && ts - effect.t0 < FOOD_DROP + 200) anim = 'idle'; // 음식이 놓인 뒤에 먹기 시작
     if (cheering) anim = ts - mood.t0 < MOOD_MS / 2 ? 'happy' : 'idle';
     var bob = SHEETS[id] || mon.sleeping ? 0 : (walk.frame & 1) * 2; // 시트는 프레임에 움직임이 들어 있다
+    if (lvfx) drawLevelUpLight(ts, Hh, Math.round(walk.x + sw / 2));
     // 시트는 왼쪽을 보는 그림이라 오른쪽으로 갈 때 뒤집는다
     Sprite.draw(lx, id, Math.round(walk.x), y + bob, 1, {
       flip: walk.dir > 0, frame: walk.frame, anim: anim, dark: E.warning(mon, now())
@@ -399,6 +402,7 @@
       lx.fillStyle = '#fff'; lx.fillText('!', 10, 18);
     }
     if (mon.sick && !mon.sleeping) drawSkull(W - 24, 6, (walk.frame >> 1) & 1);
+    if (lvfx) drawLevelUp(ts, W);
     if (effect && ts < effect.until && effect.text) {
       lx.font = 'bold 14px sans-serif';
       lx.fillStyle = dark ? '#fff' : '#1b1f17';
@@ -460,6 +464,60 @@
     else Sprite.egg(lx, mon.line, x + ((walk.frame++ & 1) ? 1 : -1), y, S, frame);
   }
   function fx(text, anim) { effect = { text: text, anim: anim, until: performance.now() + 1600 }; }
+
+  /* 훈련 레벨업: 발밑에서 빛 기둥과 금색 고리가 올라가고, 위에 LEVEL UP!, 그 아래 '훈련 Lv.' 숫자가 굴러 바뀐다.
+   * 시간(ms): 빛 180–1560 · 기쁨 360–1560 · LEVEL UP! 360 부터 떨어져 내려옴 · 숫자 660 부터 360 동안 굴러감 · 3200 에 끝 */
+  var lvfx = null, LVFX_MS = 3200, LV_NEW = '#8e1068';
+  function levelUpFx(from, to) {
+    lvfx = { t0: performance.now(), from: from, to: to };
+    effect = { text: '', anim: 'happy', until: lvfx.t0 + 1560 };
+    render();
+    setTimeout(render, 1320); // 숫자가 다 굴러간 뒤 LCD 위 줄도 새 레벨로
+  }
+  function lvfxShownLevel() { // LCD 위 줄 숫자는 이펙트 숫자가 다 바뀐 뒤에 바꾼다
+    return lvfx && performance.now() - lvfx.t0 < 1300 ? lvfx.from : null;
+  }
+  function lcdText(s, x, y, fill, outline) {
+    if (outline) {
+      lx.fillStyle = outline;
+      [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]].forEach(function (o) { lx.fillText(s, x + o[0], y + o[1]); });
+    }
+    lx.fillStyle = fill; lx.fillText(s, x, y);
+  }
+  // 빛 기둥·고리: 디지몬 뒤에 그린다
+  function drawLevelUpLight(ts, Hh, mx) {
+    var k = ts - lvfx.t0;
+    if (k >= 180 && k < 1560) {
+      var a = Math.min(1, (k - 180) / 240) * Math.min(1, Math.max(0, (1560 - k) / 300));
+      lx.fillStyle = 'rgba(255,250,200,' + 0.6 * a + ')'; lx.fillRect(mx - 16, 0, 33, Hh - 4);
+      lx.fillStyle = 'rgba(255,255,255,' + 0.67 * a + ')'; lx.fillRect(mx - 8, 0, 17, Hh - 4);
+      lx.strokeStyle = '#ffd250'; lx.lineWidth = 1;
+      for (var j = 0; j < 3; j++) {
+        var ry = Hh - 6 - ((Math.floor((k - 180) / 60) * 4 + j * 14) % 70);
+        if (ry > 30) { lx.beginPath(); lx.ellipse(mx + 0.5, ry + 0.5, 22, 3, 0, 0, Math.PI * 2); lx.stroke(); }
+      }
+    }
+  }
+  // 글자: 맨 위에 덧그린다
+  function drawLevelUp(ts, W) {
+    var k = ts - lvfx.t0;
+    if (k > LVFX_MS) { lvfx = null; render(); return; }
+    lx.font = '11px Galmuri11, monospace'; lx.textAlign = 'center'; lx.textBaseline = 'middle';
+    var cx = W / 2;
+    if (k >= 360) {
+      var f = Math.floor((k - 360) / 60), y = 9 - Math.max(0, 8 - f * 2) + (f === 4 || f === 5 ? 2 : 0);
+      lcdText('LEVEL UP!', cx, y, '#ffe65a', '#5a2800');
+    }
+    if (k >= 660) {
+      var ink = lcdInk, roll = Math.min(6, Math.floor((k - 660) / 60));
+      lx.textAlign = 'right'; lcdText('훈련 Lv.', cx + 13, 23, ink); lx.textAlign = 'center';
+      lx.save(); lx.beginPath(); lx.rect(cx + 14, 16, 13, 14); lx.clip();
+      if (roll < 6) lcdText(String(lvfx.from), cx + 20, 23 - roll * 2, ink);
+      lcdText(String(lvfx.to), cx + 20, 35 - roll * 2, LV_NEW);
+      lx.restore();
+    }
+    lx.textAlign = 'start'; lx.textBaseline = 'alphabetic';
+  }
   // 먹는 연출이 끝나기 전까지는 먹는 중이다
   function isEating() {
     return !!(effect && effect.food && performance.now() < effect.until);
@@ -639,8 +697,8 @@
     save();
     setTimeout(function () {
       closeScreen();
-      toast(r.levelUp ? '훈련 레벨 ' + r.level + '! 배틀에서 ' + Math.round(r.level * R.trainLvPower * 100) + '% 더 세져요'
-        : r.good ? '훈련 성공! 힘이 올랐어요' : '훈련 끝. 다음엔 더 잘할 수 있어요');
+      if (r.levelUp) { levelUpFx(r.level - 1, r.level); return; } // 알림 문구 없이 LCD 이펙트로만
+      toast(r.good ? '훈련 성공! 힘이 올랐어요' : '훈련 끝. 다음엔 더 잘할 수 있어요');
       fx(r.good ? '하앗!' : '헉헉', r.good ? 'train' : 'idle');
     }, 450);
   });
