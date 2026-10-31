@@ -386,6 +386,22 @@ test('수면: 불을 30분 넘게 안 끄거나 깨우면 수면 방해', functi
   assert.equal(s.mon.lights, true);
 });
 
+test('보관함: 자다가 들어간 디지몬은 낮에 꺼내면 바로 깨어 있다', function () {
+  var s = at('agumon', 'child', 'agumon');
+  var night = Date.UTC(2026, 0, 5, 23, 0), noon = Date.UTC(2026, 0, 6, 12, 0);
+  s.mon.lastTick = night - M; s.mon.stageEnd = null; s.mon.hunger = 4; s.mon.strength = 4;
+  E.tick(s, night);
+  assert.equal(s.mon.sleeping, true);
+  s.mon.lights = false;
+  var uid = s.mon.uid;
+  E.store(s, night); E.hatch(s, 'gabumon', night);
+  E.resume(s, uid, noon);
+  assert.equal(s.mon.sleeping, false, '꺼내자마자 깬다');
+  assert.equal(s.mon.lights, true);
+  E.store(s, noon); E.resume(s, uid, Date.UTC(2026, 0, 6, 23, 30));
+  assert.equal(s.mon.sleeping, true, '밤에 꺼내면 바로 잔다');
+});
+
 test('잘못된 진화 하루 전에는 경고한다', function () {
   var s = at('agumon', 'child', 'agumon', { mistakes: 6 });
   s.mon.stageEnd = MORNING + 25 * H;

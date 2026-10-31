@@ -117,6 +117,8 @@ var Engine = (function (D) {
     });
     delete mon.pausedAt;
     state.mon = mon;
+    // 멈춰 있던 동안 낮밤이 바뀌었을 수 있으니, 다음 1분을 기다리지 않고 지금 시각으로 잠을 맞춘다
+    if (!mon.dead && mon.woken === 0) syncSleep(state, mon, floorMin(now));
     return true;
   }
 
@@ -154,14 +156,9 @@ var Engine = (function (D) {
     }
   }
 
-  function step(state, mon, t) {
-    if (mon.stage === 'egg') { // 디지타마는 흔들리기만 한다
-      if (t >= mon.stageEnd) evolveNow(state, mon, t);
-      return;
-    }
-    if (mon.armor && t >= mon.armor) endArmor(state, mon, t);
-
-    // 잠 — 취침 시간이 되면 잠들고, 깨우면 잠깐 깨어 있다가 다시 잔다
+  // 잠 — 취침 시간이 되면 잠들고, 깨우면 잠깐 깨어 있다가 다시 잔다
+  function syncSleep(state, mon, t) {
+    if (mon.stage === 'egg') return;
     if (!sleepNow(mon.stage, t)) {
       if (mon.sleeping) { emit(state, 'wakeup', t); mon.lights = true; }
       mon.sleeping = false; mon.woken = 0; mon.sleepPenalized = false; mon.lightMin = 0;
@@ -171,6 +168,16 @@ var Engine = (function (D) {
       if (!mon.sleeping) emit(state, 'sleep', t);
       mon.sleeping = true;
     }
+  }
+
+  function step(state, mon, t) {
+    if (mon.stage === 'egg') { // 디지타마는 흔들리기만 한다
+      if (t >= mon.stageEnd) evolveNow(state, mon, t);
+      return;
+    }
+    if (mon.armor && t >= mon.armor) endArmor(state, mon, t);
+
+    syncSleep(state, mon, t);
     if (mon.sleeping && mon.lights && !mon.sleepPenalized) {
       if (++mon.lightMin > R.sleepLightsMinutes) {
         mon.sleepPenalized = true; // 하룻밤에 한 번만 센다
