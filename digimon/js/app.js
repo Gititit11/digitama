@@ -1494,7 +1494,7 @@
         (c.battles ? ' (승률 ' + Math.round(E.winRate(c) * 100) + '%)' : '')],
       ['최다 연패', c.maxStreak], ['보스 격파', c.bossWins], ['배고픈 채 배틀', c.hungryBattles]
     ].concat(BATTLE_MIN[mon.stage] ? [['진화에 필요한 배틀', Math.min(c.battles, BATTLE_MIN[mon.stage]) + ' / ' + BATTLE_MIN[mon.stage] + '번' +
-      (c.battles >= BATTLE_MIN[mon.stage] ? ' · 채움' : ' · ' + BATTLE_MIN[mon.stage] + '번부터 승률을 봐요')]] : [])));
+      (c.battles >= BATTLE_MIN[mon.stage] ? ' (충족)' : '')]] : [])));
     var it = state.meta.items;
     body.appendChild(heading('아이템 (모든 디지몬이 함께 써요)'));
     body.appendChild(table(D.DIGIMENTALS.map(function (k) {
