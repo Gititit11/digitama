@@ -282,6 +282,8 @@
     if (egg) document.querySelector('[data-act="chip"]').hidden = true;
     if (!mon.sick) document.querySelector('[data-act="medicine"]').disabled = true; // 아플 때만 누를 수 있다
   }
+  // 승률 조건이 있는 진화의 최소 배틀 수 (engine.passes 와 같다: 성숙기 ⑤⑦⑧⑬⑳ 15번, 완전체 ⑨⑮ 10번)
+  var BATTLE_MIN = { adult: 15, perfect: 10 };
   // 훈련 레벨: "Lv 3 (+9%) · 다음 레벨까지 성공 7번"
   function trainText(mon) {
     var lv = E.trainLevel(mon), ok = mon.trainOk || 0;
@@ -1491,7 +1493,8 @@
       ['배틀', c.battles + '전 ' + c.wins + '승 ' + c.losses + '패' +
         (c.battles ? ' (승률 ' + Math.round(E.winRate(c) * 100) + '%)' : '')],
       ['최다 연패', c.maxStreak], ['보스 격파', c.bossWins], ['배고픈 채 배틀', c.hungryBattles]
-    ]));
+    ].concat(BATTLE_MIN[mon.stage] ? [['진화에 필요한 배틀', Math.min(c.battles, BATTLE_MIN[mon.stage]) + ' / ' + BATTLE_MIN[mon.stage] + '번' +
+      (c.battles >= BATTLE_MIN[mon.stage] ? ' · 채움' : ' · ' + BATTLE_MIN[mon.stage] + '번부터 승률을 봐요')]] : [])));
     var it = state.meta.items;
     body.appendChild(heading('아이템 (모든 디지몬이 함께 써요)'));
     body.appendChild(table(D.DIGIMENTALS.map(function (k) {
