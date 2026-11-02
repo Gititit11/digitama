@@ -405,12 +405,12 @@ test('보관함: 자다가 들어간 디지몬은 낮에 꺼내면 바로 깨어
 test('리셋 플로피: 이기면 가끔 얻고, 케어 실수를 1 줄이며 한 단계에 한 번', function () {
   var s = at('agumon', 'adult', 'greymon');
   var w = { id: 'tyranomon', grade: 'normal', level: 4 };
-  E.endBattle(s, { won: true, wild: w }, MORNING, function () { return 0.05; });
-  assert.equal(s.meta.items.floppy, 1, '10% 안이면 얻는다');
-  E.endBattle(s, { won: true, wild: w }, MORNING, function () { return 0.15; });
-  assert.equal(s.meta.items.floppy, 1, '보통 상대는 10%');
-  E.endBattle(s, { won: true, wild: { id: 'tyranomon', grade: 'rare', level: 4 } }, MORNING, function () { return 0.15; });
-  assert.equal(s.meta.items.floppy, 2, '레어 상대는 20%');
+  E.endBattle(s, { won: true, wild: w }, MORNING, function () { return 0.04; });
+  assert.equal(s.meta.items.floppy, 1, '5% 안이면 얻는다');
+  E.endBattle(s, { won: true, wild: w }, MORNING, function () { return 0.07; });
+  assert.equal(s.meta.items.floppy, 1, '보통 상대는 5%');
+  E.endBattle(s, { won: true, wild: { id: 'tyranomon', grade: 'rare', level: 4 } }, MORNING, function () { return 0.07; });
+  assert.equal(s.meta.items.floppy, 2, '레어 상대는 10%');
   E.endBattle(s, { won: false, wild: w }, MORNING, function () { return 0.01; });
   assert.equal(s.meta.items.floppy, 2, '지면 없다');
   s.meta.items.floppy = 3;

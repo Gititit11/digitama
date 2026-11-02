@@ -74,8 +74,8 @@ var DigiData = (function () {
     foeFull: { special: 0.34, attack: 0.33, guard: 0.33 },
     foeCharging: { attack: 0.5, guard: 0.5 },
     // 훈련 레벨: 훈련을 성공(3번 중 2번 이상)할 때마다 쌓이고 진화해도 남는다. 16번마다 1레벨, 레벨마다 전투력 +3%
-    floppyDrop: 0.1,           // 배틀에서 이기면 리셋 플로피(케어 실수 -1)를 얻을 확률
-    floppyDropRare: 0.2,       // 레어 상대를 이겼을 때
+    floppyDrop: 0.05,          // 배틀에서 이기면 리셋 플로피(케어 실수 -1)를 얻을 확률
+    floppyDropRare: 0.1,       // 레어 상대를 이겼을 때
     floppyMax: 3,              // 가질 수 있는 최대 개수
     trainLvEvery: 16,
     trainLvMax: 10,
