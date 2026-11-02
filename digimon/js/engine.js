@@ -6,7 +6,7 @@
  *   hatch(state, line, now)     → 디지타마를 받는다. 5분 동안 흔들리다가 부화 (키우던 디지몬은 보관함으로)
  *   store / resume / release    → 보관함. 보관한 디지몬은 시간이 멈춘다
  *   tick(state, now)            → 마지막으로 본 때부터 now 까지 1분씩 흘려 보낸다
- *   feed / snack / train / clean / toggleLights / wake / armor / useChip / medicine
+ *   feed / snack / train / clean / toggleLights / wake / armor / useChip / useFloppy / medicine
  *   judge(mon)                  → 지금 진화하면 어떻게 되는지 (상태를 바꾸지 않음)
  *   wildFor(stageIdx, rnd) / wildForCode(code, stageIdx) → 야생 디지몬 하나 (같은 바코드 · 같은 내 단계면 늘 같은 디지몬)
  *   scan / startBattle / battleTurn / endBattle
@@ -42,7 +42,7 @@ var Engine = (function (D) {
       // 세대를 넘어 남는 것: 도감, 아이템, 지난 디지몬
       meta: {
         dex: {}, history: [], uid: 0,
-        items: { flame: false, thunder: false, archer: false, miracle: false, chip: 0 }
+        items: { flame: false, thunder: false, archer: false, miracle: false, chip: 0, floppy: 0 }
       },
       mon: null,   // 지금 키우는 디지몬
       box: [],     // 보관함 (시간이 멈춰 있다)
@@ -405,6 +405,20 @@ var Engine = (function (D) {
     return { ok: true };
   }
 
+  // 리셋 플로피: 이 단계의 케어 실수를 1 줄인다. 한 단계에 한 번만 (진화하면 다시 쓸 수 있다)
+  function useFloppy(state) {
+    var mon = state.mon, it = state.meta.items;
+    if (!it.floppy) return { ok: false, reason: 'none' };
+    if (!mon || isEgg(state)) return { ok: false, reason: 'egg' };
+    if (mon.sleeping) return asleep();
+    if (mon.c.floppyUsed) return { ok: false, reason: 'used' };
+    if (!mon.c.mistakes) return { ok: false, reason: 'zero' };
+    it.floppy--;
+    mon.c.mistakes--;
+    mon.c.floppyUsed = true;
+    return { ok: true, mistakes: mon.c.mistakes };
+  }
+
   /* ---------- 야생 디지몬 ---------- */
   // 배틀에서 쓰는 단계 번호. 아머체는 그 아머체의 단계로 친다.
   function battleStage(mon) { return STAGE_IDX[D.SPECIES[form(mon)].stage]; }
@@ -638,7 +652,7 @@ var Engine = (function (D) {
   /* 배틀 결과를 진화 수치·도감·아이템에 반영한다 */
   function endBattle(state, b, now, rnd) {
     rnd = rnd || Math.random;
-    var mon = state.mon, c = mon.c, reward = null, injured = false;
+    var mon = state.mon, c = mon.c, reward = null, injured = false, floppy = false;
     c.battles++;
     if (b.hungry) c.hungryBattles++;
     if (b.won) {
@@ -648,6 +662,12 @@ var Engine = (function (D) {
         c.bossWins++;
         reward = bossReward(state, b.wild, rnd);
       }
+      // 이기면 가끔 리셋 플로피 (레어 상대는 두 배). 가질 수 있는 수에는 끝이 있다
+      var it = state.meta.items;
+      if ((it.floppy || 0) < R.floppyMax && rnd() < (b.wild.grade === 'rare' ? R.floppyDropRare : R.floppyDrop)) {
+        it.floppy = (it.floppy || 0) + 1;
+        floppy = true;
+      }
     } else {
       c.losses++; c.streak++;
       if (c.streak > c.maxStreak) c.maxStreak = c.streak;
@@ -656,7 +676,7 @@ var Engine = (function (D) {
     if (mon.hunger > 0) mon.hunger--; // 배틀하면 배가 고파진다
     var sp = special(state, mon);
     if (sp) evolveTo(state, mon, sp.to, sp.kind, now);
-    return { won: b.won, reward: reward, injured: injured };
+    return { won: b.won, reward: reward, injured: injured, floppy: floppy };
   }
 
   return {
@@ -665,7 +685,7 @@ var Engine = (function (D) {
     slotsLeft: slotsLeft, tick: tick, sleepNow: sleepNow,
     judge: judge, passes: passes, warning: warning, form: form, winRate: winRate, dateKey: dateKey,
     feed: feed, snack: snack, train: train, clean: clean, toggleLights: toggleLights, wake: wake,
-    armorKinds: armorKinds, canArmor: canArmor, armor: armor, useChip: useChip, medicine: medicine,
+    armorKinds: armorKinds, canArmor: canArmor, armor: armor, useChip: useChip, useFloppy: useFloppy, medicine: medicine,
     wildFor: wildFor, wildForCode: wildForCode, trainLevel: trainLevel, canSpecial: canSpecial, battleStage: battleStage, advantage: advantage,
     canBattle: canBattle, scan: scan, scansLeft: scansLeft, takeBattle: takeBattle,
     startBattle: startBattle, battleTurn: battleTurn, endBattle: endBattle,
