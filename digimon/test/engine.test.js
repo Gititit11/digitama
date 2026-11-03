@@ -439,24 +439,34 @@ test('잘못된 진화 하루 전에는 경고한다', function () {
   assert.equal(E.warning(s.mon, MORNING + 2 * H), false, '중간 루트(②)는 경고하지 않는다');
 });
 
-test('아머진화: 가진 디지멘탈로 고르고, 하루 1회, 48시간', function () {
+test('아머진화: 가진 디지멘탈로 고르면 그 아머체로 진화하고 거기서 끝', function () {
   var s = at('veemon', 'child', 'veemon');
   s.mon.stageEnd = MORNING + 70 * H;
   assert.equal(E.canArmor(s, MORNING), false);
   s.meta.items.thunder = true; s.meta.items.miracle = true;
   assert.deepEqual(E.armorKinds(s, MORNING), ['thunder', 'miracle']);
   assert.equal(E.armor(s, MORNING, 'flame').ok, false, '없는 디지멘탈');
-  assert.equal(E.armor(s, MORNING, 'miracle').to, 'magnamon');
-  assert.equal(E.battleStage(s.mon), E.STAGE_IDX.perfect);
-  assert.equal(E.canArmor(s, MORNING + H), false);
-  E.train(s, 3);
-  assert.equal(s.mon.c.training, 1, '아머 중에도 수치는 쌓인다');
+  assert.equal(E.armor(s, MORNING, 'thunder').to, 'raidramon');
+  assert.equal(s.mon.species, 'raidramon'); assert.equal(s.mon.stage, 'adult');
+  assert.equal(s.mon.stageEnd, null, '더 진화하지 않는다');
+  assert.equal(E.canArmor(s, MORNING + H), false, '성숙기라 다시 못 쓴다');
   quiet(s.mon);
-  E.tick(s, MORNING + 48 * H);
-  assert.equal(E.form(s.mon), 'veemon');
-  assert.equal(E.armor(s, MORNING + 48 * H, 'thunder').to, 'raidramon', '다음 날 다시');
-  assert.equal(E.battleStage(s.mon), E.STAGE_IDX.adult);
+  E.tick(s, MORNING + 200 * H);
+  assert.equal(s.mon.species, 'raidramon', '되돌아가지 않는다');
   assert.equal(s.meta.items.thunder, true, '디지멘탈은 닳지 않는다');
+  var t = at('veemon', 'child', 'veemon');
+  t.meta.items.miracle = true;
+  E.armor(t, MORNING, 'miracle');
+  assert.equal(t.mon.stage, 'perfect', '매그너몬은 완전체로 끝');
+  assert.equal(E.battleStage(t.mon), E.STAGE_IDX.perfect);
+});
+
+test('예전 저장의 48시간 아머체는 그 아머체로 굳힌다', function () {
+  var s = at('veemon', 'child', 'veemon');
+  Object.assign(s.mon, { armor: MORNING + 48 * H, armorTo: 'flamedramon' });
+  quiet(s.mon);
+  E.tick(s, MORNING + 2 * M);
+  assert.equal(s.mon.species, 'flamedramon'); assert.equal(s.mon.armor, null); assert.equal(s.mon.stageEnd, null);
 });
 
 test('야생: 내 단계별 등장 단계 확률과 단계별 등급 확률', function () {

@@ -149,7 +149,7 @@
       var age = (on ? t : mon.pausedAt) - mon.born;
       tx.innerHTML = '<div class="n"></div><div class="t"></div><div class="t"></div>';
       tx.children[0].textContent = name(id);
-      tx.children[1].textContent = (mon.armor ? '아머체' : D.STAGE_NAMES[mon.stage]) + ' · ' +
+      tx.children[1].textContent = (D.SPECIES[id].armor ? '아머체' : D.STAGE_NAMES[mon.stage]) + ' · ' +
         D.LINES[mon.line].name + ' 라인 · ' + dur(age) + '째';
       tx.children[2].textContent = on ? '키우는 중' : '보관 중 · 눌러서 데려오기';
       li.appendChild(tx);
@@ -232,7 +232,7 @@
 
     var id = E.form(mon), S = D.SPECIES[id], egg = mon.stage === 'egg';
     $('monName').textContent = egg ? D.LINES[mon.line].name + '의 디지타마' : S.name;
-    $('monStage').textContent = mon.armor ? '아머체' : D.STAGE_NAMES[mon.stage];
+    $('monStage').textContent = S.armor ? '아머체' : D.STAGE_NAMES[mon.stage];
     $('monAttr').textContent = egg ? '' : D.ATTR_NAMES[S.attr];
     $('monAge').textContent = dur(t - mon.born) + '째';
     var shownLv = lvfxShownLevel();
@@ -249,7 +249,6 @@
     else if (mon.callS > 0 && mon.strength === 0) { text = '힘이 없어요. 간식이나 훈련을!'; bad = true; }
     else if (mon.poops.length) { text = '똥을 치워 주세요'; }
     else if (warn) { text = '몸 색이 어두워졌어요… 뭔가 잘못되고 있어요'; bad = true; }
-    else if (mon.armor) { text = '아머진화 중 · ' + dur(mon.armor - t) + ' 남음'; }
     else text = ''; // 기분이 좋으면 말 대신 화면에서 하트·음표로 보여 준다
     if (!mon.sleeping && warn && text !== '몸 색이 어두워졌어요… 뭔가 잘못되고 있어요') text += ' · 색이 어두워요';
     msg.textContent = text; msg.className = 'msg' + (bad ? ' warn' : '');
@@ -594,11 +593,14 @@
     box: function () { renderBox(); show('box'); },
     armor: function () {
       var A = D.LINES[state.mon.line].armor;
-      openPick('아머진화', '디지멘탈의 힘으로 48시간 동안 아머체가 돼요. 하루 한 번, 디지멘탈은 닳지 않아요.',
+      openPick('아머진화', '디지멘탈의 힘으로 아머체로 진화해요. 되돌아가지 않고 더 진화하지도 않아요. 디지멘탈은 닳지 않아요.',
         E.armorKinds(state, now()).map(function (k) {
           return {
             label: D.RULE_HINTS[k] + ' → ' + name(A[k]) + ' (' + D.STAGE_NAMES[D.SPECIES[A[k]].stage] + ')',
-            fn: function () { E.armor(state, now(), k); }
+            fn: function () {
+              if (!confirm(name(A[k]) + '(으)로 아머진화할까요?\n아머체는 여기서 끝이에요. 되돌릴 수 없어요.')) return;
+              E.armor(state, now(), k);
+            }
           };
         }));
     },
@@ -1439,8 +1441,8 @@
         });
       });
       if (L.armor) D.DIGIMENTALS.forEach(function (dk) {
-        if (L.armor[dk] === id) from.push([L.child, D.RULE_HINTS[dk] + ' (48시간)']);
-        if (id === L.child) to.push([L.armor[dk], D.RULE_HINTS[dk] + ' · 아머진화 48시간']);
+        if (L.armor[dk] === id) from.push([L.child, D.RULE_HINTS[dk] + ' (아머진화, 여기서 끝)']);
+        if (id === L.child) to.push([L.armor[dk], D.RULE_HINTS[dk] + ' · 아머진화 (여기서 끝)']);
       });
       Object.keys(L.special || {}).forEach(function (f) {
         var x = L.special[f];
@@ -1494,7 +1496,7 @@
     body.appendChild(heading('지금'));
     body.appendChild(table([
       ['디지몬', S.name + ' (' + D.LINES[mon.line].name + ' 라인)'],
-      ['단계 · 속성', (mon.armor ? '아머체' : D.STAGE_NAMES[mon.stage]) + ' · ' + D.ATTR_NAMES[S.attr]],
+      ['단계 · 속성', (S.armor ? '아머체' : D.STAGE_NAMES[mon.stage]) + ' · ' + D.ATTR_NAMES[S.attr]],
       ['나이', dur(t - mon.born)],
       ['다음 진화', mon.stageEnd ? dur(mon.stageEnd - t) + ' 뒤' : '없음'],
       ['전투력', mon.stage === 'egg' ? '-' : Math.round(E.myPower(mon))],
@@ -1537,7 +1539,7 @@
     bad: '돌보기가 많이 서툴렀어요',
     jogress: '두 영웅의 힘이 하나가 됐어요',
     mode: '보스를 이겨 낸 힘으로 모습이 바뀌었어요',
-    armor: '48시간 동안 아머체가 돼요. 보스전에 강해요',
+    armor: '아머체로 진화했어요. 여기서 끝이지만 보스전에 강해요',
     hatch: '디지타마에서 깨어났어요. 잘 돌봐 주세요!'
   };
   function drainEvents() {

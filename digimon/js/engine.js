@@ -175,7 +175,7 @@ var Engine = (function (D) {
       if (t >= mon.stageEnd) evolveNow(state, mon, t);
       return;
     }
-    if (mon.armor && t >= mon.armor) endArmor(state, mon, t);
+    if (mon.armor) { evolveTo(state, mon, mon.armorTo, 'armor', t); return; } // 예전(48시간) 아머체는 그대로 굳힌다
 
     syncSleep(state, mon, t);
     if (mon.sleeping && mon.lights && !mon.sleepPenalized) {
@@ -373,21 +373,18 @@ var Engine = (function (D) {
     return { ok: true };
   }
 
-  /* 아머진화 — 성장기 브이몬 + 디지멘탈, 하루 1회, 48시간. 디지멘탈은 닳지 않는다. */
+  /* 아머진화 — 성장기 브이몬 + 디지멘탈. 그 아머체로 진화하고 거기서 끝난다 (되돌아가지 않고 더 진화하지 않는다).
+   * 디지멘탈은 닳지 않아서 다음 브이몬도 쓸 수 있다. */
   function armorKinds(state, now) {
     var mon = state.mon, A = mon && !mon.dead && line(mon).armor;
-    if (!A || mon.stage !== 'child' || mon.armor || mon.sleeping || mon.armorDay === dateKey(now)) return [];
+    if (!A || mon.stage !== 'child' || mon.armor || mon.sleeping) return [];
     return D.DIGIMENTALS.filter(function (k) { return state.meta.items[k] && A[k]; });
   }
   function canArmor(state, now) { return armorKinds(state, now).length > 0; }
   function armor(state, now, kind) {
     if (armorKinds(state, now).indexOf(kind) < 0) return { ok: false };
     var mon = state.mon, to = line(mon).armor[kind];
-    mon.armor = now + R.armorHours * HOUR;
-    mon.armorTo = to;
-    mon.armorDay = dateKey(now);
-    register(state, to, 'raised', now);
-    emit(state, 'evolve', now, { from: mon.species, to: to, kind: 'armor', item: kind });
+    evolveTo(state, mon, to, 'armor', now); // 아머체는 다음 진화가 없어서 진화 시각이 비워진다
     return { ok: true, to: to };
   }
   function endArmor(state, mon, t) {
