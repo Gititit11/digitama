@@ -598,7 +598,8 @@
           return {
             label: D.RULE_HINTS[k] + ' → ' + name(A[k]) + ' (' + D.STAGE_NAMES[D.SPECIES[A[k]].stage] + ')',
             fn: function () {
-              if (!confirm(name(A[k]) + '(으)로 아머진화할까요?\n아머체는 여기서 끝이에요. 되돌릴 수 없어요.')) return;
+              if (!confirm(josa(name(A[k]), '으로', '로') + ' 아머진화할까요?\n아머진화하면 브이몬으로 돌아갈 수 없고, ' +
+                josa(name(A[k]), '은', '는') + ' 더 이상 진화하지 않아요.')) return;
               E.armor(state, now(), k);
             }
           };
