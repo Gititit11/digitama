@@ -226,6 +226,7 @@ var DigiData = (function () {
   sp('palmon', '팔몬', 'child', 'data');
   sp('terriermon', '테리어몬', 'child', 'vaccine');
   sp('piyomon', '피요몬', 'child', 'vaccine');
+  sp('tentomon', '텐타몬', 'child', 'vaccine');
   sp('patamon', '파닥몬', 'child', 'data');
   sp('wormmon', '추추몬', 'child', 'free');
   sp('gazimon', '가지몬', 'child', 'virus');
@@ -558,7 +559,7 @@ var DigiData = (function () {
   /* 야생 디지몬 풀 [단계][속성] */
   var WILD = {
     child: {
-      vaccine: ['terriermon', 'bearmon', 'pulsemon', 'vorvomon', 'angoramon', 'ryudamon', 'flamon', 'strabimon', 'kokuwamon', 'piyomon'],
+      vaccine: ['terriermon', 'bearmon', 'pulsemon', 'vorvomon', 'angoramon', 'ryudamon', 'flamon', 'strabimon', 'kokuwamon', 'piyomon', 'tentomon'],
       data: ['palmon', 'gotsumon', 'monodramon', 'sangomon', 'sunarizamon', 'blucomon', 'gammamon', 'jellymon', 'liollmon', 'patamon'],
       virus: ['gazimon', 'hagurumon', 'agumon_black', 'gabumon_black', 'ghostmon', 'gizamon', 'snowgoblimon'],
       free: ['wormmon']
