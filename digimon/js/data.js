@@ -315,6 +315,7 @@ var DigiData = (function () {
   sp('garudamon', '가루다몬', 'perfect', 'vaccine');
   sp('holyangemon', '홀리엔젤몬', 'perfect', 'vaccine');
   sp('monzaemon', '퍼펫몬', 'perfect', 'vaccine');
+  sp('atlurkabuterimon', '아트라캅테리몬', 'perfect', 'vaccine');
   sp('panjyamon', '화이트레오몬', 'perfect', 'vaccine');
   sp('mastertyranomon', '마스터티라노몬', 'perfect', 'vaccine');
   sp('deathmeramon', '데드메라몬', 'perfect', 'virus');
@@ -576,7 +577,7 @@ var DigiData = (function () {
         'chackmon', 'blitzmon']
     },
     perfect: {
-      vaccine: ['mammon', 'garudamon', 'holyangemon', 'monzaemon', 'panjyamon', 'mastertyranomon', 'loaderliomon', 'weregarurumon_sm', 'cerberumon', 'rapidmon',
+      vaccine: ['mammon', 'garudamon', 'holyangemon', 'monzaemon', 'atlurkabuterimon', 'panjyamon', 'mastertyranomon', 'loaderliomon', 'weregarurumon_sm', 'cerberumon', 'rapidmon',
         'cyberdramon', 'gusokumon', 'asuramon', 'vermillimon'],
       data: ['megaseadramon', 'lilimon', 'blossomon', 'metalmamemon', 'atlurballistamon', 'locomon', 'mailbirdramon',
         'extyranomon', 'pandamon', 'jaegerdorulumon', 'mermaimon', 'flaremon', 'cryspaledramon', 'crescemon',
