@@ -230,6 +230,7 @@ var DigiData = (function () {
   sp('patamon', '파닥몬', 'child', 'data');
   sp('wormmon', '추추몬', 'child', 'free');
   sp('armadimon', '아르마몬', 'child', 'free');
+  sp('hawkmon', '호크몬', 'child', 'free');
   sp('gazimon', '가지몬', 'child', 'virus');
   sp('hagurumon', '톱니몬', 'child', 'virus');
   sp('gotsumon', '울퉁몬', 'child', 'data');
@@ -567,7 +568,7 @@ var DigiData = (function () {
       vaccine: ['terriermon', 'bearmon', 'pulsemon', 'vorvomon', 'angoramon', 'ryudamon', 'flamon', 'strabimon', 'kokuwamon', 'piyomon', 'tentomon'],
       data: ['palmon', 'gotsumon', 'monodramon', 'sangomon', 'sunarizamon', 'blucomon', 'gammamon', 'jellymon', 'liollmon', 'patamon'],
       virus: ['gazimon', 'hagurumon', 'agumon_black', 'gabumon_black', 'ghostmon', 'gizamon', 'snowgoblimon', 'kokabuterimon'],
-      free: ['wormmon', 'armadimon']
+      free: ['wormmon', 'armadimon', 'hawkmon']
     },
     adult: {
       vaccine: ['birdramon', 'tortamon', 'leomon', 'galgomon', 'strikedramon', 'yukidarumon', 'mojyamon', 'gryzmon',
