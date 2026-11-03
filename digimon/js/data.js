@@ -256,6 +256,7 @@ var DigiData = (function () {
   // 야생 — 성숙기
   sp('birdramon', '버드라몬', 'adult', 'vaccine');
   sp('angemon', '엔젤몬', 'adult', 'vaccine');
+  sp('kabuterimon', '캅테리몬', 'adult', 'vaccine');
   sp('meramon', '메라몬', 'adult', 'data');
   sp('tyranomon', '티라노몬', 'adult', 'data');
   sp('monochromon', '모노크로몬', 'adult', 'data');
@@ -566,7 +567,7 @@ var DigiData = (function () {
     },
     adult: {
       vaccine: ['birdramon', 'tortamon', 'leomon', 'galgomon', 'strikedramon', 'yukidarumon', 'mojyamon', 'gryzmon',
-        'tobiumon', 'bulkmon', 'ginryumon', 'angemon'],
+        'tobiumon', 'bulkmon', 'ginryumon', 'angemon', 'kabuterimon'],
       data: ['meramon', 'tyranomon', 'monochromon', 'seadramon', 'shellmon', 'togemon', 'sunflowmon', 'drimogemon',
         'dorulumon', 'ballistamon', 'paledramon', 'parasaurmon', 'starmon', 'rukamon', 'turuiemon'],
       virus: ['darktyranomon', 'greymon_blue', 'garurumon_black', 'gesomon', 'snimon', 'vegimon', 'golemon',
