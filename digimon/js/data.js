@@ -320,6 +320,7 @@ var DigiData = (function () {
   sp('garudamon', '가루다몬', 'perfect', 'vaccine');
   sp('holyangemon', '홀리엔젤몬', 'perfect', 'vaccine');
   sp('monzaemon', '퍼펫몬', 'perfect', 'vaccine');
+  sp('warumonzaemon', '배드퍼펫몬', 'perfect', 'virus');
   sp('atlurkabuterimon', '아트라캅테리몬', 'perfect', 'vaccine');
   sp('panjyamon', '화이트레오몬', 'perfect', 'vaccine');
   sp('mastertyranomon', '마스터티라노몬', 'perfect', 'vaccine');
@@ -331,6 +332,7 @@ var DigiData = (function () {
   sp('mailbirdramon', '메일버드라몬', 'perfect', 'data');
   sp('rebellimon', '리벨리몬', 'perfect', 'virus');
   sp('metalgreymon_virus', '메탈그레이몬(청)', 'perfect', 'virus');
+  // 야생에서는 뺐다 (배드퍼펫몬으로 대체). 예전에 잡아 둔 저장 데이터가 있어서 종 정보는 남겨 둔다
   sp('metalgreymon_2010', '메탈그레이몬(2010)', 'perfect', 'virus');
   sp('extyranomon', '엑스티라노몬', 'perfect', 'data');
   sp('weregarurumon_black', '워가루몬(흑)', 'perfect', 'virus');
@@ -587,7 +589,7 @@ var DigiData = (function () {
       data: ['megaseadramon', 'lilimon', 'blossomon', 'metalmamemon', 'atlurballistamon', 'locomon', 'mailbirdramon',
         'extyranomon', 'pandamon', 'jaegerdorulumon', 'mermaimon', 'flaremon', 'cryspaledramon', 'crescemon',
         'triceramon', 'andiramon', 'scorpiomon'],
-      virus: ['deathmeramon', 'rebellimon', 'metalgreymon_virus', 'metalgreymon_2010', 'weregarurumon_black', 'jokermon',
+      virus: ['deathmeramon', 'rebellimon', 'metalgreymon_virus', 'warumonzaemon', 'weregarurumon_black', 'jokermon',
         'marinchimairamon', 'volcamon', 'lavogaritamon', 'groundramon', 'vulturemon'],
       free: ['frozomon', 'daipenmon', 'jewelbeemon', 'pucchiemon', 'aldamon', 'kongoumon']
     },
