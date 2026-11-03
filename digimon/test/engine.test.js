@@ -40,7 +40,7 @@ test('데이터: 모든 종에 도트 시트가 있고, 표가 서로 맞는다'
   assert.deepEqual(D.LINE_ORDER, ['agumon', 'gabumon', 'veemon', 'impmon', 'guilmon', 'renamon']);
   assert.equal(Object.keys(D.WILD).reduce(function (n, st) {
     return n + Object.keys(D.WILD[st]).reduce(function (m, a) { return m + D.WILD[st][a].length; }, 0);
-  }, 0), 166, '야생 166종');
+  }, 0), 167, '야생 167종');
   assert.equal(D.BOSSES.perfect.length + D.BOSSES.ultimate.length + D.LEGENDS.length, 30, '보스 30종');
   D.LINE_ORDER.forEach(function (k) { assert.ok(SHEETS['egg_' + k], k + ' 디지타마 그림'); });
   D.LINE_ORDER.forEach(function (k) {
