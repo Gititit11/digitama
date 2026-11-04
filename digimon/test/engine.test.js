@@ -663,3 +663,12 @@ test('훈련 레벨: 성공 16번마다 1레벨, 최대 10, 진화해도 남고 
   assert.equal(s.mon.stage, 'adult');
   assert.equal(E.trainLevel(s.mon), 3, '진화해도 그대로');
 });
+
+test('배고픔이 힘보다 먼저 떨어진다', function () {
+  var R = D.RULES, s = at('agumon', 'child', 'agumon');
+  s.mon.hunger = 4; s.mon.strength = 4; s.mon.hungerT = 0; s.mon.strengthT = 0; s.mon.poopT = -1e9;
+  E.tick(s, MORNING + 4 * R.hungerEvery.child * M);
+  assert.equal(s.mon.hunger, 0);
+  assert.ok(s.mon.strength >= 1, '힘은 아직 남아 있다');
+  assert.ok(R.strengthEvery.child > R.hungerEvery.child);
+});

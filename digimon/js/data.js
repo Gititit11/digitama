@@ -25,9 +25,9 @@ var DigiData = (function () {
     poopLimitMinutes: 180,     // 배변을 이만큼 넘게 두면 위생 실수
     sleepLightsMinutes: 30,    // 잠든 뒤 불을 이만큼 넘게 안 끄면 수면 방해
     wakeMinutes: 10,           // 깨우면 이만큼 깨어 있다가 다시 잔다
-    // 배고픔·힘이 1칸 줄어드는 간격(분). 원조 기기처럼 둘이 같은 간격으로 준다.
+    // 배고픔·힘이 1칸 줄어드는 간격(분). 배고픔이 먼저 비고, 힘은 1.5배 천천히 준다.
     hungerEvery: { baby1: 3, baby2: 30, child: 48, adult: 50, perfect: 60, ultimate: 60 },
-    strengthEvery: { baby1: 3, baby2: 30, child: 48, adult: 50, perfect: 60, ultimate: 60 },
+    strengthEvery: { baby1: 5, baby2: 45, child: 72, adult: 75, perfect: 90, ultimate: 90 },
     poopEvery: { baby1: 20, baby2: 120, child: 180, adult: 180, perfect: 200, ultimate: 220 },
     maxPoops: 8,
     sickPoops: 4,              // 똥이 이만큼 쌓이면 병에 걸린다
