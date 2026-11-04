@@ -284,7 +284,7 @@
     if (egg) document.querySelector('[data-act="chip"]').hidden = true;
     if (!mon.sick) document.querySelector('[data-act="medicine"]').disabled = true; // 아플 때만 누를 수 있다
   }
-  var FLOPPY_TEXT = '리셋 플로피: 지금 단계의 케어 실수를 1 줄여요. 한 단계에 한 번만 쓸 수 있고, 진화하면 다시 쓸 수 있어요.';
+  var FLOPPY_TEXT = '리셋 플로피: 지금 단계의 케어 실수를 1 줄여요.';
   // 승률 조건이 있는 진화의 최소 배틀 수 (engine.passes 와 같다: 성숙기 ⑤⑦⑧⑬⑳ 15번, 완전체 ⑨⑮ 10번)
   var BATTLE_MIN = { adult: 15, perfect: 10 };
   // 훈련 레벨: "Lv 3 (+9%) · 다음 레벨까지 성공 7번"
@@ -611,7 +611,6 @@
     },
     floppy: function () {
       var c = state.mon.c;
-      if (c.floppyUsed) { toast('리셋 플로피는 한 단계에 한 번만 쓸 수 있어요'); return; }
       if (!c.mistakes) { toast('지울 케어 실수가 없어요'); return; }
       if (!confirm(FLOPPY_TEXT + '\n\n지금 케어 실수 ' + c.mistakes + ' → ' + (c.mistakes - 1) + '\n쓸까요?')) return;
       var r = E.useFloppy(state);
@@ -1517,8 +1516,7 @@
     body.appendChild(table(D.DIGIMENTALS.map(function (k) {
       return [D.RULE_HINTS[k], it[k] ? '있음 → ' + name(D.LINES.veemon.armor[k]) : '없음'];
     }).concat([['디지 칩', it.chip + '개 (배고픔·힘 가득)'],
-      ['리셋 플로피', (it.floppy || 0) + '개 / 최대 ' + R.floppyMax + ' (케어 실수 1 감소 · 한 단계에 1번' +
-        (state.mon && state.mon.c && state.mon.c.floppyUsed ? ', 이번 단계엔 씀' : '') + ')']])));
+      ['리셋 플로피', (it.floppy || 0) + '개 / 최대 ' + R.floppyMax + ' (케어 실수 1 감소)']])));
     if (state.meta.history.length) {
       body.appendChild(heading('지난 디지몬'));
       body.appendChild(table(state.meta.history.map(function (h) {

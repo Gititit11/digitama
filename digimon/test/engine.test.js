@@ -402,7 +402,7 @@ test('보관함: 자다가 들어간 디지몬은 낮에 꺼내면 바로 깨어
   assert.equal(s.mon.sleeping, true, '밤에 꺼내면 바로 잔다');
 });
 
-test('리셋 플로피: 이기면 가끔 얻고, 케어 실수를 1 줄이며 한 단계에 한 번', function () {
+test('리셋 플로피: 이기면 가끔 얻고, 케어 실수를 1 줄이며 가진 만큼 쓴다', function () {
   var s = at('agumon', 'adult', 'greymon');
   var w = { id: 'tyranomon', grade: 'normal', level: 4 };
   E.endBattle(s, { won: true, wild: w }, MORNING, function () { return 0.04; });
@@ -420,12 +420,26 @@ test('리셋 플로피: 이기면 가끔 얻고, 케어 실수를 1 줄이며 �
   s.mon.c.mistakes = 2;
   var r = E.useFloppy(s);
   assert.equal(r.ok, true); assert.equal(s.mon.c.mistakes, 1); assert.equal(s.meta.items.floppy, 2);
-  assert.equal(E.useFloppy(s).reason, 'used', '한 단계에 한 번');
-  quiet(s.mon); s.mon.sick = false; s.mon.c.battles = 15; s.mon.c.wins = 9; s.mon.stageEnd = MORNING + 2 * H;
-  E.tick(s, MORNING + 2 * H + M); // 낮에 진화시킨다 (밤이면 자고 있어서 못 쓴다)
-  assert.equal(s.mon.stage, 'perfect');
-  s.mon.c.mistakes = 1;
-  assert.equal(E.useFloppy(s).ok, true, '진화하면 다시 쓸 수 있다');
+  assert.equal(E.useFloppy(s).ok, true, '한 단계에 여러 번 써도 된다');
+  assert.equal(s.mon.c.mistakes, 0); assert.equal(s.meta.items.floppy, 1);
+  assert.equal(E.useFloppy(s).reason, 'zero');
+});
+
+test('케어 실수: 배고픔과 힘을 같이 방치하면 1만 센다', function () {
+  var s = at('agumon', 'child', 'agumon'); quiet(s.mon);
+  s.mon.hunger = 0; s.mon.strength = 0;
+  E.tick(s, MORNING + 30 * M);
+  assert.equal(s.mon.c.mistakes, 1, '동시에 0칸');
+  s = at('agumon', 'child', 'agumon'); quiet(s.mon);
+  s.mon.hunger = 0;
+  E.tick(s, MORNING + 25 * M);
+  s.mon.strength = 0;
+  E.tick(s, MORNING + 60 * M);
+  assert.equal(s.mon.c.mistakes, 1, '배고픔 호출이 아직 안 풀렸으면 힘 호출은 따로 안 센다');
+  s = at('agumon', 'child', 'agumon'); quiet(s.mon);
+  s.mon.strength = 0;
+  E.tick(s, MORNING + 30 * M);
+  assert.equal(s.mon.c.mistakes, 1, '하나만 방치해도 1');
 });
 
 test('잘못된 진화 하루 전에는 경고한다', function () {

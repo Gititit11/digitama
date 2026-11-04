@@ -213,8 +213,13 @@ var Engine = (function (D) {
       mon.callH = mon.hunger === 0 ? mon.callH + 1 : 0;
       mon.callS = mon.strength === 0 ? mon.callS + 1 : 0;
       if (mon.callH === 1 || mon.callS === 1) emit(state, 'call', t);
-      if (mon.callH === R.callMinutes) { mon.c.mistakes++; emit(state, 'mistake', t, { kind: 'hunger' }); }
-      if (mon.callS === R.callMinutes) { mon.c.mistakes++; emit(state, 'mistake', t, { kind: 'strength' }); }
+      // 배고픔과 힘을 같이 방치하면 (둘 다 호출이 넘어간 채로 겹치면) 실수는 1만 센다.
+      // 두 게이지가 같은 속도로 줄어서, 따로 세면 한 번 방치에 실수가 2씩 오른다.
+      var overH = mon.callH === R.callMinutes, overS = mon.callS === R.callMinutes;
+      if (overH || overS) {
+        var already = (overH && mon.callS > R.callMinutes) || (overS && mon.callH > R.callMinutes);
+        if (!already) { mon.c.mistakes++; emit(state, 'mistake', t, { kind: overH ? 'hunger' : 'strength' }); }
+      }
     }
 
     if (mon.stageEnd && t >= mon.stageEnd) evolveNow(state, mon, t);
@@ -402,17 +407,15 @@ var Engine = (function (D) {
     return { ok: true };
   }
 
-  // 리셋 플로피: 이 단계의 케어 실수를 1 줄인다. 한 단계에 한 번만 (진화하면 다시 쓸 수 있다)
+  // 리셋 플로피: 이 단계의 케어 실수를 1 줄인다. 가진 만큼 몇 번이든 쓸 수 있다
   function useFloppy(state) {
     var mon = state.mon, it = state.meta.items;
     if (!it.floppy) return { ok: false, reason: 'none' };
     if (!mon || isEgg(state)) return { ok: false, reason: 'egg' };
     if (mon.sleeping) return asleep();
-    if (mon.c.floppyUsed) return { ok: false, reason: 'used' };
     if (!mon.c.mistakes) return { ok: false, reason: 'zero' };
     it.floppy--;
     mon.c.mistakes--;
-    mon.c.floppyUsed = true;
     return { ok: true, mistakes: mon.c.mistakes };
   }
 
