@@ -285,8 +285,8 @@
     if (!mon.sick) document.querySelector('[data-act="medicine"]').disabled = true; // 아플 때만 누를 수 있다
   }
   var FLOPPY_TEXT = '리셋 플로피: 지금 단계의 케어 실수를 1 줄여요.';
-  // 승률 조건이 있는 진화의 최소 배틀 수 (engine.passes 와 같다: 성숙기 ⑤⑦⑧⑬⑳ 15번, 완전체 ⑨⑮ 10번)
-  var BATTLE_MIN = { adult: 15, perfect: 10 };
+  // 승률 조건이 있는 진화의 최소 배틀 수 (engine.passes 와 같다: 성숙기 ⑤⑦⑧⑬⑳ 15번, 완전체 ⑨⑮ 15번)
+  var BATTLE_MIN = { adult: 15, perfect: 15 };
   // 훈련 레벨: "Lv 3 (+9%) · 다음 레벨까지 성공 7번"
   function trainText(mon) {
     var lv = E.trainLevel(mon), ok = mon.trainOk || 0;

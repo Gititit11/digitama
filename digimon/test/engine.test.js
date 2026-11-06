@@ -99,7 +99,7 @@ test('성장기 → 성숙기 (파피몬·브이몬)', function () {
 });
 
 test('새 스타터: 임프몬 · 길몬 · 레나몬', function () {
-  var ok = { mistakes: 2, battles: 15, wins: 9 }, ult = { mistakes: 1, battles: 10, wins: 7, bossWins: 1 };
+  var ok = { mistakes: 2, battles: 15, wins: 9 }, ult = { mistakes: 1, battles: 15, wins: 10, bossWins: 1 };
   assert.equal(to('impmon', 'child', 'impmon', { training: 20 }), 'wizarmon');
   assert.equal(to('impmon', 'child', 'impmon', { sleep: 4, training: 20 }), 'devimon');
   assert.equal(to('impmon', 'child', 'impmon', { hygiene: 4 }), 'raremon');
@@ -132,7 +132,7 @@ test('스카몬: 어느 라인이든 위생 실수 6 이상이면 스카몬 → 
     assert.equal(to(k, 'child', child, { hygiene: 6, mistakes: 6, training: 20 }), 'sukamon', k + ' 다른 나쁜 진화보다 먼저');
     assert.notEqual(to(k, 'child', child, { hygiene: 5 }), 'sukamon', k + ' 5 까지는 기존 진화');
     assert.equal(to(k, 'adult', 'sukamon', { battles: 15, wins: 8 }), 'etemon', k);
-    assert.equal(to(k, 'perfect', 'etemon', { battles: 10, wins: 6, bossWins: 1 }), 'metaletemon', k);
+    assert.equal(to(k, 'perfect', 'etemon', { battles: 15, wins: 9, bossWins: 1 }), 'metaletemon', k);
   });
   assert.equal(to('agumon', 'child', 'agumon', { hygiene: 4 }), 'coelamon', '위생 4–5 는 그대로 씨라몬');
 });
@@ -162,11 +162,11 @@ test('성숙기 → 완전체', function () {
 });
 
 test('완전체 → 궁극체', function () {
-  var ok = { mistakes: 1, battles: 10, wins: 7, bossWins: 1 };
+  var ok = { mistakes: 1, battles: 15, wins: 10, bossWins: 1 };
   assert.equal(to('agumon', 'perfect', 'metalgreymon', ok), 'wargreymon');
-  assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({}, ok, { wins: 6 })), 'wargreymon', '⑨ 승률 60%');
-  assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({}, ok, { wins: 5 })), null);
-  assert.equal(to('agumon', 'perfect', 'metalgreymon', { mistakes: 0, battles: 1, wins: 1, bossWins: 1 }), null, '배틀 10번은 해야 한다');
+  assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({}, ok, { wins: 9 })), 'wargreymon', '⑨ 승률 60%');
+  assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({}, ok, { wins: 8 })), null);
+  assert.equal(to('agumon', 'perfect', 'metalgreymon', { mistakes: 0, battles: 14, wins: 14, bossWins: 1 }), null, '배틀 15번은 해야 한다');
   assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({}, ok, { bossWins: 0 })), null);
   assert.equal(to('agumon', 'perfect', 'metaltyranomon', { mistakes: 3, maxStreak: 5 }), 'blitzgreymon');
   assert.equal(to('gabumon', 'perfect', 'weregarurumon', ok), 'cresgarurumon', '수면 방해 0 이면 숨은 진화');
