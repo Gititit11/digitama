@@ -251,7 +251,15 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 .dex-cell { cursor: pointer; color: inherit; font: inherit; }
 .dex-head { display: flex; align-items: center; gap: 14px; }
 .dex-head canvas { width: 96px; height: 96px; background: var(--lcd); border-radius: 12px; flex: none; }
-.dc-evo { max-height: 46vh; overflow-y: auto; }
+.dc-move { display: flex; flex-direction: column; gap: 8px; }
+.dc-move canvas { display: block; width: 100%; aspect-ratio: 160 / 72; border-radius: 12px; image-rendering: pixelated; }
+.dc-anims { display: flex; flex-wrap: wrap; gap: 6px; }
+.dc-anims button {
+  appearance: none; border: 1px solid var(--line); background: var(--card-2); color: var(--dim);
+  border-radius: 999px; padding: 5px 11px; font: inherit; font-size: 13px;
+}
+.dc-anims button.on { background: var(--text); border-color: var(--text); color: var(--bg-2); }
+.dc-evo { max-height: 34vh; overflow-y: auto; }
 .dc-evo h4 { font-size: 13px; color: var(--dim); margin: 10px 0 6px; font-weight: 600; }
 .evo-row { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
 .evo-row b { flex: none; min-width: 92px; }

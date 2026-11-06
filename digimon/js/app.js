@@ -89,6 +89,7 @@
     b.addEventListener('click', closeScreen);
   });
   function onClosed(was) {
+    if (was === 'dexCard') stopDexAnim();
     if (was === 'train') stopTrain();
     if (was === 'scan') stopCam();
     if (was === 'battle' && battle && !battle.over) finishBattle(true); // 도망쳐도 패배로 친다
@@ -198,6 +199,7 @@
   }
   var ignorePops = 0;
   function onClosedQuiet(was) {
+    if (was === 'dexCard') stopDexAnim();
     if (was === 'train') stopTrain();
     if (was === 'scan') stopCam();
   }
@@ -1403,9 +1405,67 @@
     body.scrollTop = top0;
   }
 
+  /* 도감 칸의 움직임 보기: 키웠거나 이긴 디지몬만. 동작을 하나씩 돌려 보여 주고, 누르면 그 동작만 */
+  var MOVES = [['idle', '대기'], ['walk', '걷기'], ['run', '달리기'], ['train', '훈련'],
+    ['happy', '기쁨'], ['attack', '공격'], ['eat', '먹기'], ['sleep', '잠']];
+  var dexAnim = null;
+  function pixelZ(x, zx, zy, n) { // n×n 칸짜리 Z
+    x.fillRect(zx, zy, n, 1); x.fillRect(zx, zy + n - 1, n, 1);
+    for (var k = 1; k < n - 1; k++) x.fillRect(zx + n - 1 - k, zy + k, 1, 1);
+  }
+  function stopDexAnim() { if (dexAnim) { clearInterval(dexAnim.timer); dexAnim = null; } }
+  function startDexAnim(id) {
+    stopDexAnim();
+    var moves = MOVES.filter(function (mv) { return !SHEETS[id] || Sprite.has(id, mv[0]); });
+    var box = $('dcAnims'), c = $('dcStage'), x = c.getContext('2d');
+    var m = Sprite.measure(id), FLOOR = 68;
+    var sc = Math.min(1, (FLOOR - 4) / m.h, (c.width - 8) / m.w);
+    var a = dexAnim = { id: id, auto: true, i: 0, t: 0, pos: (c.width - m.w * sc) / 2, dir: -1 };
+    box.innerHTML = '';
+    function chip(label, on, fn) {
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = label;
+      if (on) b.className = 'on';
+      b.addEventListener('click', fn); box.appendChild(b); return b;
+    }
+    function paintChips() {
+      Array.prototype.forEach.call(box.children, function (b, k) {
+        b.className = (k === 0 ? a.auto : !a.auto && a.i === k - 1) ? 'on' : '';
+      });
+    }
+    chip('자동', true, function () { a.auto = true; a.t = 0; paintChips(); });
+    moves.forEach(function (mv, k) {
+      chip(mv[1], false, function () { a.auto = false; a.i = k; a.t = 0; a.pos = (c.width - m.w * sc) / 2; paintChips(); });
+    });
+    var TICK = 125;
+    a.timer = setInterval(function () {
+      if (!dexAnim || dexAnim !== a) return;
+      a.t++;
+      if (a.auto && a.t >= 24) { a.t = 0; a.i = (a.i + 1) % moves.length; a.pos = (c.width - m.w * sc) / 2; paintChips(); }
+      var mv = moves[a.i][0], fast = mv === 'run' || mv === 'attack';
+      var frame = Math.floor(a.t / (fast ? 2 : 4));
+      if (mv === 'walk' || mv === 'run') { // 좌우로 오가며 걷는다. 시트는 왼쪽을 본다
+        a.pos += a.dir * (mv === 'run' ? 2 : 1);
+        var maxX = c.width - m.w * sc - 4;
+        if (a.pos <= 4) { a.pos = 4; a.dir = 1; }
+        if (a.pos >= maxX) { a.pos = maxX; a.dir = -1; }
+      }
+      x.fillStyle = lcdColor; x.fillRect(0, 0, c.width, c.height);
+      x.fillStyle = lcdInk; x.globalAlpha = 0.25; x.fillRect(0, FLOOR, c.width, 1); x.globalAlpha = 1;
+      Sprite.draw(x, id, Math.round(a.pos), FLOOR - Math.round(m.h * sc), sc,
+        { anim: mv, frame: frame, flip: (mv === 'walk' || mv === 'run') && a.dir > 0 });
+      if (mv === 'sleep') { // 잠: 도트 z 가 떠오른다
+        x.fillStyle = lcdInk;
+        var zx = Math.round(a.pos + m.w * sc - 8), zy = Math.round(FLOOR - m.h * sc - 6 - (a.t % 8) / 2);
+        pixelZ(x, zx, zy, 3); if (a.t % 8 > 3) pixelZ(x, zx + 6, zy - 6, 4);
+      }
+    }, TICK);
+  }
+
   function openDexCard(id) {
     var S = D.SPECIES[id], e = state.meta.dex[id], got = known(id);
     picture($('dcPic'), id, { silhouette: !got, anim: 'idle' });
+    $('dcMove').hidden = !got;
+    if (got) startDexAnim(id); else stopDexAnim();
     var nm = $('dcName');
     nm.textContent = got || e ? S.name : '???';
     if (S.boss || S.legend) {
