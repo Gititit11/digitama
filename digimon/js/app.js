@@ -1437,18 +1437,20 @@
       chip(mv[1], false, function () { a.auto = false; a.i = k; a.t = 0; a.pos = (c.width - m.w * sc) / 2; paintChips(); });
     });
     var TICK = 125;
-    a.timer = setInterval(function () {
-      if (!dexAnim || dexAnim !== a) return;
+    function advance() {
       a.t++;
       if (a.auto && a.t >= 24) { a.t = 0; a.i = (a.i + 1) % moves.length; a.pos = (c.width - m.w * sc) / 2; paintChips(); }
-      var mv = moves[a.i][0], fast = mv === 'run' || mv === 'attack';
-      var frame = Math.floor(a.t / (fast ? 2 : 4));
+      var mv = moves[a.i][0];
       if (mv === 'walk' || mv === 'run') { // 좌우로 오가며 걷는다. 시트는 왼쪽을 본다
         a.pos += a.dir * (mv === 'run' ? 2 : 1);
         var maxX = c.width - m.w * sc - 4;
         if (a.pos <= 4) { a.pos = 4; a.dir = 1; }
         if (a.pos >= maxX) { a.pos = maxX; a.dir = -1; }
       }
+    }
+    function paint() {
+      var mv = moves[a.i][0], fast = mv === 'run' || mv === 'attack';
+      var frame = Math.floor(a.t / (fast ? 2 : 4));
       x.fillStyle = lcdColor; x.fillRect(0, 0, c.width, c.height);
       x.fillStyle = lcdInk; x.globalAlpha = 0.25; x.fillRect(0, FLOOR, c.width, 1); x.globalAlpha = 1;
       Sprite.draw(x, id, Math.round(a.pos), FLOOR - Math.round(m.h * sc), sc,
@@ -1458,7 +1460,13 @@
         var zx = Math.round(a.pos + m.w * sc - 8), zy = Math.round(FLOOR - m.h * sc - 6 - (a.t % 8) / 2);
         pixelZ(x, zx, zy, 3); if (a.t % 8 > 3) pixelZ(x, zx + 6, zy - 6, 4);
       }
+    }
+    paint(); // 열자마자 그린다 (안 그러면 첫 틱까지 앞서 본 디지몬이 남아 있다)
+    a.timer = setInterval(function () {
+      if (dexAnim !== a) return;
+      advance(); paint();
     }, TICK);
+    a.repaint = paint;
   }
 
   function openDexCard(id) {
@@ -1678,6 +1686,7 @@
     if (top() === 'box') renderBox();
     if (!stack.length && !$('eggs').hidden) renderEggs();
     pictures.forEach(function (p) { picture(p[0], p[1], p[2]); });
+    if (dexAnim && dexAnim.repaint) dexAnim.repaint();
   });
 
   // 안드로이드 앱(APK) 안에서는 파일이 이미 기기에 있어서 오프라인 캐시가 필요 없다
