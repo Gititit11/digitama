@@ -231,6 +231,7 @@ test('⑩ 오메가몬: 짝을 키워 본 적 있고 보스 3번 격파 / ⑲ �
   assert.equal(s.mon.species, 'imperialdramon_pm', '⑲ 다음 ㉓ 팔라딘 모드');
   assert.equal(D.SPECIES.imperialdramon_pm.mult, 1.35);
   assert.equal(D.SPECIES.blitzgreymon.mult, 1.3);
+  ['cresgarurumon', 'beelzebumon_2010', 'dukemon_x', 'sakuyamon_x'].forEach(function (id) { assert.equal(D.SPECIES[id].mult, 1.15, id + ' 숨은 궁극체'); });
 });
 
 test('디지타마: 5분 동안 흔들리다가 부화한다', function () {

@@ -96,6 +96,8 @@ var DigiData = (function () {
     SPECIES[id] = o;
   }
   var END = { terminal: true, mult: 1.3 };
+  // ⑮ 숨은 궁극체: 조건이 빡센 대신 되자마자 1.15배 (일반 루트는 보스 3번을 더 이겨야 최종 변신 1.25배)
+  var HIDDEN = { mult: 1.15 };
 
   var END = { terminal: true, mult: 1.3 };
   var ARMOR = { armor: true, bossMult: 1.5 };
@@ -141,7 +143,7 @@ var DigiData = (function () {
   sp('waruseadramon', '워시드라몬', 'perfect', 'virus');
   sp('orochimon', '오로치몬', 'perfect', 'virus', END);
   sp('metalgarurumon', '메탈가루몬', 'ultimate', 'data');
-  sp('cresgarurumon', '크레스가루몬', 'ultimate', 'data');
+  sp('cresgarurumon', '크레스가루몬', 'ultimate', 'data', HIDDEN);
   sp('nidhoggmon', '니드호그몬', 'ultimate', 'virus');
 
   // 브이몬 라인 (2 - Ancient Warriors)
@@ -178,7 +180,7 @@ var DigiData = (function () {
   sp('fantomon', '팬텀몬', 'perfect', 'virus');
   sp('skullsatamon', '스컬사탄몬', 'perfect', 'virus');
   sp('beelzebumon', '베르제브몬', 'ultimate', 'virus');
-  sp('beelzebumon_2010', '베르제브몬(2010)', 'ultimate', 'virus');
+  sp('beelzebumon_2010', '베르제브몬(2010)', 'ultimate', 'virus', HIDDEN);
   sp('deathmon', '데스몬', 'ultimate', 'virus');
   sp('beelzebumon_blast', '베르제브몬 블래스트 모드', 'ultimate', 'virus', { mult: 1.25 });
 
@@ -198,7 +200,7 @@ var DigiData = (function () {
   sp('vajramon', '바지라몬', 'perfect', 'data', END);
   sp('majiramon', '마지라몬', 'perfect', 'data', END);
   sp('dukemon', '듀크몬', 'ultimate', 'vaccine');
-  sp('dukemon_x', '듀크몬X', 'ultimate', 'vaccine');
+  sp('dukemon_x', '듀크몬X', 'ultimate', 'vaccine', HIDDEN);
   sp('megidramon', '메기드라몬', 'ultimate', 'virus');
   sp('dukemon_crimson', '듀크몬 크림슨 모드', 'ultimate', 'vaccine', { mult: 1.25 });
 
@@ -218,7 +220,7 @@ var DigiData = (function () {
   sp('caturamon', '챠츠라몬', 'perfect', 'virus', END);
   sp('parasimon', '파라사이몬', 'ultimate', 'virus');
   sp('sakuyamon', '샤크라몬', 'ultimate', 'data');
-  sp('sakuyamon_x', '샤크라몬X', 'ultimate', 'data');
+  sp('sakuyamon_x', '샤크라몬X', 'ultimate', 'data', HIDDEN);
   sp('kuzuhamon_miko', '쿠즈하몬 무녀 모드', 'ultimate', 'virus');
   sp('vikaralamon', '비가라몬', 'perfect', 'virus'); // 데바지만 파라사이몬으로 이어져서 막다른 진화가 아니다
 
