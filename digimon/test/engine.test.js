@@ -121,7 +121,7 @@ test('새 스타터: 임프몬 · 길몬 · 레나몬', function () {
   assert.equal(to('renamon', 'perfect', 'taomon', ult), 'sakuyamon', '도사몬에서는 X 가 안 나온다');
   assert.equal(to('renamon', 'perfect', 'doumon', ult), 'sakuyamon_x', '도우몬을 완벽하게 키우면 샤크라몬X');
   assert.equal(to('renamon', 'perfect', 'doumon', Object.assign({ sleep: 1 }, ult)), 'kuzuhamon');
-  assert.equal(to('renamon', 'adult', 'icedevimon', { mistakes: 0, battles: 15, wins: 6 }), 'vikaralamon');
+  assert.equal(to('renamon', 'adult', 'icedevimon', { mistakes: 2, battles: 15, wins: 8 }), 'vikaralamon');
   assert.equal(to('renamon', 'perfect', 'vikaralamon', { mistakes: 3, maxStreak: 5 }), 'parasimon');
   assert.equal(D.SPECIES.vikaralamon.stage, 'perfect'); assert.ok(!D.SPECIES.vikaralamon.terminal);
   assert.equal(D.SPECIES.parasimon.stage, 'ultimate');
@@ -157,8 +157,10 @@ test('성숙기 → 완전체', function () {
   assert.equal(to('agumon', 'adult', 'greymon', { battles: 15, wins: 8 }), 'metalgreymon', '⑤ 승률 50% 이상');
   assert.equal(to('agumon', 'adult', 'greymon', { battles: 15, wins: 7 }), null, '⑦ 이 없는 라인은 실패');
   assert.equal(to('agumon', 'adult', 'ogremon', ok), 'andromon');
-  assert.equal(to('agumon', 'adult', 'algomon_adult', { battles: 15, wins: 6 }), 'neodevimon');
-  assert.equal(to('gabumon', 'adult', 'algomon_adult', { battles: 15, wins: 6 }), 'orochimon', '같은 종도 라인마다 다르다');
+  assert.equal(to('agumon', 'adult', 'algomon_adult', { mistakes: 2, battles: 15, wins: 8 }), 'neodevimon', '⑧ 만회: 케어 실수 2 이하, 승률 50%');
+  assert.equal(to('agumon', 'adult', 'algomon_adult', { mistakes: 3, battles: 15, wins: 8 }), null);
+  assert.equal(to('agumon', 'adult', 'algomon_adult', { mistakes: 0, battles: 15, wins: 7 }), null, '승률 50% 미만');
+  assert.equal(to('gabumon', 'adult', 'algomon_adult', { battles: 15, wins: 8 }), 'orochimon', '같은 종도 라인마다 다르다');
   assert.equal(to('agumon', 'adult', 'coelamon', ok), 'anomalocarimon');
   assert.equal(to('gabumon', 'adult', 'dokugumon', ok), 'weregarurumon');
   assert.equal(E.judge(at('gabumon', 'adult', 'dokugumon', ok).mon).kind, 'purify');
