@@ -117,7 +117,7 @@ var DigiData = (function () {
   sp('algomon_adult', '아르고몬', 'adult', 'virus');
   sp('coelamon', '씨라몬', 'adult', 'data');
   sp('metalgreymon', '메탈그레이몬', 'perfect', 'vaccine');
-  sp('skullgreymon', '스컬그레이몬', 'perfect', 'virus', { terminal: true, mult: 1.3, ignores: true }); // 폭주: 세지만 가끔 말을 안 듣는다
+  sp('skullgreymon', '스컬그레이몬', 'perfect', 'virus', { terminal: true, mult: 1.2, ignores: true }); // 폭주: 세지만 가끔 말을 안 듣는다
   sp('metaltyranomon', '메탈티라노몬', 'perfect', 'virus', END);
   sp('andromon', '안드로몬', 'perfect', 'vaccine', END);
   sp('mamemon', '콩알몬', 'perfect', 'data', END);
@@ -201,7 +201,7 @@ var DigiData = (function () {
   sp('majiramon', '마지라몬', 'perfect', 'data', END);
   sp('dukemon', '듀크몬', 'ultimate', 'vaccine');
   sp('dukemon_x', '듀크몬X', 'ultimate', 'vaccine', HIDDEN);
-  sp('megidramon', '메기드라몬', 'ultimate', 'virus', { mult: 1.3, ignores: true }); // 폭주: 세지만 가끔 말을 안 듣는다
+  sp('megidramon', '메기드라몬', 'ultimate', 'virus', { mult: 1.2, ignores: true }); // 폭주: 세지만 가끔 말을 안 듣는다
   sp('dukemon_crimson', '듀크몬 크림슨 모드', 'ultimate', 'vaccine', { mult: 1.25 });
 
   // 레나몬 라인 (26 - Renamon EX)
