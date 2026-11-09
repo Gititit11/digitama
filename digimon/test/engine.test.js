@@ -172,13 +172,15 @@ test('성숙기 → 완전체', function () {
 });
 
 test('완전체 → 궁극체', function () {
-  var ok = { mistakes: 1, battles: 15, wins: 10, bossWins: 1 };
-  assert.equal(to('agumon', 'perfect', 'metalgreymon', ok), 'wargreymon');
-  assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({}, ok, { wins: 9 })), 'wargreymon', '⑨ 승률 60%');
-  assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({}, ok, { wins: 8 })), null);
+  var ok = { mistakes: 1, battles: 15, wins: 10, bossWins: 1 }, w = Object.assign({ sleep: 1 }, ok); // 수면 방해 0 이면 ⑮
+  assert.equal(to('agumon', 'perfect', 'metalgreymon', w), 'wargreymon');
+  assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({}, w, { wins: 9 })), 'wargreymon', '⑨ 승률 60%');
+  assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({}, w, { wins: 8 })), null);
   assert.equal(to('agumon', 'perfect', 'metalgreymon', { mistakes: 0, battles: 14, wins: 14, bossWins: 1 }), null, '배틀 15번은 해야 한다');
-  assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({}, ok, { bossWins: 0 })), null);
-  assert.equal(to('agumon', 'perfect', 'metaltyranomon', { mistakes: 3, maxStreak: 5 }), 'blitzgreymon');
+  assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({}, w, { bossWins: 0 })), null);
+  assert.equal(E.judge(at('agumon', 'perfect', 'metaltyranomon', { mistakes: 3, maxStreak: 5 }).mon).kind, 'terminal', '메탈티라노몬은 막다른 진화');
+  assert.equal(to('agumon', 'perfect', 'metalgreymon', ok), 'blitzgreymon', '수면 방해 0 이면 숨은 진화');
+  assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({ sleep: 1 }, ok)), 'wargreymon');
   assert.equal(to('gabumon', 'perfect', 'weregarurumon', ok), 'cresgarurumon', '수면 방해 0 이면 숨은 진화');
   assert.equal(to('gabumon', 'perfect', 'weregarurumon', Object.assign({ sleep: 1 }, ok)), 'metalgarurumon');
   assert.equal(to('veemon', 'perfect', 'paildramon', ok), 'imperialdramon_dm');
@@ -230,8 +232,9 @@ test('⑩ 오메가몬: 짝을 키워 본 적 있고 보스 3번 격파 / ⑲ �
   win(s);
   assert.equal(s.mon.species, 'imperialdramon_pm', '⑲ 다음 ㉓ 팔라딘 모드');
   assert.equal(D.SPECIES.imperialdramon_pm.mult, 1.35);
-  assert.equal(D.SPECIES.blitzgreymon.mult, 1.3);
-  ['cresgarurumon', 'beelzebumon_2010', 'dukemon_x', 'sakuyamon_x'].forEach(function (id) { assert.equal(D.SPECIES[id].mult, 1.15, id + ' 숨은 궁극체'); });
+  assert.ok(D.SPECIES.skullgreymon.ignores && D.SPECIES.megidramon.ignores && !D.SPECIES.blitzgreymon.ignores, '폭주는 스컬그레이몬·메기드라몬');
+  assert.equal(D.SPECIES.megidramon.mult, 1.3);
+  ['cresgarurumon', 'blitzgreymon', 'beelzebumon_2010', 'dukemon_x', 'sakuyamon_x'].forEach(function (id) { assert.equal(D.SPECIES[id].mult, 1.15, id + ' 숨은 궁극체'); });
 });
 
 test('디지타마: 5분 동안 흔들리다가 부화한다', function () {
@@ -638,8 +641,8 @@ test('배틀 결과: 수치·도감·보상·배고픔', function () {
   assert.equal(s.mon.hunger, 0);
 });
 
-test('배틀 턴이 끝까지 진행되고, 블리츠그레이몬은 가끔 명령을 무시한다', function () {
-  var s = at('agumon', 'ultimate', 'blitzgreymon');
+test('배틀 턴이 끝까지 진행되고, 폭주한 메기드라몬은 가끔 명령을 무시한다', function () {
+  var s = at('guilmon', 'ultimate', 'megidramon');
   var r = seeded(42);
   var b = E.startBattle(s, { id: 'wargreymon', name: '워그레이몬', attr: 'vaccine', grade: 'normal', level: E.STAGE_IDX.ultimate }), n = 0;
   while (!b.over) { E.battleTurn(b, 'attack', r); n++; }

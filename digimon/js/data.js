@@ -117,14 +117,14 @@ var DigiData = (function () {
   sp('algomon_adult', '아르고몬', 'adult', 'virus');
   sp('coelamon', '씨라몬', 'adult', 'data');
   sp('metalgreymon', '메탈그레이몬', 'perfect', 'vaccine');
-  sp('skullgreymon', '스컬그레이몬', 'perfect', 'virus', END);
-  sp('metaltyranomon', '메탈티라노몬', 'perfect', 'virus');
+  sp('skullgreymon', '스컬그레이몬', 'perfect', 'virus', { terminal: true, mult: 1.3, ignores: true }); // 폭주: 세지만 가끔 말을 안 듣는다
+  sp('metaltyranomon', '메탈티라노몬', 'perfect', 'virus', END);
   sp('andromon', '안드로몬', 'perfect', 'vaccine', END);
   sp('mamemon', '콩알몬', 'perfect', 'data', END);
   sp('neodevimon', '네오데블몬', 'perfect', 'virus');
   sp('anomalocarimon', '스콜피오몬', 'perfect', 'virus', END);
   sp('wargreymon', '워그레이몬', 'ultimate', 'vaccine');
-  sp('blitzgreymon', '블리츠그레이몬', 'ultimate', 'vaccine', { mult: 1.3, ignores: true });
+  sp('blitzgreymon', '블리츠그레이몬', 'ultimate', 'vaccine', HIDDEN); // 크레스가루몬과 짝인 숨은 궁극체
   sp('donedevimon', '던데블몬', 'ultimate', 'virus');
   sp('omegamon', '오메가몬', 'ultimate', 'vaccine', { mult: 1.25 });
 
@@ -201,7 +201,7 @@ var DigiData = (function () {
   sp('majiramon', '마지라몬', 'perfect', 'data', END);
   sp('dukemon', '듀크몬', 'ultimate', 'vaccine');
   sp('dukemon_x', '듀크몬X', 'ultimate', 'vaccine', HIDDEN);
-  sp('megidramon', '메기드라몬', 'ultimate', 'virus');
+  sp('megidramon', '메기드라몬', 'ultimate', 'virus', { mult: 1.3, ignores: true }); // 폭주: 세지만 가끔 말을 안 듣는다
   sp('dukemon_crimson', '듀크몬 크림슨 모드', 'ultimate', 'vaccine', { mult: 1.25 });
 
   // 레나몬 라인 (26 - Renamon EX)
@@ -484,8 +484,7 @@ var DigiData = (function () {
         ogremon: [['r7', 'mamemon'], ['r5', 'andromon']],
         algomon_adult: [['r8', 'neodevimon']],
         coelamon: [['r5', 'anomalocarimon']],
-        metalgreymon: [['r9', 'wargreymon']],
-        metaltyranomon: [['r11', 'blitzgreymon']],
+        metalgreymon: [['r15', 'blitzgreymon'], ['r9', 'wargreymon']],
         neodevimon: [['r9', 'donedevimon']]
       },
       special: { wargreymon: { rule: 'r10', to: 'omegamon', partner: 'metalgarurumon' } }

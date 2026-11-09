@@ -1314,7 +1314,7 @@
       if (!battle || battle.over || turn) return;
       var r = E.battleTurn(battle, btn.getAttribute('data-cmd'));
       var me = name(battle.me), en = battle.wild.name, lines = [];
-      if (r.ignored) lines.push(josa(me, '이', '가') + ' 명령을 무시했다!');
+      if (r.ignored) lines.push(josa(me, '이', '가') + ' 폭주해서 말을 듣지 않는다!');
       lines.push(cmdLine(me, r.pCmd, r.pDmg, r.pEvent, r.eCmd));
       lines.push(cmdLine(en, r.eCmd, r.eDmg, r.eEvent, r.pCmd));
       if (!battle.over && battle.eGauge >= R.gaugeMax) lines.push(josa(en, '이', '가') + ' 기를 모으고 있다!');
@@ -1486,6 +1486,7 @@
       nm.appendChild(g);
     }
     $('dcInfo').textContent = D.STAGE_NAMES[S.stage] + ' · ' + D.ATTR_NAMES[S.attr] + (S.armor ? ' · 아머체' : '') +
+      (S.ignores ? ' · 폭주 (가끔 말을 안 들음)' : '') +
       (S.terminal ? ' · 막다른 진화 (전투력 높음)' : '');
 
     var box = $('dcEvo');
