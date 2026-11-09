@@ -149,6 +149,8 @@ test('성숙기 → 완전체', function () {
   var ok = { mistakes: 2, battles: 15, wins: 9 };
   assert.equal(to('agumon', 'adult', 'greymon', ok), 'metalgreymon');
   assert.equal(to('agumon', 'adult', 'greymon', Object.assign({ training: 48, hungryBattles: 5 }, ok)), 'skullgreymon');
+  assert.equal(to('gabumon', 'adult', 'garurumon', Object.assign({ training: 48, hungryBattles: 5 }, ok)), 'weregarurumon_black', '가루몬의 스컬그레이몬 자리');
+  assert.ok(D.SPECIES.weregarurumon_black.terminal);
   assert.equal(to('agumon', 'adult', 'greymon', { mistakes: 4, battles: 15, wins: 9 }), 'metaltyranomon');
   assert.equal(to('agumon', 'adult', 'greymon', { mistakes: 6, battles: 15, wins: 9 }), null);
   assert.equal(to('agumon', 'adult', 'ogremon', { battles: 15, wins: 7 }), 'mamemon', '⑦ 승률 50% 미만이면 막다른 진화');

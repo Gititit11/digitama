@@ -135,7 +135,7 @@ var DigiData = (function () {
   sp('gorimon', '고릴라몬', 'adult', 'data');
   sp('dokugumon', '스파이더몬', 'adult', 'virus');
   sp('weregarurumon', '워가루몬', 'perfect', 'vaccine');
-  sp('parrotmon', '패럿몬', 'perfect', 'data', END);
+  sp('parrotmon', '패럿몬', 'perfect', 'data'); // 가루몬 ⑥ 자리를 워가루몬(흑)에게 넘기고 야생으로
   sp('valvemon', '밸브몬', 'perfect', 'data', END);
   sp('bigmamemon', '빅콩알몬', 'perfect', 'data', END);
   sp('waruseadramon', '워시드라몬', 'perfect', 'virus');
@@ -339,7 +339,7 @@ var DigiData = (function () {
   // 야생에서는 뺐다 (배드퍼펫몬으로 대체). 예전에 잡아 둔 저장 데이터가 있어서 종 정보는 남겨 둔다
   sp('metalgreymon_2010', '메탈그레이몬(2010)', 'perfect', 'virus');
   sp('extyranomon', '엑스티라노몬', 'perfect', 'data');
-  sp('weregarurumon_black', '워가루몬(흑)', 'perfect', 'virus');
+  sp('weregarurumon_black', '워가루몬(흑)', 'perfect', 'virus', END); // 가루몬 ⑥ — 그레이몬의 스컬그레이몬 자리
   sp('weregarurumon_sm', '워가루몬 사지타리우스 모드', 'perfect', 'vaccine');
   sp('pandamon', '팬더몬', 'perfect', 'data');
   sp('jaegerdorulumon', '예거도루루몬', 'perfect', 'data');
@@ -492,7 +492,7 @@ var DigiData = (function () {
       baby1: 'punimon', baby2: 'tsunomon', child: 'gabumon',
       evo: {
         gabumon: [['r34', 'algomon_adult'], ['r12', 'dokugumon'], ['r1', 'garurumon'], ['r2', 'gorimon']],
-        garurumon: [['r6', 'parrotmon'], ['r5', 'weregarurumon']],
+        garurumon: [['r6', 'weregarurumon_black'], ['r5', 'weregarurumon']],
         dokugumon: [['r13', 'weregarurumon'], ['r14', 'waruseadramon']],
         gorimon: [['r7', 'bigmamemon'], ['r5', 'valvemon']],
         algomon_adult: [['r8', 'orochimon']],
@@ -599,8 +599,8 @@ var DigiData = (function () {
         'cyberdramon', 'gusokumon', 'asuramon', 'vermillimon'],
       data: ['megaseadramon', 'lilimon', 'blossomon', 'metalmamemon', 'atlurballistamon', 'locomon', 'mailbirdramon',
         'extyranomon', 'pandamon', 'jaegerdorulumon', 'mermaimon', 'flaremon', 'cryspaledramon', 'crescemon',
-        'triceramon', 'andiramon', 'scorpiomon'],
-      virus: ['deathmeramon', 'rebellimon', 'metalgreymon_virus', 'warumonzaemon', 'weregarurumon_black', 'jokermon',
+        'triceramon', 'andiramon', 'scorpiomon', 'parrotmon'],
+      virus: ['deathmeramon', 'rebellimon', 'metalgreymon_virus', 'warumonzaemon', 'jokermon',
         'marinchimairamon', 'volcamon', 'lavogaritamon', 'groundramon', 'vulturemon'],
       free: ['frozomon', 'daipenmon', 'jewelbeemon', 'pucchiemon', 'aldamon', 'kongoumon']
     },
