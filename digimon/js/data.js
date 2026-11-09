@@ -55,8 +55,8 @@ var DigiData = (function () {
     gradeOdds: {
       child: { normal: 0.75, rare: 0.25 },
       adult: { normal: 0.75, rare: 0.25 },
-      perfect: { normal: 0.61, rare: 0.24, boss: 0.15 },
-      ultimate: { normal: 0.695, rare: 0.24, boss: 0.05, legend: 0.015 }
+      perfect: { normal: 0.56, rare: 0.24, boss: 0.2 },
+      ultimate: { normal: 0.63, rare: 0.24, boss: 0.1, legend: 0.03 }
     },
     attrOdds: { vaccine: 0.3, data: 0.3, virus: 0.3, free: 0.1 },
     attrAdv: 1.2,              // 상성이 유리하면 내 피해 ×1.2, 받는 피해 ÷1.2

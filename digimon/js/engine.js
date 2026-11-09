@@ -437,7 +437,7 @@ var Engine = (function (D) {
   function pickOdds(odds, x) {
     var keys = Object.keys(odds), acc = 0;
     for (var i = 0; i < keys.length; i++) { acc += odds[keys[i]]; if (x < acc) return keys[i]; }
-    return keys[0]; // 남는 확률은 첫 항목 (궁극체 일반 69.5%)
+    return keys[0]; // 남는 확률은 첫 항목 (보통 '일반')
   }
   function pick(list, x) { return list[Math.floor(x * list.length)]; }
 

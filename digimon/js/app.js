@@ -1553,7 +1553,7 @@
     section('진화 전', dedupe(from));
     section('진화 후', dedupe(to));
     if (!from.length && !to.length) {
-      var where = S.legend ? '궁극체로 스캔하면 아주 드물게 (0.3%)' : S.boss
+      var where = S.legend ? '궁극체로 스캔하면 아주 드물게 (' + Math.round(R.stageOdds.ultimate.ultimate * R.gradeOdds.ultimate.legend * 1000) / 10 + '%)' : S.boss
         ? D.STAGE_NAMES[S.stage] + ' 상대 중 ' + Math.round(R.gradeOdds[S.stage].boss * 100) + '% 확률로'
         : D.STAGE_NAMES[S.stage] + ' 상대로 바코드 배틀에서';
       section('만나는 곳', [[id, where]]);
