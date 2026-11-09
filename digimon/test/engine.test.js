@@ -112,7 +112,9 @@ test('새 스타터: 임프몬 · 길몬 · 레나몬', function () {
   assert.equal(to('guilmon', 'child', 'guilmon', { training: 60 }), 'growmon_orange', '㉑ 훈련 48 이상');
   assert.equal(to('guilmon', 'child', 'guilmon', { training: 60, mistakes: 5 }), 'siesamon');
   assert.equal(to('guilmon', 'child', 'guilmon', { mistakes: 6 }), 'devidramon');
-  assert.equal(to('guilmon', 'perfect', 'megalogrowmon', { mistakes: 3, maxStreak: 5 }), 'megidramon');
+  assert.equal(to('guilmon', 'perfect', 'megalogrowmon_orange', { mistakes: 3, maxStreak: 5 }), 'megidramon', '폭주는 훈련 갈래에서');
+  assert.equal(to('guilmon', 'perfect', 'megalogrowmon', { mistakes: 1, battles: 15, wins: 10, bossWins: 1 }), 'dukemon_x', '수면 방해 0 이면 숨은 진화');
+  assert.equal(to('guilmon', 'perfect', 'megalogrowmon', { mistakes: 1, battles: 15, wins: 10, bossWins: 1, sleep: 1 }), 'dukemon');
   assert.equal(E.judge(at('guilmon', 'perfect', 'mihiramon', ult).mon).kind, 'terminal', '데바는 막다른 진화');
   assert.equal(to('renamon', 'child', 'renamon', { training: 20 }), 'kyubimon');
   assert.equal(to('renamon', 'child', 'renamon', { sleep: 4, training: 20 }), 'youkomon');

@@ -553,8 +553,9 @@ var DigiData = (function () {
         growmon_orange: [['r7', 'majiramon'], ['r5', 'megalogrowmon_orange']],
         siesamon: [['r7', 'vajramon'], ['r5', 'sandiramon']],
         devidramon: [['r8', 'majiramon']],
-        megalogrowmon: [['r11', 'megidramon'], ['r9', 'dukemon']],
-        megalogrowmon_orange: [['r15', 'dukemon_x'], ['r9', 'medievaldukemon']]
+        megalogrowmon: [['r15', 'dukemon_x'], ['r9', 'dukemon']],
+        // 훈련을 몰아붙인 갈래: 일반 궁극체 메디벌 듀크몬, 무너지면 폭주한 메기드라몬
+        megalogrowmon_orange: [['r11', 'megidramon'], ['r9', 'medievaldukemon']]
       },
       special: { dukemon: { rule: 'r19', to: 'dukemon_crimson' } }
     },
