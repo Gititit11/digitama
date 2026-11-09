@@ -259,7 +259,7 @@ var Engine = (function (D) {
       case 'r20': return c.mistakes >= 3 && c.mistakes <= 5 && bat && wr >= 0.5;
       case 'r9': return c.mistakes <= 1 && bat && wr >= 0.6 && c.bossWins >= 1; // 한두 판만 이기고 끝내지 못하게
       case 'r11': return c.maxStreak >= 5 && c.mistakes >= 3;
-      case 'r15': return passes('r9', c) && c.sleep === 0;
+      case 'r15': return passes('r9', c) && c.sleep === 0 && c.training >= 48; // 숨은 궁극체는 일부러 노려야: 잠 + 훈련
     }
     return false;
   }
