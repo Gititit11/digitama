@@ -233,7 +233,8 @@ test('⑩ 오메가몬: 짝을 키워 본 적 있고 보스 3번 격파 / ⑲ �
   assert.equal(s.mon.species, 'imperialdramon_pm', '⑲ 다음 ㉓ 팔라딘 모드');
   assert.equal(D.SPECIES.imperialdramon_pm.mult, 1.35);
   assert.ok(D.SPECIES.skullgreymon.ignores && D.SPECIES.megidramon.ignores && !D.SPECIES.blitzgreymon.ignores, '폭주는 스컬그레이몬·메기드라몬');
-  assert.equal(D.SPECIES.megidramon.mult, 1.3);
+  assert.equal(D.SPECIES.megidramon.mult, 1.3); assert.equal(D.SPECIES.skullgreymon.mult, 1.3);
+  ['andromon', 'digitamamon', 'weregarurumon_black', 'majiramon', 'metaltyranomon'].forEach(function (id) { assert.equal(D.SPECIES[id].mult, 1, id + ' 막다른 진화는 보너스 없음'); });
   ['cresgarurumon', 'blitzgreymon', 'beelzebumon_2010', 'dukemon_x', 'sakuyamon_x'].forEach(function (id) { assert.equal(D.SPECIES[id].mult, 1.15, id + ' 숨은 궁극체'); });
 });
 

@@ -1503,7 +1503,7 @@
     }
     $('dcInfo').textContent = D.STAGE_NAMES[S.stage] + ' · ' + D.ATTR_NAMES[S.attr] + (S.armor ? ' · 아머체' : '') +
       (S.ignores ? ' · 폭주 (가끔 말을 안 들음)' : '') + (D.ENDING[id] ? ' · ' + D.ENDING_NAMES[D.ENDING[id]] : '') +
-      (S.terminal ? ' · 막다른 진화 (전투력 높음)' : '');
+      (S.terminal ? ' · 막다른 진화' : '');
 
     var box = $('dcEvo');
     box.innerHTML = '';

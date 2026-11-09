@@ -95,11 +95,11 @@ var DigiData = (function () {
     for (var k in extra || {}) o[k] = extra[k];
     SPECIES[id] = o;
   }
-  var END = { terminal: true, mult: 1.3 };
+  // 막다른 진화: 완전체에서 멈춘다 (ALTER END). 전투력 보너스는 없다 (폭주하는 스컬그레이몬만 따로 1.3배)
+  var END = { terminal: true };
   // ⑮ 숨은 궁극체: 조건이 빡센 대신 되자마자 1.15배 (일반 루트는 보스 3번을 더 이겨야 최종 변신 1.25배)
   var HIDDEN = { mult: 1.15 };
 
-  var END = { terminal: true, mult: 1.3 };
   var ARMOR = { armor: true };
 
   // 어느 라인이든: 성장기에 똥을 오래 방치하면 스카몬 → 에테몬 → 메탈에테몬
