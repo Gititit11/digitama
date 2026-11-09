@@ -12,7 +12,7 @@ var DigiData = (function () {
     egg: '디지타마', baby1: '유년기1', baby2: '유년기2', child: '성장기',
     adult: '성숙기', perfect: '완전체', ultimate: '궁극체'
   };
-  var ATTR_NAMES = { vaccine: '백신', data: '데이터', virus: '바이러스', free: '프리' };
+  var ATTR_NAMES = { vaccine: '백신', data: '데이터', virus: '바이러스', free: '프리', unknown: '알 수 없음' };
   var GRADE_NAMES = { normal: '일반', rare: '희귀', boss: '보스', legend: '전설' };
 
   // 시간은 모두 실시간. 초기에는 느슨하게 잡고 해 보면서 조인다.
@@ -89,7 +89,7 @@ var DigiData = (function () {
    *   ignores  가끔 명령을 무시한다
    */
   var SPECIES = {};
-  var ATTR_COLOR = { vaccine: '#f2a33a', data: '#6fa8dc', virus: '#8a5aa8', free: '#8fbf6a' };
+  var ATTR_COLOR = { vaccine: '#f2a33a', data: '#6fa8dc', virus: '#8a5aa8', free: '#8fbf6a', unknown: '#9a9aa6' };
   function sp(id, name, stage, attr, extra) {
     var o = { id: id, name: name, stage: stage, attr: attr, color: ATTR_COLOR[attr], mult: 1 };
     for (var k in extra || {}) o[k] = extra[k];
@@ -627,6 +627,10 @@ var DigiData = (function () {
       'cherubimon_vice', 'lucemon_falldown', 'omegamon_zwart', 'chaosdramon', 'chaosdukemon', 'gulfmon', 'jyureimon']
   };
   var LEGENDS = ['apocalymon', 'millenniumon', 'reaper', 'susanoomon'];
+  // 보스·전설은 속성을 알 수 없다: 상성이 없어서 어떤 속성으로 키워도 같은 조건으로 싸운다
+  BOSSES.perfect.concat(BOSSES.ultimate, LEGENDS).forEach(function (id) {
+    SPECIES[id].attr = 'unknown'; SPECIES[id].color = ATTR_COLOR.unknown;
+  });
 
   return {
     STAGES: STAGES, STAGE_NAMES: STAGE_NAMES, ATTR_NAMES: ATTR_NAMES, GRADE_NAMES: GRADE_NAMES, RULES: RULES,

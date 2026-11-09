@@ -1115,7 +1115,8 @@
   var AW = arena.width, AH = arena.height; // 보스(레이드 128px)도 들어가게 크게 잡는다
   var T = { pGo: 0, pHit: 280, pBack: 460, eGo: 600, eHit: 880, eBack: 1060, end: 1500 };
   var SHOT = { vaccine: ['#fff4b0', '#ffb43a', '#e0602a'], data: ['#e6f6ff', '#5ab4ff', '#2a5fd0'],
-    virus: ['#ffe0ff', '#c46aff', '#6a2aa8'], free: ['#f0ffe0', '#7ad05a', '#2f8a3a'] };
+    virus: ['#ffe0ff', '#c46aff', '#6a2aa8'], free: ['#f0ffe0', '#7ad05a', '#2f8a3a'],
+    unknown: ['#ffe8e8', '#ff5a5a', '#8a1a2a'] }; // 보스·전설
   // 3x5 도트 글꼴 (피해 숫자용)
   var FONT = {
     0: ['111', '101', '101', '101', '111'], 1: ['010', '110', '010', '010', '111'], 2: ['111', '001', '111', '100', '111'],

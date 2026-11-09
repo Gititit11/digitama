@@ -592,6 +592,12 @@ test('상성: 백신 → 바이러스 → 데이터 → 백신, 프리는 영향
   assert.ok(E.advantage('virus', 'vaccine') < 1);
   assert.equal(E.advantage('free', 'virus'), 1);
   assert.equal(E.advantage('vaccine', 'virus'), 1.2);
+  D.BOSSES.perfect.concat(D.BOSSES.ultimate, D.LEGENDS).forEach(function (id) {
+    assert.equal(D.SPECIES[id].attr, 'unknown', id);
+    ['vaccine', 'data', 'virus', 'free'].forEach(function (a) {
+      assert.equal(E.advantage(a, 'unknown'), 1); assert.equal(E.advantage('unknown', a), 1);
+    });
+  });
 });
 
 test('유년기는 배틀할 수 없다', function () {
