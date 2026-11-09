@@ -724,6 +724,8 @@ test('엔딩: 더 진화할 데가 없는 모습에만 붙는다', function () {
   ['blitzgreymon', 'cresgarurumon', 'beelzebumon_2010', 'dukemon_x', 'sakuyamon_x', 'magnamon'].forEach(function (id) { assert.equal(E2[id], 'hidden', id); });
   ['skullgreymon', 'andromon', 'anomalocarimon', 'digitamamon', 'megidramon', 'parasimon', 'metaletemon'].forEach(function (id) { assert.equal(E2[id], 'alter', id); });
   ['donedevimon', 'kuzuhamon', 'murmukusmon'].forEach(function (id) { assert.equal(E2[id], 'normal', id); });
+  assert.equal(E2.medievaldukemon, 'normal');
+  assert.equal(to('guilmon', 'perfect', 'megalogrowmon_orange', { mistakes: 1, battles: 15, wins: 10, bossWins: 1, sleep: 1 }), 'medievaldukemon');
   assert.equal(E2.fantomon, 'alter'); assert.ok(!E2.deathmon, '데스몬은 야생');
   assert.equal(E2.skullsatamon, 'alter', '스컬사탄몬은 막다른 진화');
   assert.equal(to('impmon', 'perfect', 'astamon', { mistakes: 1, battles: 15, wins: 10, bossWins: 1 }), 'murmukusmon');

@@ -202,6 +202,7 @@ var DigiData = (function () {
   sp('majiramon', '마지라몬', 'perfect', 'data', END);
   sp('dukemon', '듀크몬', 'ultimate', 'vaccine');
   sp('dukemon_x', '듀크몬X', 'ultimate', 'vaccine', HIDDEN);
+  sp('medievaldukemon', '메디벌 듀크몬', 'ultimate', 'data'); // 훈련 갈래(그라우몬(황))의 일반 궁극체
   sp('megidramon', '메기드라몬', 'ultimate', 'virus', { mult: 1.2, ignores: true }); // 폭주: 세지만 가끔 말을 안 듣는다
   sp('dukemon_crimson', '듀크몬 크림슨 모드', 'ultimate', 'vaccine', { mult: 1.25 });
 
@@ -553,7 +554,7 @@ var DigiData = (function () {
         siesamon: [['r7', 'vajramon'], ['r5', 'sandiramon']],
         devidramon: [['r8', 'majiramon']],
         megalogrowmon: [['r11', 'megidramon'], ['r9', 'dukemon']],
-        megalogrowmon_orange: [['r15', 'dukemon_x'], ['r9', 'dukemon']]
+        megalogrowmon_orange: [['r15', 'dukemon_x'], ['r9', 'medievaldukemon']]
       },
       special: { dukemon: { rule: 'r19', to: 'dukemon_crimson' } }
     },
