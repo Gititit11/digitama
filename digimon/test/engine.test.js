@@ -720,8 +720,8 @@ test('배고픔이 힘보다 먼저 떨어진다', function () {
 
 test('엔딩: 더 진화할 데가 없는 모습에만 붙는다', function () {
   var E2 = D.ENDING;
-  ['omegamon', 'imperialdramon_pm', 'magnamon', 'beelzebumon_blast', 'dukemon_crimson'].forEach(function (id) { assert.equal(E2[id], 'true', id); });
-  ['blitzgreymon', 'cresgarurumon', 'beelzebumon_2010', 'dukemon_x', 'sakuyamon_x'].forEach(function (id) { assert.equal(E2[id], 'hidden', id); });
+  ['omegamon', 'imperialdramon_pm', 'beelzebumon_blast', 'dukemon_crimson', 'sakuyamon_miko'].forEach(function (id) { assert.equal(E2[id], 'true', id); });
+  ['blitzgreymon', 'cresgarurumon', 'beelzebumon_2010', 'dukemon_x', 'sakuyamon_x', 'magnamon'].forEach(function (id) { assert.equal(E2[id], 'hidden', id); });
   ['skullgreymon', 'andromon', 'anomalocarimon', 'digitamamon', 'megidramon', 'parasimon', 'metaletemon'].forEach(function (id) { assert.equal(E2[id], 'alter', id); });
   ['donedevimon', 'kuzuhamon', 'murmukusmon'].forEach(function (id) { assert.equal(E2[id], 'normal', id); });
   assert.equal(E2.fantomon, 'alter'); assert.ok(!E2.deathmon, '데스몬은 야생');
