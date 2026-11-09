@@ -1385,9 +1385,14 @@
       if (ids.length) secs.push({ title: title, ids: ids });
     }
     var anyLine = ['sukamon', 'etemon', 'metaletemon']; // 어느 라인에서든 나와서 따로 묶는다
-    anyLine.forEach(function (id) { used[id] = 1; });
-    D.LINE_ORDER.forEach(function (k) { add(D.LINES[k].name + ' 라인', lineSpecies(k)); });
-    anyLine.forEach(function (id) { used[id] = 0; });
+    // 라인끼리는 겹쳐도 각 라인에 다 보여 준다 (오메가몬은 아구몬·파피몬 라인 둘 다에)
+    var inLine = {};
+    D.LINE_ORDER.forEach(function (k) {
+      var ids = lineSpecies(k).filter(function (id) { return anyLine.indexOf(id) < 0; });
+      ids.forEach(function (id) { inLine[id] = 1; });
+      secs.push({ title: D.LINES[k].name + ' 라인', ids: ids });
+    });
+    Object.keys(inLine).forEach(function (id) { used[id] = 1; });
     add('어느 라인이든 (똥 방치)', anyLine);
     ['child', 'adult', 'perfect', 'ultimate'].forEach(function (st) {
       var ids = [];
@@ -1401,7 +1406,7 @@
   function known(id) { var e = state.meta.dex[id]; return !!(e && (e.raised || e.beaten)); }
   function met(id) { return !!state.meta.dex[id]; }
   function renderDex() {
-    var body = $('dexBody'), total = 0, have = 0, top0 = body.scrollTop;
+    var body = $('dexBody'), seen = {}, total = 0, have = 0, top0 = body.scrollTop;
     body.innerHTML = '';
     dexSections().forEach(function (sec) {
       var div = document.createElement('div'); div.className = 'dex-sec';
@@ -1410,7 +1415,8 @@
       div.appendChild(h);
       var grid = document.createElement('div'); grid.className = 'dex-grid';
       sec.ids.forEach(function (id) {
-        var got = known(id); total++; if (got) have++;
+        var got = known(id);
+        if (!seen[id]) { seen[id] = 1; total++; if (got) have++; } // 두 라인에 나오는 디지몬은 한 번만 센다
         var cell = document.createElement('button'); cell.type = 'button';
         cell.className = 'dex-cell' + (got ? '' : ' no');
         cell.appendChild(Sprite.canvas(id, 48, { silhouette: !got }));
@@ -1501,9 +1507,7 @@
       g.className = 'grade ' + (S.boss ? 'boss' : 'legend'); g.textContent = S.boss ? '보스' : '전설';
       nm.appendChild(g);
     }
-    $('dcInfo').textContent = D.STAGE_NAMES[S.stage] + ' · ' + D.ATTR_NAMES[S.attr] + (S.armor ? ' · 아머체' : '') +
-      (S.ignores ? ' · 폭주 (가끔 말을 안 들음)' : '') + (D.ENDING[id] ? ' · ' + D.ENDING_NAMES[D.ENDING[id]] : '') +
-      (S.terminal ? ' · 막다른 진화' : '');
+    $('dcInfo').textContent = D.STAGE_NAMES[S.stage] + ' · ' + D.ATTR_NAMES[S.attr];
 
     var box = $('dcEvo');
     box.innerHTML = '';
