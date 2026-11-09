@@ -40,7 +40,7 @@ test('데이터: 모든 종에 도트 시트가 있고, 표가 서로 맞는다'
   assert.deepEqual(D.LINE_ORDER, ['agumon', 'gabumon', 'veemon', 'impmon', 'guilmon', 'renamon']);
   assert.equal(Object.keys(D.WILD).reduce(function (n, st) {
     return n + Object.keys(D.WILD[st]).reduce(function (m, a) { return m + D.WILD[st][a].length; }, 0);
-  }, 0), 169, '야생 169종');
+  }, 0), 170, '야생 170종');
   assert.equal(D.BOSSES.perfect.length + D.BOSSES.ultimate.length + D.LEGENDS.length, 30, '보스 30종');
   D.LINE_ORDER.forEach(function (k) { assert.ok(SHEETS['egg_' + k], k + ' 디지타마 그림'); });
   D.LINE_ORDER.forEach(function (k) {
@@ -723,7 +723,8 @@ test('엔딩: 더 진화할 데가 없는 모습에만 붙는다', function () {
   ['omegamon', 'imperialdramon_pm', 'magnamon', 'beelzebumon_blast', 'dukemon_crimson'].forEach(function (id) { assert.equal(E2[id], 'true', id); });
   ['blitzgreymon', 'cresgarurumon', 'beelzebumon_2010', 'dukemon_x', 'sakuyamon_x'].forEach(function (id) { assert.equal(E2[id], 'hidden', id); });
   ['skullgreymon', 'andromon', 'anomalocarimon', 'digitamamon', 'megidramon', 'parasimon', 'metaletemon'].forEach(function (id) { assert.equal(E2[id], 'alter', id); });
-  ['donedevimon', 'deathmon', 'kuzuhamon', 'murmukusmon'].forEach(function (id) { assert.equal(E2[id], 'normal', id); });
+  ['donedevimon', 'kuzuhamon', 'murmukusmon'].forEach(function (id) { assert.equal(E2[id], 'normal', id); });
+  assert.equal(E2.fantomon, 'alter'); assert.ok(!E2.deathmon, '데스몬은 야생');
   assert.equal(E2.skullsatamon, 'alter', '스컬사탄몬은 막다른 진화');
   assert.equal(to('impmon', 'perfect', 'astamon', { mistakes: 1, battles: 15, wins: 10, bossWins: 1 }), 'murmukusmon');
   assert.equal(E2.sakuyamon_miko, 'true'); assert.ok(!E2.sakuyamon, '샤크라몬은 무녀 모드가 남았다'); assert.ok(!E2.kuzuhamon_miko, '쿠즈하몬 무녀 모드는 야생');

@@ -177,7 +177,7 @@ var DigiData = (function () {
   sp('raremon', '레어몬', 'adult', 'virus');
   sp('baalmon', '바알몬', 'perfect', 'virus');
   sp('astamon', '아스타몬', 'perfect', 'virus');
-  sp('fantomon', '팬텀몬', 'perfect', 'virus');
+  sp('fantomon', '팬텀몬', 'perfect', 'virus', END); // 위자몬 ⑥ · 레어몬 ⑧ 로 오는 막다른 진화
   sp('skullsatamon', '스컬사탄몬', 'perfect', 'virus', END); // 고스몬 ⑦ · 데블몬 ⑭ 로 오는 막다른 진화
   sp('beelzebumon', '베르제브몬', 'ultimate', 'virus');
   sp('beelzebumon_2010', '베르제브몬(2010)', 'ultimate', 'virus', HIDDEN);
@@ -539,8 +539,7 @@ var DigiData = (function () {
         devimon: [['r13', 'baalmon'], ['r14', 'skullsatamon']],
         raremon: [['r8', 'fantomon']],
         baalmon: [['r15', 'beelzebumon_2010'], ['r9', 'beelzebumon']],
-        astamon: [['r9', 'murmukusmon']],
-        fantomon: [['r9', 'deathmon']]
+        astamon: [['r9', 'murmukusmon']]
       },
       special: { beelzebumon: { rule: 'r19', to: 'beelzebumon_blast' } }
     },
@@ -618,7 +617,7 @@ var DigiData = (function () {
         'saintgalgomon', 'cherubimon_virtue', 'justimon'],
       data: ['grandlocomon', 'plesiomon', 'regalecusmon', 'dinorexmon', 'frosvelgrmon', 'zdgarurumon', 'cannondramon',
         'volcanicdramon', 'rafflesimon'],
-      virus: ['pharaohmon', 'noblepumpmon', 'skullmammon', 'gaioumon', 'metalgarurumon_black', 'grankuwagamon', 'hydramon', 'kuzuhamon_miko'],
+      virus: ['pharaohmon', 'noblepumpmon', 'skullmammon', 'gaioumon', 'metalgarurumon_black', 'grankuwagamon', 'hydramon', 'kuzuhamon_miko', 'deathmon'],
       free: ['banchostingmon', 'kaisergreymon', 'magnagarurumon']
     }
   };
