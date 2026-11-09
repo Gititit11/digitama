@@ -178,10 +178,11 @@ var DigiData = (function () {
   sp('baalmon', '바알몬', 'perfect', 'virus');
   sp('astamon', '아스타몬', 'perfect', 'virus');
   sp('fantomon', '팬텀몬', 'perfect', 'virus');
-  sp('skullsatamon', '스컬사탄몬', 'perfect', 'virus');
+  sp('skullsatamon', '스컬사탄몬', 'perfect', 'virus', END); // 고스몬 ⑦ · 데블몬 ⑭ 로 오는 막다른 진화
   sp('beelzebumon', '베르제브몬', 'ultimate', 'virus');
   sp('beelzebumon_2010', '베르제브몬(2010)', 'ultimate', 'virus', HIDDEN);
   sp('deathmon', '데스몬', 'ultimate', 'virus');
+  sp('murmukusmon', '무르무쿠스몬', 'ultimate', 'virus');
   sp('beelzebumon_blast', '베르제브몬 블래스트 모드', 'ultimate', 'virus', { mult: 1.25 });
 
   // 길몬 라인 (24 - Guilmon EX)
@@ -538,9 +539,8 @@ var DigiData = (function () {
         devimon: [['r13', 'baalmon'], ['r14', 'skullsatamon']],
         raremon: [['r8', 'fantomon']],
         baalmon: [['r15', 'beelzebumon_2010'], ['r9', 'beelzebumon']],
-        astamon: [['r9', 'beelzebumon']],
-        fantomon: [['r9', 'deathmon']],
-        skullsatamon: [['r11', 'deathmon']]
+        astamon: [['r9', 'murmukusmon']],
+        fantomon: [['r9', 'deathmon']]
       },
       special: { beelzebumon: { rule: 'r19', to: 'beelzebumon_blast' } }
     },

@@ -721,7 +721,9 @@ test('엔딩: 더 진화할 데가 없는 모습에만 붙는다', function () {
   ['omegamon', 'imperialdramon_pm', 'magnamon', 'beelzebumon_blast', 'dukemon_crimson'].forEach(function (id) { assert.equal(E2[id], 'true', id); });
   ['blitzgreymon', 'cresgarurumon', 'beelzebumon_2010', 'dukemon_x', 'sakuyamon_x'].forEach(function (id) { assert.equal(E2[id], 'hidden', id); });
   ['skullgreymon', 'andromon', 'anomalocarimon', 'digitamamon', 'megidramon', 'parasimon', 'metaletemon'].forEach(function (id) { assert.equal(E2[id], 'alter', id); });
-  ['donedevimon', 'deathmon', 'kuzuhamon'].forEach(function (id) { assert.equal(E2[id], 'normal', id); });
+  ['donedevimon', 'deathmon', 'kuzuhamon', 'murmukusmon'].forEach(function (id) { assert.equal(E2[id], 'normal', id); });
+  assert.equal(E2.skullsatamon, 'alter', '스컬사탄몬은 막다른 진화');
+  assert.equal(to('impmon', 'perfect', 'astamon', { mistakes: 1, battles: 15, wins: 10, bossWins: 1 }), 'murmukusmon');
   assert.equal(E2.sakuyamon_miko, 'true'); assert.ok(!E2.sakuyamon, '샤크라몬은 무녀 모드가 남았다'); assert.ok(!E2.kuzuhamon_miko, '쿠즈하몬 무녀 모드는 야생');
   ['wargreymon', 'metalgarurumon', 'imperialdramon', 'imperialdramon_dm', 'beelzebumon', 'dukemon', 'sagittarimon'].forEach(function (id) { assert.ok(!E2[id], id + ' 는 아직 갈 데가 있다'); });
 });
