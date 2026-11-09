@@ -118,7 +118,13 @@ test('새 스타터: 임프몬 · 길몬 · 레나몬', function () {
   assert.equal(to('renamon', 'child', 'renamon', { sleep: 4, training: 20 }), 'youkomon');
   assert.equal(to('renamon', 'adult', 'youkomon', {}), 'doumon');
   assert.equal(to('renamon', 'perfect', 'taomon', Object.assign({ sleep: 1 }, ult)), 'sakuyamon');
-  assert.equal(to('renamon', 'perfect', 'parasimon', { mistakes: 3, maxStreak: 5 }), 'vikaralamon');
+  assert.equal(to('renamon', 'perfect', 'taomon', ult), 'sakuyamon', '도사몬에서는 X 가 안 나온다');
+  assert.equal(to('renamon', 'perfect', 'doumon', ult), 'sakuyamon_x', '도우몬을 완벽하게 키우면 샤크라몬X');
+  assert.equal(to('renamon', 'perfect', 'doumon', Object.assign({ sleep: 1 }, ult)), 'kuzuhamon_miko');
+  assert.equal(to('renamon', 'adult', 'icedevimon', { mistakes: 0, battles: 15, wins: 6 }), 'vikaralamon');
+  assert.equal(to('renamon', 'perfect', 'vikaralamon', { mistakes: 3, maxStreak: 5 }), 'parasimon');
+  assert.equal(D.SPECIES.vikaralamon.stage, 'perfect'); assert.ok(!D.SPECIES.vikaralamon.terminal);
+  assert.equal(D.SPECIES.parasimon.stage, 'ultimate');
 
   var boss = { id: 'piemon', name: '피에몬', attr: 'virus', grade: 'boss', level: E.STAGE_IDX.ultimate };
   [['guilmon', 'dukemon', 'dukemon_crimson'], ['impmon', 'beelzebumon', 'beelzebumon_blast']].forEach(function (c) {

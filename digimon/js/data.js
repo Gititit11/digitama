@@ -216,11 +216,11 @@ var DigiData = (function () {
   sp('kumbhiramon', '굼비라몬', 'perfect', 'virus', END);
   sp('indaramon', '인다라몬', 'perfect', 'virus', END);
   sp('caturamon', '챠츠라몬', 'perfect', 'virus', END);
-  sp('parasimon', '파라사이몬', 'perfect', 'virus');
+  sp('parasimon', '파라사이몬', 'ultimate', 'virus');
   sp('sakuyamon', '샤크라몬', 'ultimate', 'data');
   sp('sakuyamon_x', '샤크라몬X', 'ultimate', 'data');
   sp('kuzuhamon_miko', '쿠즈하몬 무녀 모드', 'ultimate', 'virus');
-  sp('vikaralamon', '비가라몬', 'ultimate', 'virus');
+  sp('vikaralamon', '비가라몬', 'perfect', 'virus'); // 데바지만 파라사이몬으로 이어져서 막다른 진화가 아니다
 
   // 야생 — 성장기
   sp('palmon', '팔몬', 'child', 'data');
@@ -551,17 +551,18 @@ var DigiData = (function () {
       special: { dukemon: { rule: 'r19', to: 'dukemon_crimson' } }
     },
     renamon: {
-      name: '레나몬', trait: '정화·다크 루트와 데바 분기가 있는 데이터형',
+      name: '레나몬', trait: '정화·다크 루트와 데바 분기, 샤크라몬X는 어둠을 이겨 내야',
       baby1: 'relemon', baby2: 'pokomon', child: 'renamon',
       evo: {
         renamon: [['r34', 'icedevimon'], ['r12', 'youkomon'], ['r1', 'kyubimon'], ['r2', 'lynxmon']],
         kyubimon: [['r5', 'taomon'], ['r20', 'kumbhiramon']],
         youkomon: [['r13', 'taomon'], ['r14', 'doumon']],
         lynxmon: [['r7', 'caturamon'], ['r5', 'indaramon']],
-        icedevimon: [['r8', 'parasimon']],
-        taomon: [['r15', 'sakuyamon_x'], ['r9', 'sakuyamon']],
-        doumon: [['r9', 'kuzuhamon_miko']],
-        parasimon: [['r11', 'vikaralamon']]
+        icedevimon: [['r8', 'vikaralamon']],
+        taomon: [['r9', 'sakuyamon']],
+        // 샤크라몬X 는 듀크몬X 처럼 따로 가는 길: 요우코몬 → 정화 실패로 도우몬 → 완벽하게 키우면
+        doumon: [['r15', 'sakuyamon_x'], ['r9', 'kuzuhamon_miko']],
+        vikaralamon: [['r11', 'parasimon']]
       }
     }
   };
