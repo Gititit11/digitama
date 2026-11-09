@@ -40,7 +40,7 @@ test('데이터: 모든 종에 도트 시트가 있고, 표가 서로 맞는다'
   assert.deepEqual(D.LINE_ORDER, ['agumon', 'gabumon', 'veemon', 'impmon', 'guilmon', 'renamon']);
   assert.equal(Object.keys(D.WILD).reduce(function (n, st) {
     return n + Object.keys(D.WILD[st]).reduce(function (m, a) { return m + D.WILD[st][a].length; }, 0);
-  }, 0), 169, '야생 169종');
+  }, 0), 168, '야생 168종');
   assert.equal(D.BOSSES.perfect.length + D.BOSSES.ultimate.length + D.LEGENDS.length, 30, '보스 30종');
   D.LINE_ORDER.forEach(function (k) { assert.ok(SHEETS['egg_' + k], k + ' 디지타마 그림'); });
   D.LINE_ORDER.forEach(function (k) {
@@ -224,6 +224,13 @@ test('⑩ 오메가몬: 짝을 키워 본 적 있고 보스 3번 격파 / ⑲ �
   assert.equal(s.mon.species, 'imperialdramon_dm');
   win(s);
   assert.equal(s.mon.species, 'imperialdramon');
+  win(s); win(s); win(s);
+  assert.equal(s.mon.species, 'imperialdramon', '오메가몬을 키운 적이 없다');
+  s.meta.dex.omegamon = { raised: true };
+  win(s);
+  assert.equal(s.mon.species, 'imperialdramon_pm', '⑲ 다음 ㉓ 팔라딘 모드');
+  assert.equal(D.SPECIES.imperialdramon_pm.mult, 1.35);
+  assert.equal(D.SPECIES.blitzgreymon.mult, 1.3);
 });
 
 test('디지타마: 5분 동안 흔들리다가 부화한다', function () {

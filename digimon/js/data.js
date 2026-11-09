@@ -122,7 +122,7 @@ var DigiData = (function () {
   sp('neodevimon', '네오데블몬', 'perfect', 'virus');
   sp('anomalocarimon', '스콜피오몬', 'perfect', 'virus', END);
   sp('wargreymon', '워그레이몬', 'ultimate', 'vaccine');
-  sp('blitzgreymon', '블리츠그레이몬', 'ultimate', 'vaccine', { mult: 1.35, ignores: true });
+  sp('blitzgreymon', '블리츠그레이몬', 'ultimate', 'vaccine', { mult: 1.3, ignores: true });
   sp('donedevimon', '던데블몬', 'ultimate', 'virus');
   sp('omegamon', '오메가몬', 'ultimate', 'vaccine', { mult: 1.25 });
 
@@ -393,7 +393,7 @@ var DigiData = (function () {
   sp('cherubimon_virtue', '케루비몬(선)', 'ultimate', 'vaccine');
   sp('justimon', '저스티몬', 'ultimate', 'vaccine');
   sp('metalgarurumon_black', '메탈가루몬(흑)', 'ultimate', 'virus');
-  sp('imperialdramon_pm', '황제드라몬 팔라딘 모드', 'ultimate', 'vaccine');
+  sp('imperialdramon_pm', '황제드라몬 팔라딘 모드', 'ultimate', 'vaccine', { mult: 1.35 }); // 브이몬 라인의 끝판왕
   sp('grankuwagamon', '그랜쿠가몬', 'ultimate', 'virus');
   sp('banchostingmon', '반쵸스팅몬', 'ultimate', 'free');
   sp('kaisergreymon', '카이젤그레이몬', 'ultimate', 'free');
@@ -456,13 +456,14 @@ var DigiData = (function () {
     r15: '케어 실수 1 이하, 배틀 15 이상, 승률 60% 이상, 보스 격파 1 이상, 수면 방해 0',
     r10: '짝(워그레이몬·메탈가루몬)을 키워 본 적 있고, 보스 3번 격파',
     r19: '보스 3번 격파',
+    r23: '오메가몬을 키워 본 적 있고, 파이터 모드로 보스 3번 격파',
     flame: '용기의 디지멘탈', thunder: '우정의 디지멘탈', archer: '사랑의 디지멘탈', miracle: '기적의 디지멘탈'
   };
   // 진화 종류 (연출 문구·어둡게 예고에 쓴다)
   var RULE_KIND = {
     r1: 'normal', r21: 'hidden', r2: 'mid', r3: 'bad', r4: 'bad', r34: 'bad', r22: 'bad', r12: 'dark',
     r5: 'normal', r6: 'dark', r7: 'mid', r8: 'hidden', r13: 'purify', r14: 'dark', r18: 'mid', r20: 'mid',
-    r9: 'normal', r11: 'dark', r15: 'hidden', r10: 'jogress', r19: 'mode'
+    r9: 'normal', r11: 'dark', r15: 'hidden', r10: 'jogress', r19: 'mode', r23: 'mode'
   };
 
   /* 스타터 라인
@@ -511,7 +512,11 @@ var DigiData = (function () {
         paildramon: [['r9', 'imperialdramon_dm']],
         aeroveedramon: [['r9', 'ulforceveedramon']]
       },
-      special: { imperialdramon_dm: { rule: 'r19', to: 'imperialdramon' } },
+      special: {
+        imperialdramon_dm: { rule: 'r19', to: 'imperialdramon' },
+        // 원작처럼 오메가몬의 힘을 받아 팔라딘 모드 (모드가 바뀌면 보스 횟수는 새로 센다)
+        imperialdramon: { rule: 'r23', to: 'imperialdramon_pm', partner: 'omegamon' }
+      },
       // 아머 루트: 디지멘탈이 있어야만 한 단계씩 올라간다 (시간이 지나도 저절로 진화하지 않는다)
       armor: {
         veemon: { flame: 'flamedramon', thunder: 'raidramon' },
@@ -606,7 +611,7 @@ var DigiData = (function () {
     },
     ultimate: {
       vaccine: ['victorygreymon', 'zekegreymon', 'heavyleomon', 'bloomlordmon', 'marsmon', 'hexblaumon', 'neptunemon',
-        'saintgalgomon', 'cherubimon_virtue', 'justimon', 'imperialdramon_pm'],
+        'saintgalgomon', 'cherubimon_virtue', 'justimon'],
       data: ['grandlocomon', 'plesiomon', 'regalecusmon', 'dinorexmon', 'frosvelgrmon', 'zdgarurumon', 'cannondramon',
         'volcanicdramon', 'rafflesimon'],
       virus: ['pharaohmon', 'noblepumpmon', 'skullmammon', 'gaioumon', 'metalgarurumon_black', 'grankuwagamon', 'hydramon'],
