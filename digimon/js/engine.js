@@ -32,7 +32,7 @@ var Engine = (function (D) {
   function freshCounters() {
     return {
       mistakes: 0, training: 0, overfeed: 0, hygiene: 0, sleep: 0,
-      battles: 0, wins: 0, losses: 0, streak: 0, maxStreak: 0, bossWins: 0, hungryBattles: 0
+      battles: 0, wins: 0, losses: 0, streak: 0, maxStreak: 0, winStreak: 0, maxWinStreak: 0, bossWins: 0, hungryBattles: 0
     };
   }
 
@@ -259,7 +259,7 @@ var Engine = (function (D) {
       case 'r20': return c.mistakes >= 3 && c.mistakes <= 5 && bat && wr >= 0.5;
       case 'r9': return c.mistakes <= 1 && bat && wr >= 0.6 && c.bossWins >= 1; // 한두 판만 이기고 끝내지 못하게
       case 'r11': return c.maxStreak >= 5 && c.mistakes >= 3;
-      case 'r15': return passes('r9', c) && c.training >= 48; // 숨은 궁극체는 일부러 노려야: 그 단계에서 훈련 48
+      case 'r15': return passes('r9', c) && (c.maxWinStreak || 0) >= 10; // 숨은 궁극체: 그 단계에서 10연승
     }
     return false;
   }
@@ -667,6 +667,8 @@ var Engine = (function (D) {
     if (b.hungry) c.hungryBattles++;
     if (b.won) {
       c.wins++; c.streak = 0;
+      c.winStreak = (c.winStreak || 0) + 1; // 연승 (예전 저장엔 없던 칸)
+      if (c.winStreak > (c.maxWinStreak || 0)) c.maxWinStreak = c.winStreak;
       register(state, b.wild.id, 'beaten', now);
       if (b.wild.grade === 'boss' || b.wild.grade === 'legend') {
         c.bossWins++;
@@ -679,7 +681,7 @@ var Engine = (function (D) {
         floppy = true;
       }
     } else {
-      c.losses++; c.streak++;
+      c.losses++; c.streak++; c.winStreak = 0;
       if (c.streak > c.maxStreak) c.maxStreak = c.streak;
       if (rnd() < R.injuryChance) injured = getSick(state, mon, now, 'injury');
     }

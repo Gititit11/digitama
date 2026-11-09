@@ -1608,7 +1608,7 @@
       ['위생 실수', c.hygiene], ['수면 방해', c.sleep],
       ['배틀', c.battles + '전 ' + c.wins + '승 ' + c.losses + '패' +
         (c.battles ? ' (승률 ' + Math.round(E.winRate(c) * 100) + '%)' : '')],
-      ['최다 연패', c.maxStreak], ['보스 격파', c.bossWins], ['배고픈 채 배틀', c.hungryBattles]
+      ['최다 연승', c.maxWinStreak || 0], ['최다 연패', c.maxStreak], ['보스 격파', c.bossWins], ['배고픈 채 배틀', c.hungryBattles]
     ].concat(BATTLE_MIN[mon.stage] ? [['진화에 필요한 배틀', Math.min(c.battles, BATTLE_MIN[mon.stage]) + ' / ' + BATTLE_MIN[mon.stage] + '번' +
       (c.battles >= BATTLE_MIN[mon.stage] ? ' (충족)' : '')]] : [])));
     var it = state.meta.items;
