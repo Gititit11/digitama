@@ -1181,6 +1181,18 @@
     ax.fillStyle = 'rgba(200,240,255,.9)'; ax.fillRect(x + (dir > 0 ? 0 : 1), y + 6, 2, 6);
   }
 
+  // 내 디지몬 위에 같은 모양의 빨간 막을 덮는다 (폭주 연출)
+  var rageCv = document.createElement('canvas');
+  function rageTint(id, x, y, anim, frame, alpha) {
+    var m = Sprite.measure(id); rageCv.width = m.w; rageCv.height = m.h;
+    var c = rageCv.getContext('2d');
+    c.clearRect(0, 0, m.w, m.h);
+    Sprite.draw(c, id, 0, 0, 1, { flip: true, anim: anim, frame: frame });
+    c.globalCompositeOperation = 'source-atop'; c.fillStyle = '#ff1e1e'; c.fillRect(0, 0, m.w, m.h);
+    c.globalCompositeOperation = 'source-over';
+    ax.globalAlpha = alpha; ax.drawImage(rageCv, x, y); ax.globalAlpha = 1;
+  }
+
   function arenaLoop(ts) {
     if ($('battle').hidden || !view) return;
     drawArena(ts);
@@ -1224,7 +1236,15 @@
       act(t, r.pCmd, r.pDmg, P, Q, 1, T.pGo, T.pHit, T.pBack, view.meAttr, '#ffd23f');
       // 상대 차례
       act(t, r.eCmd, r.eDmg, Q, P, -1, T.eGo, T.eHit, T.eBack, view.foeAttr, '#ff5f6d');
-      if (r.ignored && t < 700) fx.push(function () { pixelText('?!', P.x + ma.w / 2, floor - ma.h - 14 - (t < 150 ? (150 - t) / 30 : 0), 2, '#ff9d3a'); });
+      // 폭주해서 말을 안 들으면: 몸이 붉게 번쩍이며 좌우로 흔들린다 (뒤쪽에 흔들림 선)
+      if (r.ignored && t < 700) {
+        P.rage = t < 600 && Math.floor(t / 100) % 2 === 0 ? 0.55 : 0.25;
+        P.x += Math.floor(t / 50) % 2 ? 3 : -3;
+        fx.push(function () {
+          ax.fillStyle = '#dc2828';
+          for (var k = 0; k < 3; k++) ax.fillRect(Math.round(P.x) - 9, floor - ma.h + Math.round(ma.h * (0.3 + k * 0.22)), 6, 2);
+        });
+      }
       // HP 는 맞는 순간 줄인다
       // 방어의 반격은 상대가 때리는 순간에 들어간다
       if (t >= (r.pCmd === 'guard' ? T.eHit : T.pHit) && !turn.eDone) { turn.eDone = true; view.ehp = battle ? battle.ehp : turn.ehp; hpBars(); }
@@ -1291,7 +1311,10 @@
     }
 
     // 내 디지몬은 왼쪽에서 오른쪽을 본다 (그림은 왼쪽을 보므로 뒤집는다)
-    if (!P.hide) Sprite.draw(ax, a, Math.round(P.x), floor - ma.h, 1, { flip: true, anim: P.anim, frame: P.frame });
+    if (!P.hide) {
+      Sprite.draw(ax, a, Math.round(P.x), floor - ma.h, 1, { flip: true, anim: P.anim, frame: P.frame });
+      if (P.rage) rageTint(a, Math.round(P.x), floor - ma.h, P.anim, P.frame, P.rage);
+    }
     if (!Q.hide) Sprite.draw(ax, b, Math.round(Q.x), floor - mb.h, 1, { anim: Q.anim, frame: Q.frame });
     fx.forEach(function (f) { f(); });
   }
