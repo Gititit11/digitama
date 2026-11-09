@@ -181,7 +181,7 @@ var DigiData = (function () {
   sp('skullsatamon', '스컬사탄몬', 'perfect', 'virus', END); // 고스몬 ⑦ · 데블몬 ⑭ 로 오는 막다른 진화
   sp('beelzebumon', '베르제브몬', 'ultimate', 'virus');
   sp('beelzebumon_2010', '베르제브몬(2010)', 'ultimate', 'virus', HIDDEN);
-  sp('deathmon', '데스몬', 'ultimate', 'virus');
+  sp('deathmon', '데스몬', 'ultimate', 'data');
   sp('murmukusmon', '무르무쿠스몬', 'ultimate', 'virus');
   sp('beelzebumon_blast', '베르제브몬 블래스트 모드', 'ultimate', 'virus', { mult: 1.25 });
 
@@ -616,8 +616,8 @@ var DigiData = (function () {
       vaccine: ['victorygreymon', 'zekegreymon', 'heavyleomon', 'bloomlordmon', 'marsmon', 'hexblaumon', 'neptunemon',
         'saintgalgomon', 'cherubimon_virtue', 'justimon'],
       data: ['grandlocomon', 'plesiomon', 'regalecusmon', 'dinorexmon', 'frosvelgrmon', 'zdgarurumon', 'cannondramon',
-        'volcanicdramon', 'rafflesimon'],
-      virus: ['pharaohmon', 'noblepumpmon', 'skullmammon', 'gaioumon', 'metalgarurumon_black', 'grankuwagamon', 'hydramon', 'kuzuhamon_miko', 'deathmon'],
+        'volcanicdramon', 'rafflesimon', 'deathmon'],
+      virus: ['pharaohmon', 'noblepumpmon', 'skullmammon', 'gaioumon', 'metalgarurumon_black', 'grankuwagamon', 'hydramon', 'kuzuhamon_miko'],
       free: ['banchostingmon', 'kaisergreymon', 'magnagarurumon']
     }
   };
