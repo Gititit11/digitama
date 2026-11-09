@@ -41,7 +41,7 @@ var DigiData = (function () {
     scansPerDay: 5,            // 디지몬마다 하루 배틀 횟수 (바코드 찍기는 무제한). 0 이면 배틀도 무제한 (테스트용)
     hpMax: 100,
     stagePower: { child: 10, adult: 20, perfect: 34, ultimate: 52 },
-    gradePower: { normal: 1, rare: 1.2, boss: 1.3, legend: 1.5 },
+    gradePower: { normal: 1, rare: 1.1, boss: 1.3, legend: 1.5 },
     // 내 단계 → 나오는 야생 디지몬의 단계 확률. 바코드마다 단계별 디지몬이 정해져 있고,
     // 바코드의 고정된 값이 이 표의 어느 칸에 떨어지느냐로 그중 하나가 나온다.
     // 위 줄로 갈수록 누적 확률이 작아져서, 내가 진화하면 같은 바코드에서 같거나 더 높은 단계가 나온다.
