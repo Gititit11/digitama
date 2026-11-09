@@ -84,7 +84,7 @@ var DigiData = (function () {
   /* 종 정보
    *   mult     전투력 배율 (막다른 진화는 다음 단계가 없는 대신 높게 준다)
    *   terminal 더 진화하지 않는다
-   *   armor    아머체 (48시간 뒤 브이몬으로 돌아간다)
+   *   armor    아머체 (디지멘탈로만 다음 단계로 간다)
    *   bossMult 보스에게 이만큼 강하다
    *   ignores  가끔 명령을 무시한다
    */
@@ -151,15 +151,15 @@ var DigiData = (function () {
   sp('veemon', '브이몬', 'child', 'free');
   sp('exveemon', '엑스브이몬', 'adult', 'free');
   sp('veedramon', '브이드라몬', 'adult', 'vaccine');
-  sp('digitamamon', '디지타몬', 'adult', 'data', END);
+  sp('digitamamon', '디지타몬', 'perfect', 'data', END);
   sp('flamedramon', '화염드라몬', 'adult', 'free', ARMOR);
   sp('raidramon', '번개드라몬', 'adult', 'free', ARMOR);
-  sp('sagittarimon', '사수몬', 'adult', 'free', ARMOR);
+  sp('sagittarimon', '사수몬', 'perfect', 'free', ARMOR);
   sp('paildramon', '파일드라몬', 'perfect', 'free');
   sp('dinobeemon', '다이노몬', 'perfect', 'free', END);
   sp('aeroveedramon', '에어로브이드라몬', 'perfect', 'vaccine');
   sp('goldveedramon', '골드브이드라몬', 'perfect', 'vaccine', END);
-  sp('magnamon', '매그너몬', 'perfect', 'free', ARMOR);
+  sp('magnamon', '매그너몬', 'ultimate', 'free', { armor: true, bossMult: 1.5, mult: 1.25 }); // 디지멘탈 4개를 다 거친 끝이라 최종 변신들처럼 1.25배
   sp('ulforceveedramon', '알포스브이드라몬', 'ultimate', 'vaccine');
   sp('imperialdramon_dm', '황제드라몬 드래곤 모드', 'ultimate', 'free');
   sp('imperialdramon', '황제드라몬 파이터 모드', 'ultimate', 'free', { mult: 1.25 });
@@ -502,17 +502,23 @@ var DigiData = (function () {
       special: { metalgarurumon: { rule: 'r10', to: 'omegamon', partner: 'wargreymon' } }
     },
     veemon: {
-      name: '브이몬', trait: '아이템 활용형, 디지멘탈로 아머진화',
+      name: '브이몬', trait: '아이템 활용형, 디지멘탈로 단계마다 아머진화',
       baby1: 'chicomon', baby2: 'chibimon', child: 'veemon',
       evo: {
-        veemon: [['r34', 'digitamamon'], ['r1', 'exveemon'], ['r2', 'veedramon']],
-        exveemon: [['r5', 'paildramon'], ['r18', 'dinobeemon']],
-        veedramon: [['r7', 'goldveedramon'], ['r5', 'aeroveedramon']],
+        veemon: [['r1', 'exveemon'], ['r2', 'veedramon']],
+        exveemon: [['r3', 'digitamamon'], ['r5', 'paildramon'], ['r18', 'dinobeemon']],
+        veedramon: [['r3', 'digitamamon'], ['r7', 'goldveedramon'], ['r5', 'aeroveedramon']],
         paildramon: [['r9', 'imperialdramon_dm']],
         aeroveedramon: [['r9', 'ulforceveedramon']]
       },
       special: { imperialdramon_dm: { rule: 'r19', to: 'imperialdramon' } },
-      armor: { flame: 'flamedramon', thunder: 'raidramon', archer: 'sagittarimon', miracle: 'magnamon' }
+      // 아머 루트: 디지멘탈이 있어야만 한 단계씩 올라간다 (시간이 지나도 저절로 진화하지 않는다)
+      armor: {
+        veemon: { flame: 'flamedramon', thunder: 'raidramon' },
+        flamedramon: { archer: 'sagittarimon' },
+        raidramon: { archer: 'sagittarimon' },
+        sagittarimon: { miracle: 'magnamon' }
+      }
     },
     impmon: {
       name: '임프몬', trait: '바이러스 다크형, 보스를 이기면 블래스트 모드',

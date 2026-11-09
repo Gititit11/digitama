@@ -21,7 +21,7 @@
   function load() {
     try {
       var s = JSON.parse(localStorage.getItem(KEY));
-      if (s && s.v === 2) return s;
+      if (s && s.v === 2) return E.fixStages(s);
     } catch (e) { }
     return E.newState();
   }
@@ -258,6 +258,7 @@
     var next; // LCD 오른쪽 위
     if (egg) next = '부화까지 ' + clock(mon.stageEnd - t);
     else if (mon.stageEnd) next = '진화까지 ' + dur(mon.stageEnd - t);
+    else if ((D.LINES[mon.line].armor || {})[mon.species]) next = '디지멘탈로 진화';
     else if (mon.stage === 'ultimate') next = '최종 단계' + (specialHint(mon) || '');
     else next = '더 진화하지 않아요';
     $('next').textContent = next;
@@ -594,14 +595,16 @@
     info: function () { renderInfo(); show('info'); },
     box: function () { renderBox(); show('box'); },
     armor: function () {
-      var A = D.LINES[state.mon.line].armor;
-      openPick('아머진화', '디지멘탈의 힘으로 아머체로 진화해요. 되돌아가지 않고 더 진화하지도 않아요. 디지멘탈은 닳지 않아요.',
+      var mon = state.mon, L = D.LINES[mon.line], A = L.armor[mon.species];
+      openPick('아머진화', '디지멘탈의 힘으로 아머진화해요. 아머체는 디지멘탈로만 다음 단계로 진화해요. 디지멘탈은 닳지 않아요.',
         E.armorKinds(state, now()).map(function (k) {
+          var to = A[k], more = !!L.armor[to];
           return {
-            label: D.RULE_HINTS[k] + ' → ' + name(A[k]) + ' (' + D.STAGE_NAMES[D.SPECIES[A[k]].stage] + ')',
+            label: D.RULE_HINTS[k] + ' → ' + name(to) + ' (' + D.STAGE_NAMES[D.SPECIES[to].stage] + ')',
             fn: function () {
-              if (!confirm(josa(name(A[k]), '으로', '로') + ' 아머진화할까요?\n아머진화하면 브이몬으로 돌아갈 수 없고, ' +
-                josa(name(A[k]), '은', '는') + ' 더 이상 진화하지 않아요.')) return;
+              if (!confirm(josa(name(to), '으로', '로') + ' 아머진화할까요?\n아머진화하면 ' + josa(name(mon.species), '으로', '로') +
+                ' 돌아갈 수 없어요.\n' + (more ? josa(name(to), '은', '는') + ' 디지멘탈이 있어야만 다음 단계로 진화해요.'
+                  : josa(name(to), '은', '는') + ' 더 이상 진화하지 않아요.'))) return;
               E.armor(state, now(), k);
             }
           };
@@ -1354,7 +1357,7 @@
       seen[id] = 1; out.push(id);
       (L.evo[id] || []).forEach(function (e) { q.push(e[1]); });
       if (L.special && L.special[id]) q.push(L.special[id].to);
-      if (id === L.child && L.armor) D.DIGIMENTALS.forEach(function (d) { q.push(L.armor[d]); });
+      if (L.armor && L.armor[id]) D.DIGIMENTALS.forEach(function (d) { if (L.armor[id][d]) q.push(L.armor[id][d]); });
     }
     return out.sort(function (a, b) { return E.STAGE_IDX[D.SPECIES[a].stage] - E.STAGE_IDX[D.SPECIES[b].stage]; });
   }
@@ -1508,9 +1511,13 @@
           if (f === id) to.push([x[1], D.RULE_HINTS[x[0]]]);
         });
       });
-      if (L.armor) D.DIGIMENTALS.forEach(function (dk) {
-        if (L.armor[dk] === id) from.push([L.child, D.RULE_HINTS[dk] + ' (아머진화, 여기서 끝)']);
-        if (id === L.child) to.push([L.armor[dk], D.RULE_HINTS[dk] + ' · 아머진화 (여기서 끝)']);
+      Object.keys(L.armor || {}).forEach(function (f) {
+        D.DIGIMENTALS.forEach(function (dk) {
+          var t = L.armor[f][dk];
+          if (!t) return;
+          if (t === id) from.push([f, D.RULE_HINTS[dk] + ' (아머진화)']);
+          if (f === id) to.push([t, D.RULE_HINTS[dk] + ' · 아머진화 (디지멘탈이 있어야만)']);
+        });
       });
       Object.keys(L.special || {}).forEach(function (f) {
         var x = L.special[f];
@@ -1530,6 +1537,13 @@
       section('만나는 곳', [[id, where]]);
     }
     show('dexCard');
+  }
+
+  // 그 디지멘탈로 될 수 있는 아머체 (브이몬 라인 표에서)
+  function armorTargets(k) {
+    var A = D.LINES.veemon.armor, out = [];
+    Object.keys(A).forEach(function (f) { if (A[f][k] && out.indexOf(A[f][k]) < 0) out.push(A[f][k]); });
+    return out;
   }
 
   /* ---------- 정보 ---------- */
@@ -1582,7 +1596,7 @@
     var it = state.meta.items;
     body.appendChild(heading('아이템 (모든 디지몬이 함께 써요)'));
     body.appendChild(table(D.DIGIMENTALS.map(function (k) {
-      return [D.RULE_HINTS[k], it[k] ? '있음 → ' + name(D.LINES.veemon.armor[k]) : '없음'];
+      return [D.RULE_HINTS[k], it[k] ? '있음 → ' + armorTargets(k).map(name).join('·') : '없음'];
     }).concat([['디지 칩', it.chip + '개 (배고픔·힘 가득)'],
       ['리셋 플로피', (it.floppy || 0) + '개 / 최대 ' + R.floppyMax + ' (케어 실수 1 감소)']])));
     if (state.meta.history.length) {
@@ -1606,7 +1620,7 @@
     bad: '돌보기가 많이 서툴렀어요',
     jogress: '두 영웅의 힘이 하나가 됐어요',
     mode: '보스를 이겨 낸 힘으로 모습이 바뀌었어요',
-    armor: '아머체로 진화했어요. 여기서 끝이지만 보스전에 강해요',
+    armor: '아머체로 진화했어요. 보스전에 강하고, 다음 진화는 디지멘탈로만 해요',
     hatch: '디지타마에서 깨어났어요. 잘 돌봐 주세요!'
   };
   function drainEvents() {
@@ -1640,7 +1654,8 @@
     } else {
       $('evoKind').textContent = KIND[e.kind] || '진화!';
       $('evoName').textContent = name(e.from) + ' → ' + name(id);
-      $('evoNote').textContent = NOTE[e.kind] || '';
+      $('evoNote').textContent = e.kind === 'armor' && !(D.LINES.veemon.armor || {})[e.to]
+        ? '아머진화의 끝까지 왔어요. 보스전에 강해요' : NOTE[e.kind] || '';
       sec.classList.remove('flash'); void sec.offsetWidth; sec.classList.add('flash');
       vibrate([60, 40, 60, 40, 160]);
     }

@@ -105,6 +105,15 @@ var Engine = (function (D) {
     return true;
   }
 
+  // 종의 단계가 바뀐 경우(진화표 개편) 저장된 디지몬의 단계를 맞춘다
+  function fixStages(state) {
+    [state.mon].concat(state.box || []).forEach(function (m) {
+      var S = m && !m.dead && m.stage !== 'egg' && D.SPECIES[m.species];
+      if (S && m.stage !== S.stage) m.stage = S.stage;
+    });
+    return state;
+  }
+
   // 보관함에서 꺼낸다. 멈춰 있던 만큼 모든 시각을 뒤로 민다.
   function resume(state, uid, now) {
     var i = indexOf(state, uid);
@@ -380,16 +389,18 @@ var Engine = (function (D) {
 
   /* 아머진화 — 성장기 브이몬 + 디지멘탈. 그 아머체로 진화하고 거기서 끝난다 (되돌아가지 않고 더 진화하지 않는다).
    * 디지멘탈은 닳지 않아서 다음 브이몬도 쓸 수 있다. */
+  // 지금 모습에서 쓸 수 있는 디지멘탈 (아머 루트 표에 그 모습이 있을 때만)
+  function armorFrom(mon) { var A = line(mon).armor; return (A && A[mon.species]) || null; }
   function armorKinds(state, now) {
-    var mon = state.mon, A = mon && !mon.dead && line(mon).armor;
-    if (!A || mon.stage !== 'child' || mon.armor || mon.sleeping) return [];
+    var mon = state.mon, A = mon && !mon.dead && armorFrom(mon);
+    if (!A || mon.armor || mon.sleeping) return [];
     return D.DIGIMENTALS.filter(function (k) { return state.meta.items[k] && A[k]; });
   }
   function canArmor(state, now) { return armorKinds(state, now).length > 0; }
   function armor(state, now, kind) {
     if (armorKinds(state, now).indexOf(kind) < 0) return { ok: false };
-    var mon = state.mon, to = line(mon).armor[kind];
-    evolveTo(state, mon, to, 'armor', now); // 아머체는 다음 진화가 없어서 진화 시각이 비워진다
+    var mon = state.mon, to = armorFrom(mon)[kind];
+    evolveTo(state, mon, to, 'armor', now); // 아머체는 시간으로 진화하지 않아서 진화 시각이 비워진다
     return { ok: true, to: to };
   }
   function endArmor(state, mon, t) {
@@ -685,7 +696,7 @@ var Engine = (function (D) {
     slotsLeft: slotsLeft, tick: tick, sleepNow: sleepNow,
     judge: judge, passes: passes, warning: warning, form: form, winRate: winRate, dateKey: dateKey,
     feed: feed, snack: snack, train: train, clean: clean, toggleLights: toggleLights, wake: wake,
-    armorKinds: armorKinds, canArmor: canArmor, armor: armor, useChip: useChip, useFloppy: useFloppy, medicine: medicine,
+    armorKinds: armorKinds, canArmor: canArmor, armor: armor, fixStages: fixStages, useChip: useChip, useFloppy: useFloppy, medicine: medicine,
     wildFor: wildFor, wildForCode: wildForCode, trainLevel: trainLevel, canSpecial: canSpecial, battleStage: battleStage, advantage: advantage,
     canBattle: canBattle, scan: scan, scansLeft: scansLeft, takeBattle: takeBattle,
     startBattle: startBattle, battleTurn: battleTurn, endBattle: endBattle,

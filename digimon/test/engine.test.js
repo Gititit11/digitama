@@ -90,11 +90,13 @@ test('성장기 → 성숙기 (파피몬·브이몬)', function () {
   assert.equal(to('gabumon', 'child', 'gabumon', {}), 'gorimon');
   assert.equal(to('veemon', 'child', 'veemon', { training: 20 }), 'exveemon');
   assert.equal(to('veemon', 'child', 'veemon', {}), 'veedramon');
-  assert.equal(to('veemon', 'child', 'veemon', { mistakes: 7 }), 'digitamamon');
-  var s = at('veemon', 'child', 'veemon', { mistakes: 7 });
+  assert.equal(to('veemon', 'child', 'veemon', { mistakes: 7 }), 'veedramon', '브이몬은 성장기 실패가 없다');
+  assert.equal(to('veemon', 'adult', 'exveemon', { mistakes: 6, battles: 15, wins: 9 }), 'digitamamon');
+  var s = at('veemon', 'adult', 'veedramon', { mistakes: 7 });
   s.mon.stageEnd = MORNING + M;
   E.tick(s, MORNING + M);
   assert.equal(s.mon.species, 'digitamamon');
+  assert.equal(s.mon.stage, 'perfect');
   assert.equal(s.mon.stageEnd, null, '디지타몬은 더 진화하지 않는다');
 });
 
@@ -453,26 +455,40 @@ test('잘못된 진화 하루 전에는 경고한다', function () {
   assert.equal(E.warning(s.mon, MORNING + 2 * H), false, '중간 루트(②)는 경고하지 않는다');
 });
 
-test('아머진화: 가진 디지멘탈로 고르면 그 아머체로 진화하고 거기서 끝', function () {
+test('아머진화: 디지멘탈이 있어야만 한 단계씩 올라간다', function () {
   var s = at('veemon', 'child', 'veemon');
   s.mon.stageEnd = MORNING + 70 * H;
   assert.equal(E.canArmor(s, MORNING), false);
   s.meta.items.thunder = true; s.meta.items.miracle = true;
-  assert.deepEqual(E.armorKinds(s, MORNING), ['thunder', 'miracle']);
+  assert.deepEqual(E.armorKinds(s, MORNING), ['thunder'], '브이몬은 용기·우정만');
   assert.equal(E.armor(s, MORNING, 'flame').ok, false, '없는 디지멘탈');
+  assert.equal(E.armor(s, MORNING, 'miracle').ok, false, '기적은 사수몬일 때');
   assert.equal(E.armor(s, MORNING, 'thunder').to, 'raidramon');
   assert.equal(s.mon.species, 'raidramon'); assert.equal(s.mon.stage, 'adult');
-  assert.equal(s.mon.stageEnd, null, '더 진화하지 않는다');
-  assert.equal(E.canArmor(s, MORNING + H), false, '성숙기라 다시 못 쓴다');
+  assert.equal(s.mon.stageEnd, null, '시간으로는 진화하지 않는다');
   quiet(s.mon);
-  E.tick(s, MORNING + 200 * H);
-  assert.equal(s.mon.species, 'raidramon', '되돌아가지 않는다');
+  E.tick(s, MORNING + 300 * H);
+  assert.equal(s.mon.species, 'raidramon', '사랑의 디지멘탈이 없으면 그대로');
+  assert.equal(E.canArmor(s, MORNING + 300 * H), false);
+  s.meta.items.archer = true;
+  assert.deepEqual(E.armorKinds(s, MORNING + 300 * H), ['archer']);
+  E.armor(s, MORNING + 300 * H, 'archer');
+  assert.equal(s.mon.species, 'sagittarimon'); assert.equal(s.mon.stage, 'perfect');
+  E.armor(s, MORNING + 301 * H, 'miracle');
+  assert.equal(s.mon.species, 'magnamon'); assert.equal(s.mon.stage, 'ultimate');
+  assert.equal(E.battleStage(s.mon), E.STAGE_IDX.ultimate);
+  assert.equal(D.SPECIES.magnamon.mult, 1.25);
+  assert.equal(E.canArmor(s, MORNING + 302 * H), false, '매그너몬이 끝');
   assert.equal(s.meta.items.thunder, true, '디지멘탈은 닳지 않는다');
-  var t = at('veemon', 'child', 'veemon');
-  t.meta.items.miracle = true;
-  E.armor(t, MORNING, 'miracle');
-  assert.equal(t.mon.stage, 'perfect', '매그너몬은 완전체로 끝');
-  assert.equal(E.battleStage(t.mon), E.STAGE_IDX.perfect);
+});
+
+test('진화표가 바뀌어 단계가 달라진 종은 저장된 단계를 맞춘다', function () {
+  var s = at('veemon', 'adult', 'sagittarimon');
+  var b = at('veemon', 'perfect', 'magnamon').mon;
+  s.box = [b];
+  E.fixStages(s);
+  assert.equal(s.mon.stage, 'perfect');
+  assert.equal(b.stage, 'ultimate');
 });
 
 test('예전 저장의 48시간 아머체는 그 아머체로 굳힌다', function () {
