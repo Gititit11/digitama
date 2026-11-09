@@ -107,7 +107,7 @@ test('새 스타터: 임프몬 · 길몬 · 레나몬', function () {
   assert.equal(to('impmon', 'child', 'impmon', { hygiene: 4 }), 'raremon');
   assert.equal(to('impmon', 'child', 'impmon', {}), 'bakemon');
   assert.equal(to('impmon', 'adult', 'devimon', ok), 'baalmon', '정화');
-  assert.equal(to('impmon', 'perfect', 'baalmon', Object.assign({ sleep: 0, training: 48 }, ult)), 'beelzebumon_2010');
+  assert.equal(to('impmon', 'perfect', 'baalmon', Object.assign({ sleep: 3, training: 48 }, ult)), 'beelzebumon_2010', '수면 방해와 상관없이 훈련 48 이면 숨은 진화');
   assert.equal(to('impmon', 'perfect', 'baalmon', Object.assign({ sleep: 0, training: 47 }, ult)), 'beelzebumon', '훈련 48 이 안 되면 정상 진화');
   assert.equal(to('guilmon', 'child', 'guilmon', { training: 20 }), 'growmon');
   assert.equal(to('guilmon', 'child', 'guilmon', { training: 60 }), 'growmon_orange', '㉑ 훈련 48 이상');
@@ -178,7 +178,7 @@ test('성숙기 → 완전체', function () {
 });
 
 test('완전체 → 궁극체', function () {
-  var ok = { mistakes: 1, battles: 15, wins: 10, bossWins: 1 }, w = Object.assign({ sleep: 1 }, ok); // 수면 방해 0 이면 ⑮
+  var ok = { mistakes: 1, battles: 15, wins: 10, bossWins: 1 }, w = Object.assign({ sleep: 1 }, ok); // 훈련 48 이면 ⑮
   assert.equal(to('agumon', 'perfect', 'metalgreymon', w), 'wargreymon');
   assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({}, w, { wins: 9 })), 'wargreymon', '⑨ 승률 60%');
   assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({}, w, { wins: 8 })), null);
