@@ -259,8 +259,8 @@
     if (egg) next = '부화까지 ' + clock(mon.stageEnd - t);
     else if (mon.stageEnd) next = '진화까지 ' + dur(mon.stageEnd - t);
     else if ((D.LINES[mon.line].armor || {})[mon.species]) next = '디지멘탈로 진화';
-    else if (mon.stage === 'ultimate') next = '최종 단계' + (specialHint(mon) || '');
-    else next = '더 진화하지 않아요';
+    else if (D.ENDING[mon.species]) next = D.ENDING_NAMES[D.ENDING[mon.species]];
+    else next = ''; // 궁극체에서 변신이 남았으면 비워 둔다 (변신은 시간이 아니라 보스를 이겨서 한다)
     $('next').textContent = next;
 
     $('lightsLabel').textContent = mon.lights ? '불 끄기' : '불 켜기';
@@ -650,13 +650,6 @@
   }
 
   // 궁극체에서 보스 격파로 일어나는 진화의 진행 상황
-  function specialHint(mon) {
-    var s = (D.LINES[mon.line].special || {})[mon.species];
-    if (!s) return '';
-    if (s.partner && !(state.meta.dex[s.partner] && state.meta.dex[s.partner].raised)) return '';
-    return ' · 보스 격파 ' + Math.min(mon.c.bossWins, R.jogressBossWins) + '/' + R.jogressBossWins;
-  }
-
   /* ---------- 훈련 미니게임 ---------- */
   var tr = null;
   function startTrain() {
@@ -1509,7 +1502,7 @@
       nm.appendChild(g);
     }
     $('dcInfo').textContent = D.STAGE_NAMES[S.stage] + ' · ' + D.ATTR_NAMES[S.attr] + (S.armor ? ' · 아머체' : '') +
-      (S.ignores ? ' · 폭주 (가끔 말을 안 들음)' : '') +
+      (S.ignores ? ' · 폭주 (가끔 말을 안 들음)' : '') + (D.ENDING[id] ? ' · ' + D.ENDING_NAMES[D.ENDING[id]] : '') +
       (S.terminal ? ' · 막다른 진화 (전투력 높음)' : '');
 
     var box = $('dcEvo');
@@ -1679,8 +1672,9 @@
     } else {
       $('evoKind').textContent = KIND[e.kind] || '진화!';
       $('evoName').textContent = name(e.from) + ' → ' + name(id);
-      $('evoNote').textContent = e.kind === 'armor' && !(D.LINES.veemon.armor || {})[e.to]
-        ? '아머진화의 끝까지 왔어요' : NOTE[e.kind] || '';
+      var note = e.kind === 'armor' && !(D.LINES.veemon.armor || {})[e.to] ? '아머진화의 끝까지 왔어요' : NOTE[e.kind] || '';
+      if (D.ENDING[id]) note = (note ? note + ' · ' : '') + D.ENDING_NAMES[D.ENDING[id]];
+      $('evoNote').textContent = note;
       sec.classList.remove('flash'); void sec.offsetWidth; sec.classList.add('flash');
       vibrate([60, 40, 60, 40, 160]);
     }

@@ -714,3 +714,13 @@ test('배고픔이 힘보다 먼저 떨어진다', function () {
   assert.ok(s.mon.strength >= 1, '힘은 아직 남아 있다');
   assert.ok(R.strengthEvery.child > R.hungerEvery.child);
 });
+
+test('엔딩: 더 진화할 데가 없는 모습에만 붙는다', function () {
+  var E2 = D.ENDING;
+  ['omegamon', 'imperialdramon_pm', 'magnamon', 'beelzebumon_blast', 'dukemon_crimson'].forEach(function (id) { assert.equal(E2[id], 'true', id); });
+  ['blitzgreymon', 'cresgarurumon', 'beelzebumon_2010', 'dukemon_x', 'sakuyamon_x'].forEach(function (id) { assert.equal(E2[id], 'hidden', id); });
+  ['skullgreymon', 'andromon', 'anomalocarimon', 'digitamamon', 'megidramon', 'parasimon', 'metaletemon'].forEach(function (id) { assert.equal(E2[id], 'alter', id); });
+  ['donedevimon', 'deathmon', 'sakuyamon'].forEach(function (id) { assert.equal(E2[id], 'normal', id); });
+  ['wargreymon', 'metalgarurumon', 'imperialdramon', 'imperialdramon_dm', 'beelzebumon', 'dukemon', 'sagittarimon'].forEach(function (id) { assert.ok(!E2[id], id + ' 는 아직 갈 데가 있다'); });
+});
+

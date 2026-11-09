@@ -631,7 +631,30 @@ var DigiData = (function () {
     SPECIES[id].attr = 'unknown'; SPECIES[id].color = ATTR_COLOR.unknown;
   });
 
+  /* 엔딩: 더 진화할 데가 없는 모습에 붙는다 (LCD 오른쪽 위 · 도감)
+   *   true   최종 변신 (모드 체인지 · 조그레스 · 매그너몬)
+   *   hidden 숨은 궁극체 (⑮)
+   *   alter  정해진 길에서 벗어난 끝: 완전체에서 멈춘 막다른 진화, 다크 궁극체(⑪으로만), 똥 방치 갈래의 메탈에테몬
+   *   normal 그 밖의 궁극체 */
+  var ENDING = {}, ENDING_NAMES = { 'true': 'TRUE END', hidden: 'HIDDEN END', normal: 'NORMAL END', alter: 'ALTER END' };
+  LINE_ORDER.forEach(function (k) {
+    var L = LINES[k], how = {};
+    function add(to, h) { (how[to] = how[to] || []).push(h); }
+    Object.keys(L.evo).forEach(function (f) { L.evo[f].forEach(function (e) { add(e[1], e[0]); }); });
+    Object.keys(L.special || {}).forEach(function (f) { add(L.special[f].to, 'special'); });
+    Object.keys(L.armor || {}).forEach(function (f) { Object.keys(L.armor[f]).forEach(function (d) { add(L.armor[f][d], 'armor'); }); });
+    Object.keys(how).forEach(function (id) {
+      if (L.evo[id] || (L.special || {})[id] || (L.armor || {})[id]) return; // 아직 갈 데가 있다
+      var S = SPECIES[id], h = how[id];
+      ENDING[id] = h.indexOf('special') >= 0 || h.indexOf('armor') >= 0 ? 'true'
+        : S.mult === 1.15 ? 'hidden'
+        : S.stage !== 'ultimate' || id === 'metaletemon' || h.every(function (r) { return r === 'r11'; }) ? 'alter'
+        : 'normal';
+    });
+  });
+
   return {
+    ENDING: ENDING, ENDING_NAMES: ENDING_NAMES,
     STAGES: STAGES, STAGE_NAMES: STAGE_NAMES, ATTR_NAMES: ATTR_NAMES, GRADE_NAMES: GRADE_NAMES, RULES: RULES,
     SPECIES: SPECIES, RULE_HINTS: RULE_HINTS, RULE_KIND: RULE_KIND,
     LINES: LINES, LINE_ORDER: LINE_ORDER, DIGIMENTALS: DIGIMENTALS,
