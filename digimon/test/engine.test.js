@@ -643,7 +643,7 @@ test('배틀 턴이 끝까지 진행되고, 블리츠그레이몬은 가끔 명�
   armor.meta.items.flame = true;
   E.armor(armor, MORNING, 'flame');
   var boss = { id: 'vamdemon', attr: 'virus', grade: 'boss', level: E.STAGE_IDX.perfect };
-  assert.ok(E.startBattle(armor, boss).pPow > E.myPower(armor.mon) * 1.4, '아머체는 보스에게 강하다');
+  assert.equal(E.startBattle(armor, boss).pPow, E.myPower(armor.mon), '보스라고 따로 강해지지 않는다');
 });
 
 test('배틀: 공격 > 필살기 > 방어 > 공격, 필살기는 게이지 3칸', function () {

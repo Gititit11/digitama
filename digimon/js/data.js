@@ -86,7 +86,6 @@ var DigiData = (function () {
    *   mult     전투력 배율 (막다른 진화는 다음 단계가 없는 대신 높게 준다)
    *   terminal 더 진화하지 않는다
    *   armor    아머체 (디지멘탈로만 다음 단계로 간다)
-   *   bossMult 보스에게 이만큼 강하다
    *   ignores  가끔 명령을 무시한다
    */
   var SPECIES = {};
@@ -101,7 +100,7 @@ var DigiData = (function () {
   var HIDDEN = { mult: 1.15 };
 
   var END = { terminal: true, mult: 1.3 };
-  var ARMOR = { armor: true, bossMult: 1.5 };
+  var ARMOR = { armor: true };
 
   // 어느 라인이든: 성장기에 똥을 오래 방치하면 스카몬 → 에테몬 → 메탈에테몬
   sp('sukamon', '스카몬', 'adult', 'virus');
@@ -162,8 +161,7 @@ var DigiData = (function () {
   sp('dinobeemon', '다이노몬', 'perfect', 'free', END);
   sp('aeroveedramon', '에어로브이드라몬', 'perfect', 'vaccine');
   sp('goldveedramon', '골드브이드라몬', 'perfect', 'vaccine', END);
-  // 디지멘탈 4개를 다 거친 끝이라 1.25배. 보스·전설에게는 팔라딘 모드(1.35배)와 같아지게 1.08배만 더한다
-  sp('magnamon', '매그너몬', 'ultimate', 'free', { armor: true, bossMult: 1.08, mult: 1.25 });
+  sp('magnamon', '매그너몬', 'ultimate', 'free', { armor: true, mult: 1.25 }); // 디지멘탈 4개를 다 거친 끝이라 최종 변신들처럼 1.25배
   sp('ulforceveedramon', '알포스브이드라몬', 'ultimate', 'vaccine');
   sp('imperialdramon_dm', '황제드라몬 드래곤 모드', 'ultimate', 'free');
   sp('imperialdramon', '황제드라몬 파이터 모드', 'ultimate', 'free', { mult: 1.25 });

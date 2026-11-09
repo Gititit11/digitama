@@ -554,7 +554,6 @@ var Engine = (function (D) {
   function startBattle(state, wild) {
     var mon = state.mon, me = D.SPECIES[form(mon)];
     var pPow = myPower(mon), ePow = wildPower(wild);
-    if ((wild.grade === 'boss' || wild.grade === 'legend') && me.bossMult) pPow *= me.bossMult;
     return {
       wild: wild, me: me.id,
       php: R.hpMax, ehp: R.hpMax, turn: 0, over: false, won: false,

@@ -1620,7 +1620,7 @@
     bad: '돌보기가 많이 서툴렀어요',
     jogress: '두 영웅의 힘이 하나가 됐어요',
     mode: '보스를 이겨 낸 힘으로 모습이 바뀌었어요',
-    armor: '아머체로 진화했어요. 보스전에 강하고, 다음 진화는 디지멘탈로만 해요',
+    armor: '아머체로 진화했어요. 다음 진화는 디지멘탈로만 해요',
     hatch: '디지타마에서 깨어났어요. 잘 돌봐 주세요!'
   };
   function drainEvents() {
@@ -1655,7 +1655,7 @@
       $('evoKind').textContent = KIND[e.kind] || '진화!';
       $('evoName').textContent = name(e.from) + ' → ' + name(id);
       $('evoNote').textContent = e.kind === 'armor' && !(D.LINES.veemon.armor || {})[e.to]
-        ? '아머진화의 끝까지 왔어요. 보스전에 강해요' : NOTE[e.kind] || '';
+        ? '아머진화의 끝까지 왔어요' : NOTE[e.kind] || '';
       sec.classList.remove('flash'); void sec.offsetWidth; sec.classList.add('flash');
       vibrate([60, 40, 60, 40, 160]);
     }
