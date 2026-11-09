@@ -533,7 +533,7 @@ test('야생: 내 단계별 등장 단계 확률과 단계별 등급 확률', fu
   assert.equal(c.ultimate + c.legend, 0, '성장기는 궁극체를 만나지 않는다');
   var p = tally(E.STAGE_IDX.perfect);
   assert.ok(Math.abs(p.perfect / N - 0.5) < 0.01, JSON.stringify(p));
-  assert.ok(Math.abs(p.boss / N - (0.5 * 0.09 + 0.15 * 0.05)) < 0.004, JSON.stringify(p));
+  assert.ok(Math.abs(p.boss / N - (0.5 * 0.15 + 0.15 * 0.05)) < 0.004, JSON.stringify(p));
   var u = tally(E.STAGE_IDX.ultimate);
   assert.ok(Math.abs(u.ultimate / N - 0.2) < 0.01, JSON.stringify(u));
   assert.ok(Math.abs(u.legend / N - 0.2 * 0.015) < 0.0015, JSON.stringify(u));
@@ -591,6 +591,7 @@ test('상성: 백신 → 바이러스 → 데이터 → 백신, 프리는 영향
   assert.ok(E.advantage('data', 'vaccine') > 1);
   assert.ok(E.advantage('virus', 'vaccine') < 1);
   assert.equal(E.advantage('free', 'virus'), 1);
+  assert.equal(E.advantage('vaccine', 'virus'), 1.2);
 });
 
 test('유년기는 배틀할 수 없다', function () {

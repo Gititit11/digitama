@@ -533,8 +533,8 @@ var Engine = (function (D) {
   // 백신 → 바이러스 → 데이터 → 백신. 프리는 상성 없음.
   var BEATS = { vaccine: 'virus', virus: 'data', data: 'vaccine' };
   function advantage(a, b) {
-    if (BEATS[a] === b) return 1.3;
-    if (BEATS[b] === a) return 1 / 1.3;
+    if (BEATS[a] === b) return R.attrAdv;
+    if (BEATS[b] === a) return 1 / R.attrAdv;
     return 1;
   }
 

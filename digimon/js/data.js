@@ -41,7 +41,7 @@ var DigiData = (function () {
     scansPerDay: 5,            // 디지몬마다 하루 배틀 횟수 (바코드 찍기는 무제한). 0 이면 배틀도 무제한 (테스트용)
     hpMax: 100,
     stagePower: { child: 10, adult: 20, perfect: 34, ultimate: 52 },
-    gradePower: { normal: 1, rare: 1.2, boss: 1.45, legend: 1.8 },
+    gradePower: { normal: 1, rare: 1.2, boss: 1.3, legend: 1.5 },
     // 내 단계 → 나오는 야생 디지몬의 단계 확률. 바코드마다 단계별 디지몬이 정해져 있고,
     // 바코드의 고정된 값이 이 표의 어느 칸에 떨어지느냐로 그중 하나가 나온다.
     // 위 줄로 갈수록 누적 확률이 작아져서, 내가 진화하면 같은 바코드에서 같거나 더 높은 단계가 나온다.
@@ -55,10 +55,11 @@ var DigiData = (function () {
     gradeOdds: {
       child: { normal: 0.75, rare: 0.25 },
       adult: { normal: 0.75, rare: 0.25 },
-      perfect: { normal: 0.67, rare: 0.24, boss: 0.09 },
+      perfect: { normal: 0.61, rare: 0.24, boss: 0.15 },
       ultimate: { normal: 0.695, rare: 0.24, boss: 0.05, legend: 0.015 }
     },
     attrOdds: { vaccine: 0.3, data: 0.3, virus: 0.3, free: 0.1 },
+    attrAdv: 1.2,              // 상성이 유리하면 내 피해 ×1.2, 받는 피해 ÷1.2
     ignoreChance: 0.35,        // 블리츠그레이몬이 명령을 무시할 확률
     // 배틀: 공격 > 필살기 > 방어 > 공격. 표는 [내 커맨드][상대 커맨드] → 내가 넣는 피해 배율
     hitMult: {
@@ -161,7 +162,8 @@ var DigiData = (function () {
   sp('dinobeemon', '다이노몬', 'perfect', 'free', END);
   sp('aeroveedramon', '에어로브이드라몬', 'perfect', 'vaccine');
   sp('goldveedramon', '골드브이드라몬', 'perfect', 'vaccine', END);
-  sp('magnamon', '매그너몬', 'ultimate', 'free', { armor: true, bossMult: 1.5, mult: 1.25 }); // 디지멘탈 4개를 다 거친 끝이라 최종 변신들처럼 1.25배
+  // 디지멘탈 4개를 다 거친 끝이라 1.25배. 보스·전설에게는 팔라딘 모드(1.35배)와 같아지게 1.08배만 더한다
+  sp('magnamon', '매그너몬', 'ultimate', 'free', { armor: true, bossMult: 1.08, mult: 1.25 });
   sp('ulforceveedramon', '알포스브이드라몬', 'ultimate', 'vaccine');
   sp('imperialdramon_dm', '황제드라몬 드래곤 모드', 'ultimate', 'free');
   sp('imperialdramon', '황제드라몬 파이터 모드', 'ultimate', 'free', { mult: 1.25 });
