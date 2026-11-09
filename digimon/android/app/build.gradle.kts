@@ -7,11 +7,20 @@ plugins {
     id("com.android.application")
 }
 
+// 깃허브 액션이 빌드할 때마다 1씩 오른다. 앱 버전(versionCode·versionName)과 화면에 보이는 버전에 같이 쓴다
+val appBuild = 100 + (System.getenv("GITHUB_RUN_NUMBER") ?: "0").toInt()
+
 val copyWeb by tasks.registering(Sync::class) {
     from(rootDir.parentFile) {
         exclude("android/**", "tools/**", "test/**", "README.md", "sw.js")
     }
     into(layout.buildDirectory.dir("web"))
+    inputs.property("appBuild", appBuild)
+    // 화면 아래에 보이는 버전 (웹에서는 이 파일이 비어 있어서 "웹 버전")
+    doLast {
+        layout.buildDirectory.file("web/js/version.js").get().asFile
+            .writeText("var APP_VERSION = '1.0.$appBuild';\n")
+    }
 }
 
 android {
@@ -26,9 +35,8 @@ android {
         // 깃허브 액션이 빌드할 때마다 1씩 올라서, 새 APK 를 덮어 설치할 수 있다.
         // 예전 저장소(Gititit11/test)에서 53번까지 빌드해서 깔린 앱이 있으니, 그보다 낮아지지 않게 100 을 더한다
         // (버전 번호가 깔린 것보다 낮으면 안드로이드가 설치를 막는다)
-        val build = 100 + (System.getenv("GITHUB_RUN_NUMBER") ?: "0").toInt()
-        versionCode = build
-        versionName = "1.0.$build"
+        versionCode = appBuild
+        versionName = "1.0.$appBuild"
     }
 
     signingConfigs {

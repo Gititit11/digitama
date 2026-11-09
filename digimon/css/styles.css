@@ -161,6 +161,7 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 .msg.warn { color: var(--warn); }
 .msg:empty { margin: 6px 0; }
 .subkeys { display: flex; gap: 10px; }
+.app-ver { margin: 10px 0 0; text-align: center; font-size: 11px; color: var(--t-dim); opacity: .8; }
 .subkey {
   flex: 1; min-width: 0; padding: 6px 0; border-radius: 10px; color: var(--subink); background: var(--sub);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 2px 0 #15181c;

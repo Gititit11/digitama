@@ -15,6 +15,10 @@
   var D = DigiData, E = Engine, R = D.RULES, H = E.HOUR, M = E.MIN;
   var DEV = /[?&]dev=1/.test(location.search);
 
+  // 앱 버전 (APK 는 빌드할 때 js/version.js 에 적힌다)
+  var appVer = document.getElementById('appVer');
+  if (appVer) appVer.textContent = typeof APP_VERSION !== 'undefined' && APP_VERSION ? 'v' + APP_VERSION : '웹 버전';
+
   var state = load();
   function now() { return Date.now() + (state.meta.offset || 0); }
 
