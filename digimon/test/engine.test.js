@@ -40,7 +40,7 @@ test('데이터: 모든 종에 도트 시트가 있고, 표가 서로 맞는다'
   assert.deepEqual(D.LINE_ORDER, ['agumon', 'gabumon', 'veemon', 'impmon', 'guilmon', 'renamon']);
   assert.equal(Object.keys(D.WILD).reduce(function (n, st) {
     return n + Object.keys(D.WILD[st]).reduce(function (m, a) { return m + D.WILD[st][a].length; }, 0);
-  }, 0), 168, '야생 168종');
+  }, 0), 169, '야생 169종');
   assert.equal(D.BOSSES.perfect.length + D.BOSSES.ultimate.length + D.LEGENDS.length, 30, '보스 30종');
   D.LINE_ORDER.forEach(function (k) { assert.ok(SHEETS['egg_' + k], k + ' 디지타마 그림'); });
   D.LINE_ORDER.forEach(function (k) {
@@ -120,7 +120,7 @@ test('새 스타터: 임프몬 · 길몬 · 레나몬', function () {
   assert.equal(to('renamon', 'perfect', 'taomon', Object.assign({ sleep: 1 }, ult)), 'sakuyamon');
   assert.equal(to('renamon', 'perfect', 'taomon', ult), 'sakuyamon', '도사몬에서는 X 가 안 나온다');
   assert.equal(to('renamon', 'perfect', 'doumon', ult), 'sakuyamon_x', '도우몬을 완벽하게 키우면 샤크라몬X');
-  assert.equal(to('renamon', 'perfect', 'doumon', Object.assign({ sleep: 1 }, ult)), 'kuzuhamon_miko');
+  assert.equal(to('renamon', 'perfect', 'doumon', Object.assign({ sleep: 1 }, ult)), 'kuzuhamon');
   assert.equal(to('renamon', 'adult', 'icedevimon', { mistakes: 0, battles: 15, wins: 6 }), 'vikaralamon');
   assert.equal(to('renamon', 'perfect', 'vikaralamon', { mistakes: 3, maxStreak: 5 }), 'parasimon');
   assert.equal(D.SPECIES.vikaralamon.stage, 'perfect'); assert.ok(!D.SPECIES.vikaralamon.terminal);
@@ -721,7 +721,8 @@ test('엔딩: 더 진화할 데가 없는 모습에만 붙는다', function () {
   ['omegamon', 'imperialdramon_pm', 'magnamon', 'beelzebumon_blast', 'dukemon_crimson'].forEach(function (id) { assert.equal(E2[id], 'true', id); });
   ['blitzgreymon', 'cresgarurumon', 'beelzebumon_2010', 'dukemon_x', 'sakuyamon_x'].forEach(function (id) { assert.equal(E2[id], 'hidden', id); });
   ['skullgreymon', 'andromon', 'anomalocarimon', 'digitamamon', 'megidramon', 'parasimon', 'metaletemon'].forEach(function (id) { assert.equal(E2[id], 'alter', id); });
-  ['donedevimon', 'deathmon', 'sakuyamon'].forEach(function (id) { assert.equal(E2[id], 'normal', id); });
+  ['donedevimon', 'deathmon', 'kuzuhamon'].forEach(function (id) { assert.equal(E2[id], 'normal', id); });
+  assert.equal(E2.sakuyamon_miko, 'true'); assert.ok(!E2.sakuyamon, '샤크라몬은 무녀 모드가 남았다'); assert.ok(!E2.kuzuhamon_miko, '쿠즈하몬 무녀 모드는 야생');
   ['wargreymon', 'metalgarurumon', 'imperialdramon', 'imperialdramon_dm', 'beelzebumon', 'dukemon', 'sagittarimon'].forEach(function (id) { assert.ok(!E2[id], id + ' 는 아직 갈 데가 있다'); });
 });
 

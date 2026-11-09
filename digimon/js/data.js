@@ -221,7 +221,9 @@ var DigiData = (function () {
   sp('parasimon', '파라사이몬', 'ultimate', 'virus');
   sp('sakuyamon', '샤크라몬', 'ultimate', 'data');
   sp('sakuyamon_x', '샤크라몬X', 'ultimate', 'data', HIDDEN);
-  sp('kuzuhamon_miko', '쿠즈하몬 무녀 모드', 'ultimate', 'virus');
+  sp('kuzuhamon', '쿠즈하몬', 'ultimate', 'virus');
+  sp('sakuyamon_miko', '샤크라몬 무녀 모드', 'ultimate', 'data', { mult: 1.25 }); // 레나몬 라인의 최종 변신
+  sp('kuzuhamon_miko', '쿠즈하몬 무녀 모드', 'ultimate', 'virus'); // 라인에서 빠져 야생 궁극체로
   sp('vikaralamon', '비가라몬', 'perfect', 'virus'); // 데바지만 파라사이몬으로 이어져서 막다른 진화가 아니다
 
   // 야생 — 성장기
@@ -567,9 +569,10 @@ var DigiData = (function () {
         icedevimon: [['r8', 'vikaralamon']],
         taomon: [['r9', 'sakuyamon']],
         // 샤크라몬X 는 듀크몬X 처럼 따로 가는 길: 요우코몬 → 정화 실패로 도우몬 → 완벽하게 키우면
-        doumon: [['r15', 'sakuyamon_x'], ['r9', 'kuzuhamon_miko']],
+        doumon: [['r15', 'sakuyamon_x'], ['r9', 'kuzuhamon']],
         vikaralamon: [['r11', 'parasimon']]
-      }
+      },
+      special: { sakuyamon: { rule: 'r19', to: 'sakuyamon_miko' } }
     }
   };
   // 스카몬 길: 성장기에 똥을 오래 방치하면(위생 실수 6 이상) 어느 라인이든 스카몬이 된다. 다른 조건보다 먼저 본다
@@ -615,7 +618,7 @@ var DigiData = (function () {
         'saintgalgomon', 'cherubimon_virtue', 'justimon'],
       data: ['grandlocomon', 'plesiomon', 'regalecusmon', 'dinorexmon', 'frosvelgrmon', 'zdgarurumon', 'cannondramon',
         'volcanicdramon', 'rafflesimon'],
-      virus: ['pharaohmon', 'noblepumpmon', 'skullmammon', 'gaioumon', 'metalgarurumon_black', 'grankuwagamon', 'hydramon'],
+      virus: ['pharaohmon', 'noblepumpmon', 'skullmammon', 'gaioumon', 'metalgarurumon_black', 'grankuwagamon', 'hydramon', 'kuzuhamon_miko'],
       free: ['banchostingmon', 'kaisergreymon', 'magnagarurumon']
     }
   };
