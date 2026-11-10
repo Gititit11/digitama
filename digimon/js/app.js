@@ -654,13 +654,35 @@
   }
 
   // 궁극체에서 보스 격파로 일어나는 진화의 진행 상황
-  /* ---------- 훈련 미니게임 ---------- */
+  /* ---------- 훈련 미니게임 ----------
+   * 훈련할 때마다 네 가지 중 하나가 나온다. 어느 게임이든 세 판 중 두 판을 맞히면 성공이다.
+   *   bar    막대 맞히기: 왔다 갔다 하는 막대가 초록 칸에 들어왔을 때 누른다
+   *   guard  위·아래 공격: 상대 방패가 없는 쪽을 친다 (공격이 닿기까지 0.35초 걸려서 방패 움직임을 읽어야 한다)
+   *   charge 힘 모으기: 꾹 누르고 있다가 게이지가 초록 칸에 왔을 때 뗀다. 끝까지 차면 실패
+   *   jump   피하기: 굴러오는 공을 점프로 넘는다
+   */
+  var TRAIN_GAMES = {
+    bar: { note: '막대가 초록 칸에 들어왔을 때 누르세요.', btn: '지금!' },
+    guard: { note: '상대가 막지 않은 쪽을 공격하세요. 방패 움직임을 잘 보세요.' },
+    charge: { note: '버튼을 꾹 누르고 있다가, 게이지가 초록 칸에 왔을 때 떼세요.', btn: '꾹 누르기' },
+    jump: { note: '공이 굴러오면 점프로 피하세요.', btn: '점프!' }
+  };
+  var GUARD_HIT_MS = 350, JUMP_MS = 620, REACT_MS = 450;
   var tr = null;
-  function startTrain() {
-    tr = { round: 0, hits: [], pos: 0, speed: 1.4 + Math.random() * 0.6, raf: 0, t0: performance.now() };
-    newZone();
+  function startTrain(kind) {
+    var kinds = Object.keys(TRAIN_GAMES);
+    kind = kind || kinds[Math.floor(Math.random() * kinds.length)];
+    tr = { kind: kind, round: 0, hits: [], raf: 0, t0: performance.now(), busy: false };
+    var G = TRAIN_GAMES[kind];
+    $('trainNote').textContent = G.note + ' 세 번 중 두 번 성공하면 힘이 오르고 훈련 횟수가 쌓여요.';
+    $('trainGauge').hidden = kind !== 'bar' && kind !== 'charge';
+    $('trainGauge').className = 'gauge' + (kind === 'charge' ? ' charge' : '');
+    $('trainHit').hidden = kind === 'guard';
+    $('trainUp').hidden = $('trainDown').hidden = kind !== 'guard';
+    if (G.btn) $('trainHit').textContent = G.btn;
+    [$('trainHit'), $('trainUp'), $('trainDown')].forEach(function (b) { b.disabled = false; });
+    newRound();
     showTries();
-    $('trainHit').disabled = false;
     show('train');
     tr.raf = requestAnimationFrame(trainLoop);
   }
@@ -670,47 +692,158 @@
       return '<i class="' + (i < tr.hits.length ? (tr.hits[i] ? 'hit' : 'miss') : '') + '"></i>';
     }).join('');
   }
-  function newZone() {
-    tr.zw = 18 + Math.random() * 8;
-    tr.zx = 6 + Math.random() * (88 - tr.zw);
-    $('zone').style.left = tr.zx + '%'; $('zone').style.width = tr.zw + '%';
+  // 판이 갈수록 조금씩 어려워진다
+  function newRound() {
+    var r = tr.round, ts = performance.now();
+    tr.busy = false;
+    if (tr.kind === 'bar') {
+      tr.speed = (tr.speed || 1.4 + Math.random() * 0.6) + (r ? 0.25 : 0);
+      tr.zw = 18 + Math.random() * 8;
+      tr.zx = 6 + Math.random() * (88 - tr.zw);
+      $('zone').style.left = tr.zx + '%'; $('zone').style.width = tr.zw + '%';
+      $('marker').hidden = false;
+    } else if (tr.kind === 'guard') {
+      tr.side = Math.random() < 0.5 ? 'up' : 'down';
+      tr.next = ts + guardDwell();
+      tr.atk = null;
+    } else if (tr.kind === 'charge') {
+      tr.fill = 0; tr.holding = false;
+      tr.rate = 70 + r * 18 + Math.random() * 15; // 초당 % (1.1~1.4초면 꽉 찬다)
+      tr.zw = 16 - r * 2;
+      tr.zx = 55 + Math.random() * (40 - tr.zw);
+      $('zone').style.left = tr.zx + '%'; $('zone').style.width = tr.zw + '%';
+      $('marker').hidden = true;
+      $('fill').style.width = '0%';
+    } else if (tr.kind === 'jump') {
+      tr.ball = { launch: ts + 500 + Math.random() * 900, v: 95 + r * 25 + Math.random() * 20, x: null };
+      tr.jumpT = 0;
+    }
   }
+  function guardDwell() { return (380 + Math.random() * 700) * (1 - tr.round * 0.15); }
+
   function trainLoop(ts) {
     if (!tr) return;
-    var p = ((ts - tr.t0) / 1000 * tr.speed) % 2;
-    tr.pos = (p < 1 ? p : 2 - p) * 100; // 왕복
-    $('marker').style.left = tr.pos + '%';
+    if (tr.kind === 'bar') {
+      var p = ((ts - tr.t0) / 1000 * tr.speed) % 2;
+      tr.pos = (p < 1 ? p : 2 - p) * 100; // 왕복
+      $('marker').style.left = tr.pos + '%';
+    } else if (tr.kind === 'guard') {
+      if (ts > tr.next) { tr.side = tr.side === 'up' ? 'down' : 'up'; tr.next = ts + guardDwell(); }
+      if (tr.atk && !tr.busy && ts - tr.atk.t >= GUARD_HIT_MS) {
+        tr.atk.ok = tr.side !== tr.atk.side; // 닿는 순간 방패가 그쪽에 없으면 맞는다
+        roundResult(tr.atk.ok);
+      }
+    } else if (tr.kind === 'charge') {
+      var dt = Math.min(50, ts - (tr.last || ts)) / 1000;
+      if (tr.holding && !tr.busy) {
+        tr.fill = Math.min(100, tr.fill + tr.rate * dt);
+        $('fill').style.width = tr.fill + '%';
+        if (tr.fill >= 100) { tr.holding = false; roundResult(false); } // 너무 오래 눌렀다
+      }
+    } else if (tr.kind === 'jump') {
+      var b = tr.ball;
+      if (!tr.busy && ts > b.launch) {
+        b.x = 160 - (ts - b.launch) / 1000 * b.v;
+        // 발 쪽 좁은 칸만 부딪힘으로 친다 (큰 디지몬도 넘을 수 있게)
+        var me = jumpBox(), cx = me.x + me.w / 2, half = Math.min(12, me.w * 0.3), feet = 80 - 4 - jumpHop(ts);
+        if (b.x < cx + half && b.x + 8 > cx - half && feet > 80 - 4 - 8 - 2) roundResult(false, true); // 부딪혔다
+        else if (b.x + 8 < cx - half) roundResult(true);
+      }
+    }
+    tr.last = ts;
     drawTrainee(ts);
     tr.raf = requestAnimationFrame(trainLoop);
   }
-  // 훈련하는 동안 디지몬은 훈련 동작을 한다 (훈련 칸이 없는 디지몬은 공격 동작).
-  // 누른 직후 0.4초는 맞히면 공격, 놓치면 멈칫.
+  function jumpHop(ts) {
+    if (!tr.jumpT || ts - tr.jumpT > JUMP_MS) return 0;
+    var k = (ts - tr.jumpT) / JUMP_MS;
+    return Math.round(Math.sin(k * Math.PI) * 30);
+  }
+  function jumpBox() {
+    var m = Sprite.measure(E.form(state.mon)), sc = Math.min(1, 52 / m.h, 64 / m.w);
+    return { x: 12, w: Math.round(m.w * sc), h: Math.round(m.h * sc), sc: sc };
+  }
+
+  // 훈련하는 동안 디지몬은 서 있기만 한다 (아령 같은 훈련 동작은 성공한 뒤 홈 화면에서).
+  // 판이 끝난 직후 잠깐은 맞히면 공격, 놓치면 멈칫.
   function drawTrainee(ts) {
-    var id = E.form(state.mon), o, hop = 0;
-    if (!Sprite.has(id, 'train') && !Sprite.has(id, 'attack')) {
+    var id = E.form(state.mon), o, hop = 0, noAnim = !Sprite.has(id, 'train') && !Sprite.has(id, 'attack');
+    var react = tr.react && ts - tr.react.t < REACT_MS ? tr.react : null;
+    if (noAnim) {
       // 유년기처럼 훈련·공격 칸이 없는 디지몬은 제자리에서 폴짝폴짝 뛴다
       o = { anim: 'idle', frame: Math.floor(ts / 260) };
-      hop = Math.abs(Math.sin(ts / 180)) * 8;
-      if (tr.react && ts - tr.react.t < 400) hop = tr.react.ok ? 12 : 0;
-    } else if (tr.react && ts - tr.react.t < 400) o = tr.react.ok ? { anim: 'attack', frame: 0 } : { anim: 'idle', frame: 0 };
-    else o = { anim: Sprite.has(id, 'train') ? 'train' : 'attack', frame: Math.floor(ts / 260) };
-    // 홈 화면처럼 도트 1배로, 바닥에 세워서 그린다 (커갈수록 커 보인다)
-    var c = $('trainPic'), x = c.getContext('2d'), m = Sprite.measure(id);
-    var sc = Math.min(1, (c.height - 6) / m.h, (c.width - 8) / m.w);
-    x.clearRect(0, 0, c.width, c.height);
-    Sprite.draw(x, id, Math.floor((c.width - m.w * sc) / 2), Math.floor(c.height - 4 - m.h * sc - hop), sc, o);
+      hop = tr.kind === 'jump' ? 0 : Math.abs(Math.sin(ts / 180)) * 8;
+      if (react) hop = react.ok ? 12 : 0;
+    } else if (react) o = react.ok ? { anim: 'attack', frame: 0 } : { anim: 'idle', frame: 0 };
+    else o = { anim: 'idle', frame: Math.floor(ts / 260) };
+    var c = $('trainPic'), x = c.getContext('2d'), m = Sprite.measure(id), W = c.width, H = c.height;
+    x.clearRect(0, 0, W, H);
+    x.fillStyle = lcdInk;
+    if (tr.kind === 'guard') return drawGuard(x, id, m, o, ts, W, H);
+    if (tr.kind === 'jump') {
+      var jb = jumpBox(), jh = jumpHop(ts);
+      if (!noAnim && jh) o = { anim: 'run', frame: 0 };
+      Sprite.draw(x, id, jb.x, H - 4 - jb.h - jh, jb.sc, Object.assign({ flip: true }, o));
+      if (tr.ball.x != null && !(react && react.hit === false)) drawBall(x, Math.round(tr.ball.x), H - 4 - 8, ts);
+      x.globalAlpha = 0.3; x.fillRect(0, H - 4, W, 1); x.globalAlpha = 1;
+      return;
+    }
+    var sc = Math.min(1, (H - 6) / m.h, (W - 8) / m.w), shake = 0;
+    if (tr.kind === 'charge' && tr.holding) {
+      shake = tr.fill > 40 ? (Math.floor(ts / 40) % 2 ? 1 : -1) * (tr.fill > 75 ? 2 : 1) : 0;
+      o = { anim: 'idle', frame: 0 };
+      drawAura(x, W / 2, H - 4 - m.h * sc / 2, m.h * sc / 2 + 6, tr.fill, ts);
+    }
+    Sprite.draw(x, id, Math.floor((W - m.w * sc) / 2) + shake, Math.floor(H - 4 - m.h * sc - hop), sc, o);
   }
+  // 위·아래: 왼쪽에 내 디지몬, 오른쪽에 과녁 두 개와 방패
+  function drawGuard(x, id, m, o, ts, W, H) {
+    var sc = Math.min(1, 56 / m.h, 64 / m.w), dash = 0, atk = tr.atk;
+    if (atk) { var k = Math.min(1, (ts - atk.t) / GUARD_HIT_MS); dash = Math.round((k < 1 ? k : 1) * 26); o = { anim: 'run', frame: 0 }; }
+    if (tr.react && ts - tr.react.t < REACT_MS) { dash = 26; o = tr.react.ok ? { anim: 'attack', frame: 0 } : { anim: 'idle', frame: 0 }; }
+    Sprite.draw(x, id, 6 + dash, H - 4 - Math.round(m.h * sc), sc, Object.assign({ flip: true }, o));
+    var px = W - 30;
+    x.fillRect(px + 9, 8, 3, H - 12);                          // 기둥
+    [['up', 22], ['down', H - 24]].forEach(function (t) {      // 과녁
+      var hit = tr.react && ts - tr.react.t < REACT_MS && tr.react.side === t[0];
+      x.fillStyle = hit ? (tr.react.ok ? '#e0503a' : lcdInk) : lcdInk;
+      x.fillRect(px, t[1] - 8, 21, 16);
+      x.fillStyle = lcdColor; x.fillRect(px + 3, t[1] - 5, 15, 10);
+      x.fillStyle = hit && tr.react.ok ? '#e0503a' : lcdInk; x.fillRect(px + 7, t[1] - 2, 7, 4);
+    });
+    var sy = tr.side === 'up' ? 22 : H - 24;                    // 방패
+    x.fillStyle = '#5a6a8a'; x.fillRect(px - 8, sy - 13, 7, 26);
+    x.fillStyle = lcdInk; x.fillRect(px - 9, sy - 14, 9, 1); x.fillRect(px - 9, sy + 13, 9, 1);
+    x.fillRect(px - 9, sy - 14, 1, 28); x.fillRect(px - 1, sy - 14, 1, 28);
+  }
+  function drawBall(x, bx, by, ts) {
+    var roll = Math.floor(ts / 90) % 2;
+    x.fillStyle = lcdInk; x.fillRect(bx + 2, by, 4, 8); x.fillRect(bx, by + 2, 8, 4); x.fillRect(bx + 1, by + 1, 6, 6);
+    x.fillStyle = '#e0503a'; x.fillRect(bx + 2, by + 2, 4, 4);
+    x.fillStyle = '#fff'; x.fillRect(bx + 2 + roll * 2, by + 2, 2, 2);
+  }
+  // 힘 모으기: 모일수록 둘레에 빛 점이 늘어난다
+  function drawAura(x, cx, cy, r, fill, ts) {
+    var n = Math.floor(fill / 12);
+    x.fillStyle = fill > 85 ? '#e0503a' : '#f2c43a';
+    for (var i = 0; i < n; i++) {
+      var a = ts / 300 + i * Math.PI * 2 / Math.max(1, n);
+      x.fillRect(Math.round(cx + Math.cos(a) * r) - 1, Math.round(cy + Math.sin(a) * r * 0.7) - 1, 3, 3);
+    }
+  }
+
   function stopTrain() { if (tr) cancelAnimationFrame(tr.raf); tr = null; }
-  $('trainHit').addEventListener('click', function () {
-    if (!tr || tr.round >= 3) return;
-    var ok = tr.pos >= tr.zx && tr.pos <= tr.zx + tr.zw;
+  // 한 판 끝: 표시하고, 세 판이 끝나면 결과를 엔진에 넘긴다
+  function roundResult(ok, hit) {
+    if (!tr || tr.busy) return;
+    tr.busy = true;
     tr.hits.push(ok); tr.round++;
-    tr.react = { ok: ok, t: performance.now() };
+    tr.react = { ok: ok, t: performance.now(), side: tr.atk && tr.atk.side, hit: hit ? false : undefined };
     vibrate(ok ? 30 : [20, 40, 20]);
     showTries();
-    if (tr.round < 3) { tr.speed += 0.25; newZone(); return; }
+    if (tr.round < 3) { setTimeout(function () { if (tr) newRound(); }, tr.kind === 'bar' ? 0 : REACT_MS); return; }
     var hits = tr.hits.filter(Boolean).length;
-    $('trainHit').disabled = true;
+    [$('trainHit'), $('trainUp'), $('trainDown')].forEach(function (b) { b.disabled = true; });
     E.tick(state, now());
     var r = E.train(state, hits);
     save();
@@ -720,6 +853,30 @@
       toast(r.good ? '훈련 성공! 힘이 올랐어요' : '훈련 끝. 다음엔 더 잘할 수 있어요');
       fx(r.good ? '하앗!' : '헉헉', r.good ? 'train' : 'idle');
     }, 450);
+  }
+  $('trainHit').addEventListener('click', function () {
+    if (!tr || tr.busy) return;
+    if (tr.kind === 'bar') roundResult(tr.pos >= tr.zx && tr.pos <= tr.zx + tr.zw);
+    else if (tr.kind === 'jump' && !tr.jumpT) { tr.jumpT = performance.now(); vibrate(15); }
+  });
+  // 힘 모으기는 누르고 있는 동안 차고, 떼는 순간 판정
+  $('trainHit').addEventListener('pointerdown', function (e) {
+    if (!tr || tr.kind !== 'charge' || tr.busy) return;
+    e.preventDefault(); tr.holding = true;
+    try { this.setPointerCapture(e.pointerId); } catch (er) { }
+  });
+  ['pointerup', 'pointercancel'].forEach(function (ev) {
+    $('trainHit').addEventListener(ev, function () {
+      if (!tr || tr.kind !== 'charge' || !tr.holding || tr.busy) return;
+      tr.holding = false;
+      roundResult(tr.fill >= tr.zx && tr.fill <= tr.zx + tr.zw);
+    });
+  });
+  [['trainUp', 'up'], ['trainDown', 'down']].forEach(function (b) {
+    $(b[0]).addEventListener('click', function () {
+      if (!tr || tr.kind !== 'guard' || tr.busy || tr.atk) return;
+      tr.atk = { side: b[1], t: performance.now() };
+    });
   });
 
   /* ---------- 바코드 스캔 ---------- */

@@ -75,13 +75,15 @@
   <section id="train" class="screen sheet-wrap" hidden>
     <div class="sheet">
       <h2>훈련</h2>
-      <p class="dim">막대가 초록 칸에 들어왔을 때 누르세요. 세 번 중 두 번 맞히면 성공! 힘이 오르고 훈련 횟수가 쌓여요.</p>
-      <canvas id="trainPic" class="train-pic" width="120" height="80"></canvas>
-      <div class="gauge"><div class="zone" id="zone"></div><div class="marker" id="marker"></div></div>
+      <p class="dim" id="trainNote"></p>
+      <canvas id="trainPic" class="train-pic" width="160" height="80"></canvas>
+      <div class="gauge" id="trainGauge"><div class="fill" id="fill"></div><div class="zone" id="zone"></div><div class="marker" id="marker"></div></div>
       <p class="center tries" id="tries"></p>
       <div class="sheet-actions">
         <button class="btn ghost" data-close>그만두기</button>
         <button class="btn primary grow" id="trainHit">지금!</button>
+        <button class="btn primary grow" id="trainUp" hidden>위 공격</button>
+        <button class="btn primary grow" id="trainDown" hidden>아래 공격</button>
       </div>
     </div>
   </section>
