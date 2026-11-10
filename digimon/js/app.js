@@ -657,23 +657,26 @@
   /* ---------- 훈련 미니게임 ----------
    * 훈련할 때마다 네 가지 중 하나가 나온다. 어느 게임이든 세 판 중 두 판을 맞히면 성공이다.
    *   bar    막대 맞히기: 왔다 갔다 하는 막대가 초록 칸에 들어왔을 때 누른다
-   *   guard  위·아래 공격: 상대 방패가 없는 쪽을 친다 (공격이 닿기까지 0.35초 걸려서 방패 움직임을 읽어야 한다)
+   *   guard  위·아래 공격: 상대 방패가 없는 쪽을 친다 (공격이 닿기까지 0.4초 걸려서 방패 움직임을 읽어야 한다)
+   * 막대 · 힘 모으기 · 피하기는 누를 수 있는 시간 폭이 판마다 약 130 → 113 → 100ms 로 같다 (TRAIN_WINDOW)
    *   charge 힘 모으기: 꾹 누르고 있다가 게이지가 초록 칸에 왔을 때 뗀다. 끝까지 차면 실패
    *   jump   피하기: 굴러오는 공을 점프로 넘는다
    */
   var TRAIN_GAMES = {
-    bar: { note: '막대가 초록 칸에 들어왔을 때 누르세요.', btn: '지금!' },
-    guard: { note: '상대가 막지 않은 쪽을 공격하세요. 방패 움직임을 잘 보세요.' },
-    charge: { note: '버튼을 꾹 누르고 있다가, 게이지가 초록 칸에 왔을 때 떼세요.', btn: '꾹 누르기' },
-    jump: { note: '공이 굴러오면 점프로 피하세요.', btn: '점프!' }
+    bar: { name: '막대 맞히기', note: '막대가 초록 칸에 들어왔을 때 누르세요.', btn: '지금!' },
+    guard: { name: '위·아래 공격', note: '상대가 막지 않은 쪽을 공격하세요. 방패 움직임을 잘 보세요.' },
+    charge: { name: '힘 모으기', note: '버튼을 꾹 누르고 있다가, 게이지가 초록 칸에 왔을 때 떼세요.', btn: '꾹 누르기' },
+    jump: { name: '피하기', note: '공이 굴러오면 점프로 피하세요.', btn: '점프!' }
   };
-  var GUARD_HIT_MS = 350, JUMP_MS = 620, REACT_MS = 450;
+  var GUARD_HIT_MS = 400, JUMP_HOP = 30, REACT_MS = 450;
+  var TRAIN_WINDOW = [130, 113, 100]; // ms, 판마다
   var tr = null;
   function startTrain(kind) {
     var kinds = Object.keys(TRAIN_GAMES);
     kind = kind || kinds[Math.floor(Math.random() * kinds.length)];
     tr = { kind: kind, round: 0, hits: [], raf: 0, t0: performance.now(), busy: false };
     var G = TRAIN_GAMES[kind];
+    $('trainTitle').textContent = '훈련 · ' + G.name;
     $('trainNote').textContent = G.note + ' 세 번 중 두 번 성공하면 힘이 오르고 훈련 횟수가 쌓여요.';
     $('trainGauge').hidden = kind !== 'bar' && kind !== 'charge';
     $('trainGauge').className = 'gauge' + (kind === 'charge' ? ' charge' : '');
@@ -708,18 +711,22 @@
       tr.atk = null;
     } else if (tr.kind === 'charge') {
       tr.fill = 0; tr.holding = false;
-      tr.rate = 70 + r * 18 + Math.random() * 15; // 초당 % (1.1~1.4초면 꽉 찬다)
-      tr.zw = 16 - r * 2;
+      tr.rate = 85 + r * 15; // 초당 % (판마다 빨라진다)
+      tr.zw = 12;            // 초록 칸 12% → 판마다 141 · 120 · 104ms
       tr.zx = 55 + Math.random() * (40 - tr.zw);
       $('zone').style.left = tr.zx + '%'; $('zone').style.width = tr.zw + '%';
       $('marker').hidden = true;
       $('fill').style.width = '0%';
     } else if (tr.kind === 'jump') {
-      tr.ball = { launch: ts + 500 + Math.random() * 900, v: 95 + r * 25 + Math.random() * 20, x: null };
+      tr.ball = { launch: ts + 500 + Math.random() * 900, v: 120 + r * 25 + Math.random() * 10, x: null };
       tr.jumpT = 0;
+      // 점프 길이를 공 속도에 맞춰, 공이 발밑을 지나가는 동안 떠 있을 수 있는 여유가 TRAIN_WINDOW 가 되게 한다
+      var jb = jumpBox(), cross = (2 * jb.half + 8) / tr.ball.v * 1000;
+      var air = 1 - 2 * Math.asin(10 / JUMP_HOP) / Math.PI; // 점프 중 발이 공 높이(10)보다 위에 있는 비율
+      tr.jumpMs = (cross + TRAIN_WINDOW[r]) / air;
     }
   }
-  function guardDwell() { return (380 + Math.random() * 700) * (1 - tr.round * 0.15); }
+  function guardDwell() { return (300 + Math.random() * 900) * (1 - tr.round * 0.12); }
 
   function trainLoop(ts) {
     if (!tr) return;
@@ -745,7 +752,7 @@
       if (!tr.busy && ts > b.launch) {
         b.x = 160 - (ts - b.launch) / 1000 * b.v;
         // 발 쪽 좁은 칸만 부딪힘으로 친다 (큰 디지몬도 넘을 수 있게)
-        var me = jumpBox(), cx = me.x + me.w / 2, half = Math.min(12, me.w * 0.3), feet = 80 - 4 - jumpHop(ts);
+        var me = jumpBox(), cx = me.x + me.w / 2, half = me.half, feet = 80 - 4 - jumpHop(ts);
         if (b.x < cx + half && b.x + 8 > cx - half && feet > 80 - 4 - 8 - 2) roundResult(false, true); // 부딪혔다
         else if (b.x + 8 < cx - half) roundResult(true);
       }
@@ -755,13 +762,14 @@
     tr.raf = requestAnimationFrame(trainLoop);
   }
   function jumpHop(ts) {
-    if (!tr.jumpT || ts - tr.jumpT > JUMP_MS) return 0;
-    var k = (ts - tr.jumpT) / JUMP_MS;
-    return Math.round(Math.sin(k * Math.PI) * 30);
+    if (!tr.jumpT || ts - tr.jumpT > tr.jumpMs) return 0;
+    var k = (ts - tr.jumpT) / tr.jumpMs;
+    return Math.round(Math.sin(k * Math.PI) * JUMP_HOP);
   }
   function jumpBox() {
     var m = Sprite.measure(E.form(state.mon)), sc = Math.min(1, 52 / m.h, 64 / m.w);
-    return { x: 12, w: Math.round(m.w * sc), h: Math.round(m.h * sc), sc: sc };
+    var w = Math.round(m.w * sc);
+    return { x: 12, w: w, h: Math.round(m.h * sc), sc: sc, half: Math.min(12, w * 0.3) };
   }
 
   // 훈련하는 동안 디지몬은 서 있기만 한다 (아령 같은 훈련 동작은 성공한 뒤 홈 화면에서).
