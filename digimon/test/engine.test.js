@@ -749,12 +749,12 @@ test('연승: 이기면 쌓이고 지면 끊긴다. 최다 연승이 숨은 진�
   assert.equal(s.mon.c.maxWinStreak, 10);
 });
 
-test('원작 크기: 거대 ×2 · 대형 ×1.5 는 그림 크기에 곱해지고 성장기는 그대로', () => {
+test('원작 크기: 거대 ×1.5 · 대형 ×1.2 는 그림 크기에 곱해지고 성장기는 그대로', () => {
   const Sprite = require('../js/sprite.js');
   const SHEETS = require('../js/sheets.js');
-  assert.equal(D.SPECIES.megidramon.scale, 2);
-  assert.equal(D.SPECIES.greymon.scale, 1.5);
-  assert.equal(Sprite.measure('megidramon').w, SHEETS.megidramon.w * 2);
+  assert.equal(D.SPECIES.megidramon.scale, 1.5);
+  assert.equal(D.SPECIES.greymon.scale, 1.2);
+  assert.equal(Sprite.measure('megidramon').w, Math.round(SHEETS.megidramon.w * 1.5));
   assert.deepEqual(Sprite.measure('agumon'), { w: SHEETS.agumon.w, h: SHEETS.agumon.h });
   for (const id in D.SPECIES) {
     if (!D.SPECIES[id].scale) continue;

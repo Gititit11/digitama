@@ -636,7 +636,7 @@ var DigiData = (function () {
   });
 
   /* 원작 크기: 애니에서 사람보다 훨씬 큰 디지몬은 그림을 키워 그린다 (성숙기 이상만).
-   * 거대 ×2 는 건물·배만 한 것, 대형 ×1.5 는 사람보다 확실히 큰 공룡·짐승형.
+   * 거대 ×1.5 는 건물·배만 한 것, 대형 ×1.2 는 사람보다 확실히 큰 공룡·짐승형.
    * 레이드 큰 그림(보스·전설)은 이미 커서 그대로 둔다. Sprite.measure/draw 가 이 배율을 곱한다. */
   var GIANT = [
     'seadramon', 'gesomon', 'octmon', 'megaseadramon', 'parrotmon', 'chimairamon', 'dagomon', 'marindevimon',
@@ -653,8 +653,8 @@ var DigiData = (function () {
     'atlurballistamon', 'vermillimon', 'majiramon', 'lavogaritamon', 'scorpiomon', 'anomalocarimon', 'cannondramon',
     'dinorexmon', 'skullmammon', 'frosvelgrmon'
   ];
-  GIANT.forEach(function (id) { SPECIES[id].scale = 2; });
-  LARGE.forEach(function (id) { SPECIES[id].scale = 1.5; });
+  GIANT.forEach(function (id) { SPECIES[id].scale = 1.5; });
+  LARGE.forEach(function (id) { SPECIES[id].scale = 1.2; });
 
   /* 엔딩: 더 진화할 데가 없는 모습에 붙는다 (LCD 오른쪽 위 · 도감)
    *   true   최종 변신 (모드 체인지 · 조그레스)
