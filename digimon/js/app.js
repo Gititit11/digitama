@@ -658,18 +658,20 @@
    * 훈련할 때마다 네 가지 중 하나가 나온다. 어느 게임이든 세 판 중 두 판을 맞히면 성공이다.
    *   bar    막대 맞히기: 왔다 갔다 하는 막대가 초록 칸에 들어왔을 때 누른다
    *   guard  위·아래 공격: 상대 방패가 없는 쪽을 친다 (공격이 닿기까지 0.4초 걸려서 방패 움직임을 읽어야 한다)
-   * 막대 · 힘 모으기 · 피하기는 누를 수 있는 시간 폭이 판마다 약 130 → 113 → 100ms 로 같다 (TRAIN_WINDOW)
-   *   charge 힘 모으기: 꾹 누르고 있다가 게이지가 초록 칸에 왔을 때 뗀다. 끝까지 차면 실패
+   *   react  반응 속도: 기다리다 '!' 가 뜨면 바로 누른다. 먼저 누르거나 제한 시간(REACT_LIMIT)을 넘기면 실패
    *   jump   피하기: 굴러오는 공을 점프로 넘는다
+   * 막대 · 피하기는 누를 수 있는 시간 폭이 판마다 약 130 → 113 → 100ms 로 같다 (TRAIN_WINDOW)
    */
   var TRAIN_GAMES = {
     bar: { name: '막대 맞히기', note: '막대가 초록 칸에 들어왔을 때 누르세요.', btn: '지금!' },
     guard: { name: '위·아래 공격', note: '상대가 막지 않은 쪽을 공격하세요. 방패 움직임을 잘 보세요.' },
-    charge: { name: '힘 모으기', note: '버튼을 꾹 누르고 있다가, 게이지가 초록 칸에 왔을 때 떼세요.', btn: '꾹 누르기' },
+    react: { name: '반응 속도', note: '화면에 ! 가 뜨면 바로 누르세요. 먼저 누르면 실패예요.', btn: '지금!' },
     jump: { name: '피하기', note: '공이 굴러오면 점프로 피하세요.', btn: '점프!' }
   };
   var GUARD_HIT_MS = 400, JUMP_HOP = 30, REACT_MS = 450;
   var TRAIN_WINDOW = [130, 113, 100]; // ms, 판마다
+  var REACT_LIMIT = [480, 420, 360];  // ms, '!' 가 뜬 뒤 눌러야 하는 시간 (판마다)
+  var REACT_SHOW_MS = 800;            // 반응 시간 글자를 보여 주는 시간
   var tr = null;
   function startTrain(kind) {
     var kinds = Object.keys(TRAIN_GAMES);
@@ -678,8 +680,7 @@
     var G = TRAIN_GAMES[kind];
     $('trainTitle').textContent = '훈련 · ' + G.name;
     $('trainNote').textContent = G.note + ' 세 번 중 두 번 성공하면 힘이 오르고 훈련 횟수가 쌓여요.';
-    $('trainGauge').hidden = kind !== 'bar' && kind !== 'charge';
-    $('trainGauge').className = 'gauge' + (kind === 'charge' ? ' charge' : '');
+    $('trainGauge').hidden = kind !== 'bar';
     $('trainHit').hidden = kind === 'guard';
     $('trainUp').hidden = $('trainDown').hidden = kind !== 'guard';
     if (G.btn) $('trainHit').textContent = G.btn;
@@ -709,14 +710,10 @@
       tr.side = Math.random() < 0.5 ? 'up' : 'down';
       tr.next = ts + guardDwell();
       tr.atk = null;
-    } else if (tr.kind === 'charge') {
-      tr.fill = 0; tr.holding = false;
-      tr.rate = 85 + r * 15; // 초당 % (판마다 빨라진다)
-      tr.zw = 12;            // 초록 칸 12% → 판마다 141 · 120 · 104ms
-      tr.zx = 55 + Math.random() * (40 - tr.zw);
-      $('zone').style.left = tr.zx + '%'; $('zone').style.width = tr.zw + '%';
-      $('marker').hidden = true;
-      $('fill').style.width = '0%';
+    } else if (tr.kind === 'react') {
+      tr.sigAt = ts + 1200 + Math.random() * 2000; // 언제 뜰지 모르게
+      tr.limit = REACT_LIMIT[r];
+      tr.msg = '';
     } else if (tr.kind === 'jump') {
       tr.ball = { launch: ts + 500 + Math.random() * 900, v: 120 + r * 25 + Math.random() * 10, x: null };
       tr.jumpT = 0;
@@ -740,13 +737,8 @@
         tr.atk.ok = tr.side !== tr.atk.side; // 닿는 순간 방패가 그쪽에 없으면 맞는다
         roundResult(tr.atk.ok);
       }
-    } else if (tr.kind === 'charge') {
-      var dt = Math.min(50, ts - (tr.last || ts)) / 1000;
-      if (tr.holding && !tr.busy) {
-        tr.fill = Math.min(100, tr.fill + tr.rate * dt);
-        $('fill').style.width = tr.fill + '%';
-        if (tr.fill >= 100) { tr.holding = false; roundResult(false); } // 너무 오래 눌렀다
-      }
+    } else if (tr.kind === 'react') {
+      if (!tr.busy && ts > tr.sigAt + tr.limit) { tr.msg = '늦었어요'; roundResult(false); }
     } else if (tr.kind === 'jump') {
       var b = tr.ball;
       if (!tr.busy && ts > b.launch) {
@@ -796,13 +788,25 @@
       x.globalAlpha = 0.3; x.fillRect(0, H - 4, W, 1); x.globalAlpha = 1;
       return;
     }
-    var sc = Math.min(1, (H - 6) / m.h, (W - 8) / m.w), shake = 0;
-    if (tr.kind === 'charge' && tr.holding) {
-      shake = tr.fill > 40 ? (Math.floor(ts / 40) % 2 ? 1 : -1) * (tr.fill > 75 ? 2 : 1) : 0;
-      o = { anim: 'idle', frame: 0 };
-      drawAura(x, W / 2, H - 4 - m.h * sc / 2, m.h * sc / 2 + 6, tr.fill, ts);
+    var sc = Math.min(1, (H - 6) / m.h, (W - 8) / m.w);
+    if (tr.kind === 'react') sc = Math.min(1, (H - 26) / m.h, (W - 8) / m.w); // 위에 ! 자리를 남긴다
+    var dx = Math.floor((W - m.w * sc) / 2), dy = Math.floor(H - 4 - m.h * sc - hop);
+    Sprite.draw(x, id, dx, dy, sc, o);
+    if (tr.kind === 'react') drawReact(x, ts, W, dy);
+  }
+  // 반응 속도: 신호가 뜨면 머리 위에 빨간 ! , 누르면 걸린 시간을 보여 준다
+  function drawReact(x, ts, W, top) {
+    var shown = tr.react && ts - tr.react.t < REACT_SHOW_MS;
+    if (ts >= tr.sigAt && (!tr.busy || shown) && tr.msg !== '너무 빨라요') {
+      var bx = Math.round(W / 2) - 7, by = Math.max(1, top - 20);
+      x.fillStyle = '#d6332f'; x.fillRect(bx, by, 14, 18);
+      x.fillStyle = '#fff'; x.fillRect(bx + 6, by + 3, 3, 8); x.fillRect(bx + 6, by + 13, 3, 3);
     }
-    Sprite.draw(x, id, Math.floor((W - m.w * sc) / 2) + shake, Math.floor(H - 4 - m.h * sc - hop), sc, o);
+    if (shown && tr.msg) {
+      x.font = '11px Galmuri11, monospace'; x.textAlign = 'left'; x.textBaseline = 'top';
+      x.fillStyle = tr.react.ok ? lcdInk : '#d6332f'; x.fillText(tr.msg, 4, 3);
+      x.textBaseline = 'alphabetic';
+    }
   }
   // 위·아래: 왼쪽에 내 디지몬, 오른쪽에 과녁 두 개와 방패
   function drawGuard(x, id, m, o, ts, W, H) {
@@ -830,15 +834,6 @@
     x.fillStyle = '#e0503a'; x.fillRect(bx + 2, by + 2, 4, 4);
     x.fillStyle = '#fff'; x.fillRect(bx + 2 + roll * 2, by + 2, 2, 2);
   }
-  // 힘 모으기: 모일수록 둘레에 빛 점이 늘어난다
-  function drawAura(x, cx, cy, r, fill, ts) {
-    var n = Math.floor(fill / 12);
-    x.fillStyle = fill > 85 ? '#e0503a' : '#f2c43a';
-    for (var i = 0; i < n; i++) {
-      var a = ts / 300 + i * Math.PI * 2 / Math.max(1, n);
-      x.fillRect(Math.round(cx + Math.cos(a) * r) - 1, Math.round(cy + Math.sin(a) * r * 0.7) - 1, 3, 3);
-    }
-  }
 
   function stopTrain() { if (tr) cancelAnimationFrame(tr.raf); tr = null; }
   // 한 판 끝: 표시하고, 세 판이 끝나면 결과를 엔진에 넘긴다
@@ -849,7 +844,7 @@
     tr.react = { ok: ok, t: performance.now(), side: tr.atk && tr.atk.side, hit: hit ? false : undefined };
     vibrate(ok ? 30 : [20, 40, 20]);
     showTries();
-    if (tr.round < 3) { setTimeout(function () { if (tr) newRound(); }, tr.kind === 'bar' ? 0 : REACT_MS); return; }
+    if (tr.round < 3) { setTimeout(function () { if (tr) newRound(); }, tr.kind === 'bar' ? 0 : tr.kind === 'react' ? REACT_SHOW_MS : REACT_MS); return; }
     var hits = tr.hits.filter(Boolean).length;
     [$('trainHit'), $('trainUp'), $('trainDown')].forEach(function (b) { b.disabled = true; });
     E.tick(state, now());
@@ -867,18 +862,14 @@
     if (tr.kind === 'bar') roundResult(tr.pos >= tr.zx && tr.pos <= tr.zx + tr.zw);
     else if (tr.kind === 'jump' && !tr.jumpT) { tr.jumpT = performance.now(); vibrate(15); }
   });
-  // 힘 모으기는 누르고 있는 동안 차고, 떼는 순간 판정
-  $('trainHit').addEventListener('pointerdown', function (e) {
-    if (!tr || tr.kind !== 'charge' || tr.busy) return;
-    e.preventDefault(); tr.holding = true;
-    try { this.setPointerCapture(e.pointerId); } catch (er) { }
-  });
-  ['pointerup', 'pointercancel'].forEach(function (ev) {
-    $('trainHit').addEventListener(ev, function () {
-      if (!tr || tr.kind !== 'charge' || !tr.holding || tr.busy) return;
-      tr.holding = false;
-      roundResult(tr.fill >= tr.zx && tr.fill <= tr.zx + tr.zw);
-    });
+  // 반응 속도는 손을 뗄 때(click)가 아니라 닿는 순간에 잰다
+  $('trainHit').addEventListener('pointerdown', function () {
+    if (!tr || tr.kind !== 'react' || tr.busy) return;
+    var t = performance.now();
+    if (t < tr.sigAt) { tr.msg = '너무 빨라요'; roundResult(false); return; }
+    var rt = t - tr.sigAt;
+    tr.msg = (rt / 1000).toFixed(2) + '초';
+    roundResult(rt <= tr.limit);
   });
   [['trainUp', 'up'], ['trainDown', 'down']].forEach(function (b) {
     $(b[0]).addEventListener('click', function () {

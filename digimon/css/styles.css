@@ -194,7 +194,6 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 /* 훈련 */
 .gauge { position: relative; height: 34px; border-radius: 10px; background: var(--card-2); border: 1px solid var(--line); overflow: hidden; }
 .zone { position: absolute; top: 0; bottom: 0; background: rgba(89,209,140,.45); border-left: 2px solid var(--good); border-right: 2px solid var(--good); }
-.gauge .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: linear-gradient(90deg, #f2c43a, #e0503a); }
 #trainHit { touch-action: none; user-select: none; -webkit-user-select: none; }
 .marker { position: absolute; top: -2px; bottom: -2px; width: 4px; margin-left: -2px; background: #fff; box-shadow: 0 0 6px #fff; }
 .tries { display: flex; justify-content: center; gap: 14px; min-height: 30px; align-items: center; }
