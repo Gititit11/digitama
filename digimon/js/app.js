@@ -306,7 +306,7 @@
   }
 
   /* ---------- 화면(LCD) 그리기 ---------- */
-  var lcd = $('lcd'), lx = lcd.getContext('2d'), LCD_FLOOR = 76; // 160x80 화면의 바닥 줄
+  var lcd = $('lcd'), lx = lcd.getContext('2d'), LCD_FLOOR = 124; // 208x128 화면의 바닥 줄 (거대 디지몬 ×2 도 들어가게 크게 잡았다)
   var walk = { x: 60, dir: -1, frame: 0, rest: 0 }, effect = null, lastFrame = 0, lastStep = 0;
   // 배변 도트 (24x24, 위쪽 검은 선은 냄새). 좌우로 번갈아 뒤집어 냄새가 일렁이게 한다.
   var poopImg = new Image();
@@ -340,7 +340,7 @@
     lastFrame = ts;
     var mon = state.mon;
     if (!mon || mon.dead || $('home').hidden || stack.length) return;
-    var W = 160, Hh = 80, dark = !mon.lights;
+    var W = lcd.width, Hh = lcd.height, dark = !mon.lights;
     lx.fillStyle = dark ? '#1a1f2a' : lcdColor;
     lx.fillRect(0, 0, W, Hh);
     lx.fillStyle = dark ? 'rgba(255,255,255,.03)' : 'rgba(0,0,0,.04)';
@@ -505,7 +505,7 @@
       lx.fillStyle = 'rgba(255,255,255,' + 0.67 * a + ')'; lx.fillRect(mx - 8, 0, 17, Hh - 4);
       lx.strokeStyle = '#ffd250'; lx.lineWidth = 1;
       for (var j = 0; j < 3; j++) {
-        var ry = Hh - 6 - ((Math.floor((k - 180) / 60) * 4 + j * 14) % 70);
+        var ry = Hh - 6 - ((Math.floor((k - 180) / 60) * 4 + j * 14) % (Hh - 10));
         if (ry > 30) { lx.beginPath(); lx.ellipse(mx + 0.5, ry + 0.5, 22, 3, 0, 0, Math.PI * 2); lx.stroke(); }
       }
     }
@@ -543,7 +543,7 @@
   function feedFx(kind, refuse) {
     var fw = foodSize(kind).w + 4, m = Sprite.measure(E.form(state.mon));
     if (walk.dir < 0 && walk.x < fw) walk.dir = 1;
-    else if (walk.dir > 0 && walk.x + m.w + fw > 160) walk.dir = -1;
+    else if (walk.dir > 0 && walk.x + m.w + fw > lcd.width) walk.dir = -1;
     walk.rest = 0;
     var t0 = performance.now();
     effect = {

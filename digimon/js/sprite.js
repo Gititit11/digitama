@@ -167,8 +167,11 @@ var Sprite = (function (D, SHEETS) {
     return p;
   }
 
+  // 원작 크기 배율 (data.js 의 GIANT ×2 · LARGE ×1.5). 모든 화면이 이 크기를 기준으로 맞춘다
+  function big(id) { var S = D.SPECIES[id]; return (S && S.scale) || 1; }
+
   function measure(id) {
-    if (SHEETS[id]) return { w: SHEETS[id].w, h: SHEETS[id].h };
+    if (SHEETS[id]) { var k = big(id); return { w: Math.round(SHEETS[id].w * k), h: Math.round(SHEETS[id].h * k) }; }
     var n = build(id).n * CELL;
     return { w: n, h: n };
   }
@@ -193,7 +196,7 @@ var Sprite = (function (D, SHEETS) {
   function drawSheet(ctx, id, x0, y0, scale, o) {
     var S = SHEETS[id], f = frameOf(id, o.anim, o.frame, o.index);
     var src = o.silhouette ? tint(id, 'sil') : o.dark ? tint(id, 'dark') : sheet(id);
-    var w = S.w * scale, h = S.h * scale;
+    var k = big(id), w = Math.round(S.w * k) * scale, h = Math.round(S.h * k) * scale;
     ctx.save();
     ctx.imageSmoothingEnabled = false;
     if (o.flip) {

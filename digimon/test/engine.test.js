@@ -748,3 +748,18 @@ test('연승: 이기면 쌓이고 지면 끊긴다. 최다 연승이 숨은 진�
   for (i = 0; i < 10; i++) E.endBattle(s, { won: true, wild: w }, MORNING, function () { return 0.99; });
   assert.equal(s.mon.c.maxWinStreak, 10);
 });
+
+test('원작 크기: 거대 ×2 · 대형 ×1.5 는 그림 크기에 곱해지고 성장기는 그대로', () => {
+  const Sprite = require('../js/sprite.js');
+  const SHEETS = require('../js/sheets.js');
+  assert.equal(D.SPECIES.megidramon.scale, 2);
+  assert.equal(D.SPECIES.greymon.scale, 1.5);
+  assert.equal(Sprite.measure('megidramon').w, SHEETS.megidramon.w * 2);
+  assert.deepEqual(Sprite.measure('agumon'), { w: SHEETS.agumon.w, h: SHEETS.agumon.h });
+  for (const id in D.SPECIES) {
+    if (!D.SPECIES[id].scale) continue;
+    assert.ok(['adult', 'perfect', 'ultimate'].includes(D.SPECIES[id].stage), id);
+    const m = Sprite.measure(id);
+    assert.ok(m.w <= 128 && m.h <= 128, id + ' 은 홈(208×128)·배틀(320×140) 화면에 들어가야 한다');
+  }
+});
