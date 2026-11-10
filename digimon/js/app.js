@@ -664,13 +664,13 @@
    */
   var TRAIN_GAMES = {
     bar: { name: '막대 맞히기', note: '막대가 초록 칸에 들어왔을 때 누르세요.', btn: '지금!' },
-    guard: { name: '위·아래 공격', note: '상대가 막지 않은 쪽을 공격하세요. 방패 움직임을 잘 보세요.' },
+    guard: { name: '위·아래 공격', note: '방패가 없는 쪽 과녁을 공격하세요. 공격은 0.4초 뒤에 닿으니, 방패가 막 옮겨갔을 때 반대쪽을 노리세요.' },
     react: { name: '반응 속도', note: '화면에 ! 가 뜨면 바로 누르세요. 먼저 누르면 실패예요.', btn: '지금!' },
     jump: { name: '피하기', note: '공이 굴러오면 점프로 피하세요.', btn: '점프!' }
   };
   var GUARD_HIT_MS = 400, JUMP_HOP = 30, REACT_MS = 450;
   var TRAIN_WINDOW = [130, 113, 100]; // ms, 판마다
-  var REACT_LIMIT = [480, 420, 360];  // ms, '!' 가 뜬 뒤 눌러야 하는 시간 (판마다)
+  var REACT_LIMIT = [300, 300, 300];  // ms, '!' 가 뜬 뒤 눌러야 하는 시간 (판마다)
   var REACT_SHOW_MS = 800;            // 반응 시간 글자를 보여 주는 시간
   var tr = null;
   function startTrain(kind) {
