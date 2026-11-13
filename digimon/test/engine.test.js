@@ -130,10 +130,12 @@ test('새 스타터: 임프몬 · 길몬 · 레나몬', function () {
   assert.equal(D.SPECIES.vikaralamon.stage, 'perfect'); assert.ok(!D.SPECIES.vikaralamon.terminal);
   assert.equal(D.SPECIES.parasimon.stage, 'ultimate');
 
-  var boss = { id: 'piemon', name: '피에몬', attr: 'virus', grade: 'boss', level: E.STAGE_IDX.ultimate };
   [['guilmon', 'dukemon', 'dukemon_crimson'], ['impmon', 'beelzebumon', 'beelzebumon_blast']].forEach(function (c) {
     var s = at(c[0], 'ultimate', c[1]);
-    for (var i = 0; i < 3; i++) { var b = E.startBattle(s, boss); b.over = true; b.won = true; E.endBattle(s, b, MORNING, seeded(i)); }
+    D.BOSSES.ultimate.slice(0, 5).forEach(function (id, i) {
+      var b = E.startBattle(s, { id: id, name: id, attr: 'unknown', grade: 'boss', level: E.STAGE_IDX.ultimate });
+      b.over = true; b.won = true; E.endBattle(s, b, MORNING, seeded(i));
+    });
     assert.equal(s.mon.species, c[2]);
   });
 });
@@ -216,28 +218,37 @@ test('수명은 없다: 궁극체는 아무리 지나도 사라지지 않는다'
   assert.equal(s.mon.species, 'wargreymon');
 });
 
-test('⑩ 오메가몬: 짝을 키워 본 적 있고 보스 3번 격파 / ⑲ 파이터 모드', function () {
-  var boss = { id: 'piemon', name: '피에몬', attr: 'virus', grade: 'boss', level: E.STAGE_IDX.ultimate };
-  function win(s) { var b = E.startBattle(s, boss); b.over = true; b.won = true; return E.endBattle(s, b, MORNING, seeded(1)); }
+test('⑩ 오메가몬: 짝을 키워 본 적 있고 서로 다른 보스 5종 격파 / ⑲ 파이터 모드 / ㉓ 팔라딘 모드', function () {
+  var ids = D.BOSSES.ultimate.concat(D.LEGENDS);
+  function win(s, k) {
+    var b = E.startBattle(s, { id: ids[k], name: ids[k], attr: 'unknown', grade: 'boss', level: E.STAGE_IDX.ultimate });
+    b.over = true; b.won = true; return E.endBattle(s, b, MORNING, seeded(1));
+  }
 
   var s = at('agumon', 'ultimate', 'wargreymon');
-  win(s); win(s); win(s);
-  assert.equal(s.mon.species, 'wargreymon', '메탈가루몬을 키운 적이 없다');
   s.meta.dex.metalgarurumon = { raised: true };
-  win(s);
-  assert.equal(s.mon.species, 'omegamon');
+  for (var i = 0; i < 6; i++) win(s, 0);
+  assert.equal(s.mon.species, 'wargreymon', '같은 보스만 여섯 번 이기면 한 종');
+  win(s, 1); win(s, 2); win(s, 3);
+  assert.equal(s.mon.species, 'wargreymon', '서로 다른 보스 4종');
+  win(s, 4);
+  assert.equal(s.mon.species, 'omegamon', '5종째에 오메가몬');
   assert.ok(s.meta.dex.omegamon.raised);
 
+  s = at('agumon', 'ultimate', 'wargreymon');
+  for (i = 0; i < 5; i++) win(s, i);
+  assert.equal(s.mon.species, 'wargreymon', '메탈가루몬을 키운 적이 없다');
+
   s = at('veemon', 'ultimate', 'imperialdramon_dm');
-  win(s); win(s);
+  for (i = 0; i < 4; i++) win(s, i);
   assert.equal(s.mon.species, 'imperialdramon_dm');
-  win(s);
+  win(s, 4);
   assert.equal(s.mon.species, 'imperialdramon');
-  win(s); win(s); win(s);
+  for (i = 0; i < 5; i++) win(s, i);
   assert.equal(s.mon.species, 'imperialdramon', '오메가몬을 키운 적이 없다');
   s.meta.dex.omegamon = { raised: true };
-  win(s);
-  assert.equal(s.mon.species, 'imperialdramon_pm', '⑲ 다음 ㉓ 팔라딘 모드');
+  win(s, 5);
+  assert.equal(s.mon.species, 'imperialdramon_pm', '⑲ 다음 ㉓ 팔라딘 모드 (파이터 모드에서 새로 5종)');
   assert.equal(D.SPECIES.imperialdramon_pm.mult, 1.35);
   assert.ok(D.SPECIES.skullgreymon.ignores && D.SPECIES.megidramon.ignores && !D.SPECIES.blitzgreymon.ignores, '폭주는 스컬그레이몬·메기드라몬');
   assert.equal(D.SPECIES.megidramon.mult, 1.2); assert.equal(D.SPECIES.skullgreymon.mult, 1.2);

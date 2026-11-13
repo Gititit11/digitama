@@ -32,7 +32,8 @@ var Engine = (function (D) {
   function freshCounters() {
     return {
       mistakes: 0, training: 0, overfeed: 0, hygiene: 0, sleep: 0,
-      battles: 0, wins: 0, losses: 0, streak: 0, maxStreak: 0, winStreak: 0, maxWinStreak: 0, bossWins: 0, hungryBattles: 0, perfects: 0
+      battles: 0, wins: 0, losses: 0, streak: 0, maxStreak: 0, winStreak: 0, maxWinStreak: 0, bossWins: 0, hungryBattles: 0, perfects: 0,
+      bossBeaten: [] // 그 단계에서 이긴 보스·전설 (서로 다른 종만)
     };
   }
 
@@ -306,10 +307,10 @@ var Engine = (function (D) {
     emit(state, 'evolve', t, { from: from, to: to, kind: kind });
   }
 
-  /* ⑩ ⑲ — 궁극체가 보스를 이긴 뒤에 본다 */
+  /* ⑩ ⑲ ㉓ — 궁극체가 보스를 이긴 뒤에 본다. 같은 보스를 여러 번 이겨도 한 종으로 센다 */
   function special(state, mon) {
     var sp = line(mon).special, s = sp && sp[mon.species];
-    if (!s || mon.c.bossWins < R.jogressBossWins) return null;
+    if (!s || (mon.c.bossBeaten || []).length < R.jogressBossWins) return null;
     if (s.partner && !(state.meta.dex[s.partner] && state.meta.dex[s.partner].raised)) return null;
     return { to: s.to, kind: D.RULE_KIND[s.rule], rule: s.rule };
   }
@@ -674,6 +675,8 @@ var Engine = (function (D) {
       register(state, b.wild.id, 'beaten', now);
       if (b.wild.grade === 'boss' || b.wild.grade === 'legend') {
         c.bossWins++;
+        if (!c.bossBeaten) c.bossBeaten = []; // 예전 저장엔 없던 칸
+        if (c.bossBeaten.indexOf(b.wild.id) < 0) c.bossBeaten.push(b.wild.id);
         reward = bossReward(state, b.wild, rnd);
       }
       // 이기면 가끔 리셋 플로피 (레어 상대는 두 배). 가질 수 있는 수에는 끝이 있다
