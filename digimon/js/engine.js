@@ -32,7 +32,7 @@ var Engine = (function (D) {
   function freshCounters() {
     return {
       mistakes: 0, training: 0, overfeed: 0, hygiene: 0, sleep: 0,
-      battles: 0, wins: 0, losses: 0, streak: 0, maxStreak: 0, winStreak: 0, maxWinStreak: 0, bossWins: 0, hungryBattles: 0
+      battles: 0, wins: 0, losses: 0, streak: 0, maxStreak: 0, winStreak: 0, maxWinStreak: 0, bossWins: 0, hungryBattles: 0, perfects: 0
     };
   }
 
@@ -259,7 +259,8 @@ var Engine = (function (D) {
       case 'r20': return c.mistakes >= 3 && c.mistakes <= 5 && bat && wr >= 0.5;
       case 'r9': return c.mistakes <= 1 && bat && wr >= 0.6 && c.bossWins >= 1; // 한두 판만 이기고 끝내지 못하게
       case 'r11': return c.maxStreak >= 5 && c.mistakes >= 3;
-      case 'r15': return passes('r9', c) && (c.maxWinStreak || 0) >= 10; // 숨은 궁극체: 그 단계에서 10연승
+      // 숨은 궁극체: ⑨(배틀의 길)와 따로 가는 훈련의 길. 배틀 수·승률은 안 보고, 그 단계 훈련 퍼펙트(3판 모두 성공)를 본다
+      case 'r15': return c.mistakes <= 1 && (c.perfects || 0) >= R.hiddenPerfects && c.bossWins >= 1;
     }
     return false;
   }
@@ -361,6 +362,7 @@ var Engine = (function (D) {
     if (good) mon.c.training++;
     if (good && mon.strength < 4) mon.strength++;
     if (good) mon.trainOk = (mon.trainOk || 0) + 1;
+    if (hits >= 3) mon.c.perfects = (mon.c.perfects || 0) + 1; // 퍼펙트: 숨은 진화(⑮)에 쓰인다
     answered(mon);
     return { ok: true, good: good, level: trainLevel(mon), levelUp: trainLevel(mon) > lv };
   }

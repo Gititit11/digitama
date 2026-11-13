@@ -107,14 +107,14 @@ test('새 스타터: 임프몬 · 길몬 · 레나몬', function () {
   assert.equal(to('impmon', 'child', 'impmon', { hygiene: 4 }), 'raremon');
   assert.equal(to('impmon', 'child', 'impmon', {}), 'bakemon');
   assert.equal(to('impmon', 'adult', 'devimon', ok), 'baalmon', '정화');
-  assert.equal(to('impmon', 'perfect', 'baalmon', Object.assign({ sleep: 3, maxWinStreak: 10 }, ult)), 'beelzebumon_2010', '10연승이면 숨은 진화');
-  assert.equal(to('impmon', 'perfect', 'baalmon', Object.assign({ maxWinStreak: 9, training: 99 }, ult)), 'beelzebumon', '9연승이면 정상 진화');
+  assert.equal(to('impmon', 'perfect', 'baalmon', Object.assign({ sleep: 3, perfects: 20 }, ult)), 'beelzebumon_2010', '퍼펙트 20회면 숨은 진화');
+  assert.equal(to('impmon', 'perfect', 'baalmon', Object.assign({ perfects: 19, training: 99 }, ult)), 'beelzebumon', '퍼펙트 19회면 정상 진화');
   assert.equal(to('guilmon', 'child', 'guilmon', { training: 20 }), 'growmon');
   assert.equal(to('guilmon', 'child', 'guilmon', { training: 60 }), 'growmon_orange', '㉑ 훈련 48 이상');
   assert.equal(to('guilmon', 'child', 'guilmon', { training: 60, mistakes: 5 }), 'siesamon');
   assert.equal(to('guilmon', 'child', 'guilmon', { mistakes: 6 }), 'devidramon');
   assert.equal(to('guilmon', 'perfect', 'megalogrowmon_orange', { mistakes: 3, maxStreak: 5 }), 'megidramon', '폭주는 훈련 갈래에서');
-  assert.equal(to('guilmon', 'perfect', 'megalogrowmon', { mistakes: 1, battles: 15, wins: 10, bossWins: 1, maxWinStreak: 10 }), 'dukemon_x', '10연승이면 숨은 진화');
+  assert.equal(to('guilmon', 'perfect', 'megalogrowmon', { mistakes: 1, bossWins: 1, perfects: 20 }), 'dukemon_x', '배틀 수·승률 없이 퍼펙트 20회 + 보스 1이면 숨은 진화');
   assert.equal(to('guilmon', 'perfect', 'megalogrowmon', { mistakes: 1, battles: 15, wins: 10, bossWins: 1 }), 'dukemon', '잠만 지켜서는 숨은 진화가 아니다');
   assert.equal(to('guilmon', 'perfect', 'megalogrowmon', { mistakes: 1, battles: 15, wins: 10, bossWins: 1, sleep: 1 }), 'dukemon');
   assert.equal(E.judge(at('guilmon', 'perfect', 'mihiramon', ult).mon).kind, 'terminal', '데바는 막다른 진화');
@@ -123,7 +123,7 @@ test('새 스타터: 임프몬 · 길몬 · 레나몬', function () {
   assert.equal(to('renamon', 'adult', 'youkomon', {}), 'doumon');
   assert.equal(to('renamon', 'perfect', 'taomon', Object.assign({ sleep: 1 }, ult)), 'sakuyamon');
   assert.equal(to('renamon', 'perfect', 'taomon', ult), 'sakuyamon', '도사몬에서는 X 가 안 나온다');
-  assert.equal(to('renamon', 'perfect', 'doumon', Object.assign({ maxWinStreak: 10 }, ult)), 'sakuyamon_x', '도우몬을 완벽하게 키우면 샤크라몬X');
+  assert.equal(to('renamon', 'perfect', 'doumon', Object.assign({ perfects: 20 }, ult)), 'sakuyamon_x', '도우몬을 퍼펙트 20회로 키우면 샤크라몬X');
   assert.equal(to('renamon', 'perfect', 'doumon', Object.assign({ sleep: 1 }, ult)), 'kuzuhamon');
   assert.equal(to('renamon', 'adult', 'icedevimon', { mistakes: 2, battles: 15, wins: 8 }), 'vikaralamon');
   assert.equal(to('renamon', 'perfect', 'vikaralamon', { mistakes: 3, maxStreak: 5 }), 'parasimon');
@@ -178,16 +178,16 @@ test('성숙기 → 완전체', function () {
 });
 
 test('완전체 → 궁극체', function () {
-  var ok = { mistakes: 1, battles: 15, wins: 10, bossWins: 1 }, w = Object.assign({ sleep: 1 }, ok); // 10연승이면 ⑮
+  var ok = { mistakes: 1, battles: 15, wins: 10, bossWins: 1 }, w = Object.assign({ sleep: 1 }, ok); // 퍼펙트 20회면 ⑮
   assert.equal(to('agumon', 'perfect', 'metalgreymon', w), 'wargreymon');
   assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({}, w, { wins: 9 })), 'wargreymon', '⑨ 승률 60%');
   assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({}, w, { wins: 8 })), null);
   assert.equal(to('agumon', 'perfect', 'metalgreymon', { mistakes: 0, battles: 14, wins: 14, bossWins: 1 }), null, '배틀 15번은 해야 한다');
   assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({}, w, { bossWins: 0 })), null);
   assert.equal(E.judge(at('agumon', 'perfect', 'metaltyranomon', { mistakes: 3, maxStreak: 5 }).mon).kind, 'terminal', '메탈티라노몬은 막다른 진화');
-  assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({ maxWinStreak: 10 }, ok)), 'blitzgreymon', '10연승이면 숨은 진화');
+  assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({ perfects: 20 }, ok)), 'blitzgreymon', '퍼펙트 20회면 숨은 진화');
   assert.equal(to('agumon', 'perfect', 'metalgreymon', Object.assign({ sleep: 1 }, ok)), 'wargreymon');
-  assert.equal(to('gabumon', 'perfect', 'weregarurumon', Object.assign({ maxWinStreak: 10 }, ok)), 'cresgarurumon', '10연승이면 숨은 진화');
+  assert.equal(to('gabumon', 'perfect', 'weregarurumon', Object.assign({ perfects: 20 }, ok)), 'cresgarurumon', '퍼펙트 20회면 숨은 진화');
   assert.equal(to('gabumon', 'perfect', 'weregarurumon', ok), 'metalgarurumon');
   assert.equal(to('gabumon', 'perfect', 'weregarurumon', Object.assign({ sleep: 1 }, ok)), 'metalgarurumon');
   assert.equal(to('veemon', 'perfect', 'paildramon', ok), 'imperialdramon_dm');
@@ -739,7 +739,7 @@ test('엔딩: 더 진화할 데가 없는 모습에만 붙는다', function () {
 });
 
 
-test('연승: 이기면 쌓이고 지면 끊긴다. 최다 연승이 숨은 진화(⑮)에 쓰인다', function () {
+test('연승: 이기면 쌓이고 지면 끊긴다', function () {
   var s = at('agumon', 'perfect', 'metalgreymon');
   var w = { id: 'tyranomon', grade: 'normal', level: E.STAGE_IDX.adult };
   for (var i = 0; i < 4; i++) E.endBattle(s, { won: true, wild: w }, MORNING, function () { return 0.99; });
@@ -747,6 +747,17 @@ test('연승: 이기면 쌓이고 지면 끊긴다. 최다 연승이 숨은 진�
   assert.equal(s.mon.c.winStreak, 0); assert.equal(s.mon.c.maxWinStreak, 4);
   for (i = 0; i < 10; i++) E.endBattle(s, { won: true, wild: w }, MORNING, function () { return 0.99; });
   assert.equal(s.mon.c.maxWinStreak, 10);
+});
+
+test('숨은 진화(⑮): 케어 실수 1 이하 · 훈련 퍼펙트 20회 · 보스 1. 배틀 수와 승률은 보지 않는다', function () {
+  assert.equal(to('agumon', 'perfect', 'metalgreymon', { mistakes: 1, perfects: 20, bossWins: 1 }), 'blitzgreymon', '배틀 1판만 해도 된다');
+  assert.equal(to('agumon', 'perfect', 'metalgreymon', { mistakes: 1, perfects: 20, bossWins: 0 }), null, '보스는 1번 이겨야 한다');
+  assert.equal(to('agumon', 'perfect', 'metalgreymon', { mistakes: 2, perfects: 30, bossWins: 1 }), null, '케어 실수 2면 안 된다');
+  var s = at('agumon', 'perfect', 'metalgreymon');
+  for (var i = 0; i < 3; i++) E.train(s, 3);
+  E.train(s, 2);
+  assert.equal(s.mon.c.perfects, 3, '3판 모두 성공한 훈련만 퍼펙트');
+  assert.equal(s.mon.c.training, 4);
 });
 
 test('원작 크기: 거대 ×1.5 · 대형 ×1.2 는 그림 크기에 곱해지고 성장기는 그대로', () => {
