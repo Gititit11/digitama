@@ -1721,12 +1721,6 @@
     show('dexCard');
   }
 
-  // 그 디지멘탈로 될 수 있는 아머체 (브이몬 라인 표에서)
-  function armorTargets(k) {
-    var A = D.LINES.veemon.armor, out = [];
-    Object.keys(A).forEach(function (f) { if (A[f][k] && out.indexOf(A[f][k]) < 0) out.push(A[f][k]); });
-    return out;
-  }
 
   /* ---------- 정보 ---------- */
   function table(rows) {
@@ -1778,7 +1772,7 @@
     var it = state.meta.items;
     body.appendChild(heading('아이템 (모든 디지몬이 함께 써요)'));
     body.appendChild(table(D.DIGIMENTALS.map(function (k) {
-      return [D.RULE_HINTS[k], it[k] ? '있음 → ' + armorTargets(k).map(name).join('·') : '없음'];
+      return [D.RULE_HINTS[k], it[k] ? '있음' : '없음'];
     }).concat([['디지 칩', it.chip + '개 (배고픔·힘 가득)'],
       ['리셋 플로피', (it.floppy || 0) + '개 / 최대 ' + R.floppyMax + ' (케어 실수 1 감소)']])));
     if (state.meta.history.length) {
