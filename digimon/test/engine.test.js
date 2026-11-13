@@ -743,8 +743,8 @@ test('엔딩: 더 진화할 데가 없는 모습에만 붙는다', function () {
   assert.equal(E2.medievaldukemon, 'normal');
   assert.equal(to('guilmon', 'perfect', 'megalogrowmon_orange', { mistakes: 1, battles: 15, wins: 10, bossWins: 1, sleep: 1 }), 'medievaldukemon');
   assert.equal(E2.fantomon, 'alter'); assert.ok(!E2.deathmon, '데스몬은 야생');
-  assert.equal(E2.skullsatamon, 'alter', '스컬사탄몬은 막다른 진화');
-  assert.equal(to('impmon', 'perfect', 'astamon', { mistakes: 1, battles: 15, wins: 10, bossWins: 1 }), 'murmukusmon');
+  assert.ok(!E2.skullsatamon, '스컬사탄몬은 무르무쿠스몬으로 간다'); ['astamon', 'wisemon', 'rareraremon'].forEach(function (id) { assert.equal(E2[id], 'alter', id); });
+  assert.equal(to('impmon', 'perfect', 'skullsatamon', { mistakes: 1, battles: 15, wins: 10, bossWins: 1 }), 'murmukusmon');
   assert.equal(E2.sakuyamon_miko, 'true'); assert.ok(!E2.sakuyamon, '샤크라몬은 무녀 모드가 남았다'); assert.ok(!E2.kuzuhamon_miko, '쿠즈하몬 무녀 모드는 야생');
   ['wargreymon', 'metalgarurumon', 'imperialdramon', 'imperialdramon_dm', 'beelzebumon', 'dukemon', 'sagittarimon'].forEach(function (id) { assert.ok(!E2[id], id + ' 는 아직 갈 데가 있다'); });
 });
@@ -769,6 +769,18 @@ test('숨은 진화(⑮): 케어 실수 1 이하 · 훈련 퍼펙트 20회 · �
   E.train(s, 2);
   assert.equal(s.mon.c.perfects, 3, '3판 모두 성공한 훈련만 퍼펙트');
   assert.equal(s.mon.c.training, 4);
+});
+
+test('임프몬 라인 (원작 반영): 위자몬 ⑦ 와이즈몬 · 고스몬 ⑤ 스컬사탄몬 → 무르무쿠스몬 · 레어몬은 만회 못 하면 레어레어몬', function () {
+  var ok = { mistakes: 2, battles: 15, wins: 8 }, low = { mistakes: 2, battles: 15, wins: 6 };
+  assert.equal(to('impmon', 'adult', 'wizarmon', ok), 'baalmon');
+  assert.equal(to('impmon', 'adult', 'wizarmon', low), 'wisemon');
+  assert.equal(to('impmon', 'adult', 'bakemon', ok), 'skullsatamon');
+  assert.equal(to('impmon', 'adult', 'bakemon', low), 'astamon');
+  assert.equal(to('impmon', 'adult', 'raremon', ok), 'fantomon', '만회');
+  assert.equal(to('impmon', 'adult', 'raremon', {}), 'rareraremon');
+  assert.equal(to('impmon', 'perfect', 'skullsatamon', { mistakes: 1, battles: 15, wins: 10, bossWins: 1 }), 'murmukusmon');
+  assert.equal(D.SPECIES.wisemon.attr, 'virus'); assert.equal(D.SPECIES.rareraremon.attr, 'virus');
 });
 
 test('원작 크기: 거대 ×1.5 · 대형 ×1.2 는 그림 크기에 곱해지고 성장기는 그대로', () => {

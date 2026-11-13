@@ -177,9 +177,11 @@ var DigiData = (function () {
   sp('devimon', '데블몬', 'adult', 'virus');
   sp('raremon', '레어몬', 'adult', 'virus');
   sp('baalmon', '바알몬', 'perfect', 'virus');
-  sp('astamon', '아스타몬', 'perfect', 'virus');
+  sp('astamon', '아스타몬', 'perfect', 'virus', END); // 고스몬 ⑦ 로 오는 막다른 진화
   sp('fantomon', '팬텀몬', 'perfect', 'virus', END); // 위자몬 ⑥ · 레어몬 ⑧ 로 오는 막다른 진화
-  sp('skullsatamon', '스컬사탄몬', 'perfect', 'virus', END); // 고스몬 ⑦ · 데블몬 ⑭ 로 오는 막다른 진화
+  sp('skullsatamon', '스컬사탄몬', 'perfect', 'virus'); // 임프몬 계열의 정통 완전체: 고스몬 ⑤ · 데블몬 ⑭ → 무르무쿠스몬
+  sp('wisemon', '와이즈몬', 'perfect', 'virus', END); // 위자몬 ⑦ (원작: 위자몬의 완전체)
+  sp('rareraremon', '레어레어몬', 'perfect', 'virus', END); // 레어몬이 만회하지 못하면 (원작: 레어몬의 완전체)
   sp('beelzebumon', '베르제브몬', 'ultimate', 'virus');
   sp('beelzebumon_2010', '베르제브몬(2010)', 'ultimate', 'virus', HIDDEN);
   sp('deathmon', '데스몬', 'ultimate', 'data');
@@ -536,12 +538,12 @@ var DigiData = (function () {
       baby1: 'kiimon', baby2: 'yaamon', child: 'impmon',
       evo: {
         impmon: [['r34', 'raremon'], ['r12', 'devimon'], ['r1', 'wizarmon'], ['r2', 'bakemon']],
-        wizarmon: [['r6', 'fantomon'], ['r5', 'baalmon']],
-        bakemon: [['r7', 'skullsatamon'], ['r5', 'astamon']],
+        wizarmon: [['r6', 'fantomon'], ['r5', 'baalmon'], ['r7', 'wisemon']],
+        bakemon: [['r5', 'skullsatamon'], ['r7', 'astamon']],
         devimon: [['r13', 'baalmon'], ['r14', 'skullsatamon']],
-        raremon: [['r8', 'fantomon']],
+        raremon: [['r8', 'fantomon'], ['r2', 'rareraremon']],
         baalmon: [['r15', 'beelzebumon_2010'], ['r9', 'beelzebumon']],
-        astamon: [['r9', 'murmukusmon']]
+        skullsatamon: [['r9', 'murmukusmon']] // 원작(디지몬 마스터즈): 스컬사탄몬 → 무르무쿠스몬
       },
       special: { beelzebumon: { rule: 'r19', to: 'beelzebumon_blast' } }
     },
