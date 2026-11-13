@@ -45,9 +45,10 @@
   // 받침이 있으면 a, 없으면 b. "워가루몬(흑)" 처럼 괄호로 끝나면 괄호 안 마지막 글자로 본다.
   function josa(word, a, b) {
     var w = word.replace(/[)\s]+$/, ''), last = w[w.length - 1];
-    if (/\d/.test(last)) return word + ('013678'.indexOf(last) >= 0 ? a : b); // 영·일·삼·육·칠·팔은 받침
+    var ro = a === '으로'; // ㄹ 받침 뒤에는 '로' (디지멘탈로, 일로)
+    if (/\d/.test(last)) return word + ('013678'.indexOf(last) >= 0 && !(ro && '178'.indexOf(last) >= 0) ? a : b); // 영·일·삼·육·칠·팔은 받침
     var c = w.charCodeAt(w.length - 1) - 0xac00;
-    return word + (c >= 0 && c <= 11171 && c % 28 ? a : b);
+    return word + (c >= 0 && c <= 11171 && c % 28 && !(ro && c % 28 === 8) ? a : b);
   }
   function name(id) { return D.SPECIES[id].name; }
   function dur(ms) {
@@ -602,13 +603,14 @@
       var mon = state.mon, L = D.LINES[mon.line], A = L.armor[mon.species];
       openPick('아머진화', '디지멘탈의 힘으로 아머진화해요. 아머체는 디지멘탈로만 다음 단계로 진화해요. 디지멘탈은 닳지 않아요.',
         E.armorKinds(state, now()).map(function (k) {
+          // 무엇으로 진화하는지는 진화하는 순간까지 알려 주지 않는다
           var to = A[k], more = !!L.armor[to];
           return {
-            label: D.RULE_HINTS[k] + ' → ' + name(to) + ' (' + D.STAGE_NAMES[D.SPECIES[to].stage] + ')',
+            label: D.RULE_HINTS[k],
             fn: function () {
-              if (!confirm(josa(name(to), '으로', '로') + ' 아머진화할까요?\n아머진화하면 ' + josa(name(mon.species), '으로', '로') +
-                ' 돌아갈 수 없어요.\n' + (more ? josa(name(to), '은', '는') + ' 디지멘탈이 있어야만 다음 단계로 진화해요.'
-                  : josa(name(to), '은', '는') + ' 더 이상 진화하지 않아요.'))) return;
+              if (!confirm(josa(D.RULE_HINTS[k], '으로', '로') + ' 아머진화할까요?\n아머진화하면 ' + josa(name(mon.species), '으로', '로') +
+                ' 돌아갈 수 없어요.\n' + (more ? '아머체는 디지멘탈이 있어야만 다음 단계로 진화해요.'
+                  : '이번 아머진화가 마지막이라 더 이상 진화하지 않아요.'))) return;
               E.armor(state, now(), k);
             }
           };
