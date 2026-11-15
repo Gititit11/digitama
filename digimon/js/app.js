@@ -295,15 +295,24 @@
   var FLOPPY_TEXT = '리셋 플로피: 지금 단계의 케어 실수를 1 줄여요.';
   // 승률 조건이 있는 진화의 최소 배틀 수 (engine.passes 와 같다: 성숙기 ⑤⑦⑧⑬⑳ 15번, 완전체 ⑨⑮ 15번)
   var BATTLE_MIN = { adult: 15, perfect: 15 };
+  // 디지타마·유년기는 배틀을 하지 않아 전투력이 없다
+  function noPower(mon) { return !R.stagePower[mon.stage]; }
   // 전투력과 그중 훈련으로 오른 몫 (퍼센트가 아니라 전투력 숫자로 보여 준다)
   function trainBonus(mon) {
     var p = E.myPower(mon), lv = E.trainLevel(mon), total = Math.round(p);
     return { total: total, bonus: total - Math.round(p / (1 + R.trainLvPower * lv)) };
   }
+  // "40 (기본 34 · 컨디션 +2 · 훈련 +4)" — 기본은 단계·종으로 정해진 값, 컨디션은 힘·배고픔, 훈련은 훈련 레벨.
+  // 각각 반올림한 차이라 세 숫자를 더하면 항상 전투력이 된다
+  function powerText(mon) {
+    var tb = trainBonus(mon), S = D.SPECIES[E.form(mon)];
+    var base = Math.round(R.stagePower[D.STAGES[E.battleStage(mon)]] * S.mult), cond = tb.total - tb.bonus - base;
+    return tb.total + ' (기본 ' + base + ' · 컨디션 ' + (cond < 0 ? cond : '+' + cond) + ' · 훈련 +' + tb.bonus + ')';
+  }
   // 훈련 레벨: "Lv 3 (전투력 +5) · 다음 레벨까지 성공 7번"
   function trainText(mon) {
     var lv = E.trainLevel(mon), ok = mon.trainOk || 0;
-    var t = 'Lv ' + lv + (mon.stage === 'egg' ? '' : ' (전투력 +' + trainBonus(mon).bonus + ')');
+    var t = 'Lv ' + lv + (noPower(mon) ? '' : ' (전투력 +' + trainBonus(mon).bonus + ')');
     return lv >= R.trainLvMax ? t + ' · 최고 레벨' : t + ' · 다음 레벨까지 성공 ' + ((lv + 1) * R.trainLvEvery - ok) + '번';
   }
   function clock(ms) { // 분:초
@@ -1764,7 +1773,7 @@
       ['단계 · 속성', (S.armor ? '아머체' : D.STAGE_NAMES[mon.stage]) + ' · ' + D.ATTR_NAMES[S.attr]],
       ['나이', dur(t - mon.born)],
       ['다음 진화', mon.stageEnd ? dur(mon.stageEnd - t) + ' 뒤' : '없음'],
-      ['전투력', mon.stage === 'egg' ? '-' : trainBonus(mon).total + ' (훈련 +' + trainBonus(mon).bonus + ')'],
+      ['전투력', noPower(mon) ? '- (성장기부터)' : powerText(mon)],
       ['훈련 레벨', trainText(mon)]
     ]));
     body.appendChild(heading('이 단계에서 쌓인 값 (진화 판정에 쓰여요)'));
