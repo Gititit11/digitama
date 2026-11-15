@@ -62,4 +62,5 @@ tasks.named("preBuild") { dependsOn(copyWeb) }
 
 dependencies {
     implementation("androidx.webkit:webkit:1.12.1")
+    implementation("androidx.core:core:1.13.1") // FileProvider (앱 업데이트 설치)
 }

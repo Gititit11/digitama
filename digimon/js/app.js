@@ -19,6 +19,38 @@
   var appVer = document.getElementById('appVer');
   if (appVer) appVer.textContent = typeof APP_VERSION !== 'undefined' && APP_VERSION ? 'v' + APP_VERSION : '웹 버전';
 
+  /* 앱 업데이트 (APK 에서만): 켤 때와 다시 볼 때 새 버전이 있는지 묻고, 있으면 왼쪽 아래 버전 자리에 버튼을 띄운다.
+   * 누르면 앱이 APK 를 받아 안드로이드 설치 화면을 연다 (MainActivity.Updater). 키우던 디지몬은 그대로 남는다. */
+  var updBtn = document.getElementById('appUpdate'), updLast = 0, updNew = '';
+  function verNum(v) { var m = /(\d+)\s*$/.exec(v || ''); return m ? +m[1] : 0; }
+  function checkUpdate() {
+    if (!window.DigitamaApp || typeof APP_VERSION === 'undefined' || !APP_VERSION) return;
+    if (Date.now() - updLast < 30 * 60000) return; // 30분에 한 번만
+    updLast = Date.now();
+    try { window.DigitamaApp.check(); } catch (e) { }
+  }
+  window.onAppUpdate = function (json) {
+    var info = null;
+    try { info = JSON.parse(json); } catch (e) { }
+    if (!info || verNum(info.version) <= verNum(APP_VERSION)) return;
+    updNew = info.version;
+    updBtn.textContent = '새 버전 v' + updNew + ' · 업데이트';
+    updBtn.disabled = false; updBtn.hidden = false; appVer.hidden = true;
+  };
+  window.onAppUpdateProgress = function (p) {
+    if (p === 'perm') { updBtn.disabled = false; updBtn.textContent = '설치 허용을 켠 뒤 다시 눌러 주세요'; }
+    else if (p === 'fail') { updBtn.disabled = false; updBtn.textContent = '받지 못했어요 · 다시 시도'; }
+    else if (p === 'done') { updBtn.disabled = false; updBtn.textContent = '설치 화면에서 설치를 눌러 주세요'; }
+    else updBtn.textContent = '받는 중 ' + p + '%';
+  };
+  updBtn.addEventListener('click', function () {
+    if (!window.DigitamaApp) return;
+    updBtn.disabled = true; updBtn.textContent = '받는 중…';
+    try { window.DigitamaApp.install(); } catch (e) { window.onAppUpdateProgress('fail'); }
+  });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) checkUpdate(); });
+  setTimeout(checkUpdate, 1500);
+
   var state = load();
   function now() { return Date.now() + (state.meta.offset || 0); }
 
