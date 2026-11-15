@@ -635,12 +635,14 @@ var Engine = (function (D) {
 
   /* 보스 보상: 완전체 보스 → 아직 없는 디지멘탈(용기·우정·사랑) 중 하나,
    * 궁극체 보스·전설 → 기적의 디지멘탈. 이미 다 있으면 디지 칩. */
+  // 보스를 이기면 R.digimentalDrop 확률로 아직 없는 디지멘탈 하나, 아니면 디지 칩
   function bossReward(state, w, rnd) {
     var it = state.meta.items;
+    var lucky = rnd() < R.digimentalDrop;
     if (D.STAGES[w.level] === 'perfect') {
       var missing = ['flame', 'thunder', 'archer'].filter(function (k) { return !it[k]; });
-      if (missing.length) { var k = pick(missing, rnd()); it[k] = true; return k; }
-    } else if (!it.miracle) { it.miracle = true; return 'miracle'; }
+      if (lucky && missing.length) { var k = pick(missing, rnd()); it[k] = true; return k; }
+    } else if (lucky && !it.miracle) { it.miracle = true; return 'miracle'; }
     it.chip++;
     return 'chip';
   }

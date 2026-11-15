@@ -628,7 +628,18 @@ test('유년기는 배틀할 수 없다', function () {
   assert.equal(E.scan(s, '1', MORNING).reason, 'baby');
 });
 
+test('보스 보상: 디지멘탈은 30% 확률, 안 나오면 디지 칩', function () {
+  assert.equal(D.RULES.digimentalDrop, 0.3);
+  var s = at('agumon', 'adult', 'greymon'), w = { id: 'vamdemon', name: '묘티스몬', attr: 'virus', grade: 'boss', level: E.STAGE_IDX.perfect };
+  var b = E.startBattle(s, w); b.over = true; b.won = true;
+  assert.equal(E.endBattle(s, b, MORNING, function () { return 0.99; }).reward, 'chip', '운이 없으면 칩');
+  assert.ok(!s.meta.items.flame && !s.meta.items.thunder && !s.meta.items.archer);
+  b = E.startBattle(s, w); b.over = true; b.won = true;
+  assert.ok(['flame', 'thunder', 'archer'].indexOf(E.endBattle(s, b, MORNING, function () { return 0.01; }).reward) >= 0, '운이 좋으면 디지멘탈');
+});
+
 test('배틀 결과: 수치·도감·보상·배고픔', function () {
+  var drop = D.RULES.digimentalDrop; D.RULES.digimentalDrop = 1; // 보상 순서를 보려고 이 시험에서는 항상 나오게
   var s = at('agumon', 'adult', 'greymon'), r = seeded(9);
   s.mon.hunger = 0;
   var w = { id: 'vamdemon', name: '묘티스몬', attr: 'virus', grade: 'boss', level: E.STAGE_IDX.perfect };
@@ -658,6 +669,7 @@ test('배틀 결과: 수치·도감·보상·배고픔', function () {
   }
   assert.equal(s.mon.c.maxStreak, 5);
   assert.equal(s.mon.hunger, 0);
+  D.RULES.digimentalDrop = drop;
 });
 
 test('배틀 턴이 끝까지 진행되고, 폭주한 메기드라몬은 가끔 명령을 무시한다', function () {
