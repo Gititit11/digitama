@@ -305,12 +305,8 @@
     if ($('lightsIcon').getAttribute('src') !== bulb) $('lightsIcon').src = bulb;
     document.querySelector('[data-act="wake"]').disabled = !mon.sleeping;
     document.querySelector('[data-act="battle"]').disabled = !E.canBattle(state).ok;
-    document.querySelector('[data-act="armor"]').hidden = !E.canArmor(state, t);
-    document.querySelector('[data-act="chip"]').hidden = !state.meta.items.chip;
-    $('chipLabel').textContent = '디지 칩 ×' + state.meta.items.chip;
-    var fl = state.meta.items.floppy || 0;
-    document.querySelector('[data-act="floppy"]').hidden = !fl || egg;
-    $('floppyLabel').textContent = '리셋 플로피 ×' + fl;
+    // 아머진화 · 디지 칩 · 리셋 플로피는 '아이템' 버튼 하나로 모은다 (쓸 게 있을 때만 보인다)
+    document.querySelector('[data-act="items"]').hidden = !itemOptions(t).length;
     // 디지타마일 때는 돌볼 것이 없다
     ['feed', 'snack', 'train', 'clean', 'lights'].forEach(function (k) {
       document.querySelector('[data-act="' + k + '"]').disabled = egg;
@@ -321,8 +317,16 @@
     ['feed', 'snack', 'medicine'].forEach(function (k) {
       document.querySelector('[data-act="' + k + '"]').disabled = egg || eating;
     });
-    if (egg) document.querySelector('[data-act="chip"]').hidden = true;
     if (!mon.sick) document.querySelector('[data-act="medicine"]').disabled = true; // 아플 때만 누를 수 있다
+  }
+  // 아이템 창에 나오는 것: 지금 쓸 수 있는 것만
+  function itemOptions(t) {
+    var mon = state.mon, it = state.meta.items, out = [];
+    if (!mon || mon.dead || mon.stage === 'egg') return out;
+    if (E.canArmor(state, t)) out.push({ label: '아머진화 · 디지멘탈로 진화', fn: function () { ACTS.armor(); }, keep: true });
+    if (it.chip) out.push({ label: '디지 칩 ×' + it.chip + ' · 진화 시간 10% 단축', fn: function () { ACTS.chip(); } });
+    if (it.floppy) out.push({ label: '리셋 플로피 ×' + it.floppy + ' · 케어 실수 1 지우기', fn: function () { ACTS.floppy(); } });
+    return out;
   }
   var FLOPPY_TEXT = '리셋 플로피: 지금 단계의 케어 실수를 1 줄여요.';
   // 승률 조건이 있는 진화의 최소 배틀 수 (engine.passes 와 같다: 성숙기 ⑤⑦⑧⑬⑳ 15번, 완전체 ⑨⑮ 15번)
@@ -663,6 +667,9 @@
           };
         }));
     },
+    items: function () {
+      openPick('아이템', '', itemOptions(now()));
+    },
     chip: function () {
       var h = E.chipHours(state.mon);
       if (!h) { toast('지금 모습은 진화 시간이 없어서 쓸 수 없어요'); return; }
@@ -689,20 +696,23 @@
   });
 
   /* ---------- 고르기 ---------- */
+  // 고르기 창. 이미 열려 있으면 그 자리에서 내용만 바꾼다 (아이템 → 아머진화 처럼 이어질 때).
+  // keep 인 선택지는 창을 닫지 않고 다음 고르기로 넘어간다
   function openPick(title, note, options) {
     $('pickTitle').textContent = title;
     $('pickNote').textContent = note;
+    $('pickNote').hidden = !note;
     var box = $('pickList');
     box.innerHTML = '';
     options.forEach(function (o) {
       var b = document.createElement('button'); b.className = 'btn'; b.textContent = o.label;
       b.addEventListener('click', function () {
-        closeScreen();
+        if (!o.keep) closeScreen();
         E.tick(state, now()); o.fn(); save(); drainEvents();
       });
       box.appendChild(b);
     });
-    show('pick');
+    if (stack[stack.length - 1] !== 'pick') show('pick');
   }
 
   // 궁극체에서 보스 격파로 일어나는 진화의 진행 상황
