@@ -412,13 +412,17 @@ var Engine = (function (D) {
   }
 
   // 디지 칩: 배고픔과 힘을 가득 채운다. 과식으로 치지 않는다.
+  // 디지 칩: 이 단계 진화 시간의 10% 만큼 진화를 앞당긴다. 몇 개든 쓸 수 있고, 남은 시간보다 많이 당기면 바로 진화한다
+  function chipHours(mon) {
+    var h = mon && mon.stageEnd && R.stageHours[mon.stage];
+    return h ? Math.round(h * R.chipSpeedup * 100) / 100 : 0;
+  }
   function useChip(state) {
-    var mon = state.mon, it = state.meta.items;
-    if (!it.chip || mon.sleeping || isEgg(state)) return { ok: false };
+    var mon = state.mon, it = state.meta.items, h = chipHours(mon);
+    if (!it.chip || isEgg(state) || !h) return { ok: false }; // 진화 시간이 없는 모습(궁극체 등)
     it.chip--;
-    mon.hunger = 4; mon.strength = 4;
-    answered(mon);
-    return { ok: true };
+    mon.stageEnd -= Math.round(h * HOUR);
+    return { ok: true, hours: h };
   }
 
   // 리셋 플로피: 이 단계의 케어 실수를 1 줄인다. 가진 만큼 몇 번이든 쓸 수 있다
@@ -704,7 +708,7 @@ var Engine = (function (D) {
     slotsLeft: slotsLeft, tick: tick, sleepNow: sleepNow,
     judge: judge, passes: passes, warning: warning, form: form, winRate: winRate, dateKey: dateKey,
     feed: feed, snack: snack, train: train, clean: clean, toggleLights: toggleLights, wake: wake,
-    armorKinds: armorKinds, canArmor: canArmor, armor: armor, fixStages: fixStages, useChip: useChip, useFloppy: useFloppy, medicine: medicine,
+    armorKinds: armorKinds, canArmor: canArmor, armor: armor, fixStages: fixStages, useChip: useChip, chipHours: chipHours, useFloppy: useFloppy, medicine: medicine,
     wildFor: wildFor, wildForCode: wildForCode, trainLevel: trainLevel, canSpecial: canSpecial, battleStage: battleStage, advantage: advantage,
     canBattle: canBattle, scan: scan, scansLeft: scansLeft, takeBattle: takeBattle,
     startBattle: startBattle, battleTurn: battleTurn, endBattle: endBattle,

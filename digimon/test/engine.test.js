@@ -795,6 +795,19 @@ test('임프몬 라인 (원작 반영): 위자몬 ⑦ 와이즈몬 · 고스몬 
   assert.equal(D.SPECIES.wisemon.attr, 'virus'); assert.equal(D.SPECIES.rareraremon.attr, 'virus');
 });
 
+test('디지 칩: 쓰면 그 단계 진화 시간의 10% 만큼 진화가 앞당겨진다. 진화 시간이 없으면 못 쓴다', function () {
+  var s = at('agumon', 'adult', 'greymon'), end = s.mon.stageEnd, H = 3600000;
+  s.meta.items.chip = 3;
+  var r = E.useChip(s);
+  assert.ok(r.ok); assert.equal(r.hours, 9.6);
+  assert.equal(s.mon.stageEnd, end - Math.round(9.6 * H));
+  E.useChip(s); E.useChip(s);
+  assert.equal(s.meta.items.chip, 0, '몇 개든 이어서 쓸 수 있다');
+  assert.equal(E.useChip(s).ok, false, '칩이 없으면 못 쓴다');
+  var u = at('agumon', 'ultimate', 'wargreymon'); u.meta.items.chip = 1;
+  assert.equal(E.useChip(u).ok, false, '궁극체는 진화 시간이 없다'); assert.equal(u.meta.items.chip, 1);
+});
+
 test('원작 크기: 거대 ×1.5 · 대형 ×1.2 는 그림 크기에 곱해지고 성장기는 그대로', () => {
   const Sprite = require('../js/sprite.js');
   const SHEETS = require('../js/sheets.js');

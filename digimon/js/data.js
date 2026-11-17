@@ -37,6 +37,7 @@ var DigiData = (function () {
     // [잠드는 시, 깨는 시] (기기 현지 시각). 유년기1 은 한 시간뿐이라 자지 않는다. 나머지는 모두 밤 10시 ~ 아침 8시
     sleep: { baby1: null, baby2: [22, 8], child: [22, 8], adult: [22, 8], perfect: [22, 8], ultimate: [22, 8] },
     previewHours: 24,          // 잘못된 진화가 오기 이만큼 전부터 색이 어두워진다
+    chipSpeedup: 0.1,          // 디지 칩 하나가 앞당기는 진화 시간 (그 단계 진화 시간의 비율)
     digimentalDrop: 0.3,       // 보스를 이겼을 때 디지멘탈이 나올 확률 (안 나오면 디지 칩)
     jogressBossWins: 5,        // ⑩ ⑲ ㉓ 에 필요한 보스 격파 수 (서로 다른 보스·전설만 센다)
     slots: 6,                  // 한 번에 데리고 있을 수 있는 디지몬 (키우는 하나 + 보관함)

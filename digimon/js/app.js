@@ -663,8 +663,13 @@
         }));
     },
     chip: function () {
-      if (E.useChip(state).ok) toast('디지 칩을 썼어요. 배고픔과 힘이 가득!');
-      else toast('지금은 쓸 수 없어요');
+      var h = E.chipHours(state.mon);
+      if (!h) { toast('지금 모습은 진화 시간이 없어서 쓸 수 없어요'); return; }
+      var hh = Math.round(h * 10) / 10;
+      if (!confirm('디지 칩: 진화 시간 10% 단축\n지금 단계에서는 진화가 ' + hh + '시간 앞당겨져요.\n\n' +
+        '주의: 진화는 그때까지 쌓인 값으로 판정해요. 너무 앞당기면 배틀 수 같은 조건을 못 채울 수 있고, ' +
+        '남은 시간보다 많이 앞당기면 바로 진화해요.\n\n쓸까요?')) return;
+      if (E.useChip(state).ok) { E.tick(state, now()); toast('디지 칩을 썼어요. 진화가 ' + hh + '시간 앞당겨졌어요'); }
     },
     floppy: function () {
       var c = state.mon.c;
@@ -1821,7 +1826,7 @@
     body.appendChild(heading('아이템 (모든 디지몬이 함께 써요)'));
     body.appendChild(table(D.DIGIMENTALS.map(function (k) {
       return [D.RULE_HINTS[k], it[k] ? '있음' : '없음'];
-    }).concat([['디지 칩', it.chip + '개 (배고픔·힘 가득)'],
+    }).concat([['디지 칩', it.chip + '개 (진화 시간 10% 단축)'],
       ['리셋 플로피', (it.floppy || 0) + '개 / 최대 ' + R.floppyMax + ' (케어 실수 1 감소)']])));
     if (state.meta.history.length) {
       body.appendChild(heading('지난 디지몬'));
