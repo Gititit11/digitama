@@ -22,11 +22,11 @@ var DigiData = (function () {
     // 수명은 없다. 한 번 키운 디지몬은 사라지지 않는다.
     hiddenPerfects: 20,        // 숨은 진화(⑮)에 필요한 그 단계 훈련 퍼펙트 수
     failDelayHours: 24,        // 성숙기 → 완전체 진화 실패 때 다음 판정이 이만큼 늦어진다
-    callMinutes: 20,           // 배고픔·힘 호출을 이만큼 넘게 두면 케어 실수 (원조 기기와 같음)
+    callMinutes: 20,           // 배부름·힘 호출을 이만큼 넘게 두면 케어 실수 (원조 기기와 같음)
     poopLimitMinutes: 180,     // 배변을 이만큼 넘게 두면 위생 실수
     sleepLightsMinutes: 30,    // 잠든 뒤 불을 이만큼 넘게 안 끄면 수면 방해
     wakeMinutes: 10,           // 깨우면 이만큼 깨어 있다가 다시 잔다
-    // 배고픔·힘이 1칸 줄어드는 간격(분). 배고픔이 먼저 비고, 힘은 1.5배 천천히 준다.
+    // 배부름·힘이 1칸 줄어드는 간격(분). 배부름이 먼저 비고, 힘은 1.5배 천천히 준다.
     hungerEvery: { baby1: 3, baby2: 30, child: 48, adult: 50, perfect: 60, ultimate: 60 },
     strengthEvery: { baby1: 5, baby2: 45, child: 72, adult: 75, perfect: 90, ultimate: 90 },
     poopEvery: { baby1: 20, baby2: 120, child: 180, adult: 180, perfect: 200, ultimate: 220 },

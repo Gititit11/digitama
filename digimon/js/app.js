@@ -334,7 +334,7 @@
     var p = E.myPower(mon), lv = E.trainLevel(mon), total = Math.round(p);
     return { total: total, bonus: total - Math.round(p / (1 + R.trainLvPower * lv)) };
   }
-  // "40 (기본 34 · 컨디션 +2 · 훈련 +4)" — 기본은 단계·종으로 정해진 값, 컨디션은 힘·배고픔, 훈련은 훈련 레벨.
+  // "40 (기본 34 · 컨디션 +2 · 훈련 +4)" — 기본은 단계·종으로 정해진 값, 컨디션은 힘·배부름, 훈련은 훈련 레벨.
   // 각각 반올림한 차이라 세 숫자를 더하면 항상 전투력이 된다
   function powerText(mon) {
     var tb = trainBonus(mon), S = D.SPECIES[E.form(mon)];
@@ -468,7 +468,7 @@
       lx.fillText(effect.text, 8, 36);
     }
   }
-  /* 기분 표시: 돌볼 것이 하나도 없을 때(배고픔·힘 1칸 이상, 똥·병·경고 없음) 가끔 하트나 음표가 떠오른다 */
+  /* 기분 표시: 돌볼 것이 하나도 없을 때(배부름·힘 1칸 이상, 똥·병·경고 없음) 가끔 하트나 음표가 떠오른다 */
   var mood = null, MOOD_MS = 1800;
   var MOOD_ICON = {
     heart: { color: '#ff5f8a', rows: ['.XX.XX.', 'XXXXXXX', 'XXXXXXX', '.XXXXX.', '..XXX..', '...X...'] },

@@ -223,7 +223,7 @@ var Engine = (function (D) {
       mon.callH = mon.hunger === 0 ? mon.callH + 1 : 0;
       mon.callS = mon.strength === 0 ? mon.callS + 1 : 0;
       if (mon.callH === 1 || mon.callS === 1) emit(state, 'call', t);
-      // 배고픔과 힘을 같이 방치하면 (둘 다 호출이 넘어간 채로 겹치면) 실수는 1만 센다.
+      // 배부름과 힘을 같이 방치하면 (둘 다 호출이 넘어간 채로 겹치면) 실수는 1만 센다.
       // 두 게이지가 같은 속도로 줄어서, 따로 세면 한 번 방치에 실수가 2씩 오른다.
       var overH = mon.callH === R.callMinutes, overS = mon.callS === R.callMinutes;
       if (overH || overS) {
@@ -411,7 +411,6 @@ var Engine = (function (D) {
     emit(state, 'armorEnd', t, { to: mon.species });
   }
 
-  // 디지 칩: 배고픔과 힘을 가득 채운다. 과식으로 치지 않는다.
   // 디지 칩: 이 단계 진화 시간의 10% 만큼 진화를 앞당긴다. 몇 개든 쓸 수 있고, 남은 시간보다 많이 당기면 바로 진화한다
   function chipHours(mon) {
     var h = mon && mon.stageEnd && R.stageHours[mon.stage];
