@@ -666,9 +666,7 @@
       var h = E.chipHours(state.mon);
       if (!h) { toast('지금 모습은 진화 시간이 없어서 쓸 수 없어요'); return; }
       var hh = Math.round(h * 10) / 10;
-      if (!confirm('디지 칩: 진화 시간 10% 단축\n지금 단계에서는 진화가 ' + hh + '시간 앞당겨져요.\n\n' +
-        '주의: 진화는 그때까지 쌓인 값으로 판정해요. 너무 앞당기면 배틀 수 같은 조건을 못 채울 수 있고, ' +
-        '남은 시간보다 많이 앞당기면 바로 진화해요.\n\n쓸까요?')) return;
+      if (!confirm('진화를 ' + hh + '시간 앞당길까요?\n너무 당기면 진화 조건을 못 채울 수 있어요.')) return;
       if (E.useChip(state).ok) { E.tick(state, now()); toast('디지 칩을 썼어요. 진화가 ' + hh + '시간 앞당겨졌어요'); }
     },
     floppy: function () {
