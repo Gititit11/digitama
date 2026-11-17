@@ -161,6 +161,14 @@ canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 .msg.warn { color: var(--warn); }
 .msg:empty { margin: 6px 0; }
 .subkeys { display: flex; gap: 10px; }
+/* 가이드: 장마다 접었다 펴는 목록 */
+.guide details { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; }
+.guide summary { padding: 12px 14px; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; }
+.guide summary::-webkit-details-marker { display: none; }
+.guide summary::after { content: '+'; color: var(--t-dim); }
+.guide details[open] summary::after { content: '−'; }
+.guide ul { margin: 0; padding: 0 14px 12px 30px; line-height: 1.6; font-size: 14px; }
+.guide li { margin-bottom: 4px; }
 .app-ver { position: fixed; left: 12px; bottom: calc(8px + var(--safe-b)); margin: 0; font-size: 11px; color: var(--t-dim); opacity: .8; pointer-events: none; }
 .app-update { position: fixed; left: 10px; bottom: calc(6px + var(--safe-b)); padding: 6px 12px; border: 0; border-radius: 999px;
   font: 12px/1.2 'Galmuri11', monospace; background: var(--brand); color: var(--brand-ink); box-shadow: 0 2px 6px rgba(0,0,0,.35); }

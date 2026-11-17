@@ -644,6 +644,7 @@
     battle: function () { openScan(); },
     dex: function () { renderDex(); show('dex'); },
     info: function () { renderInfo(); show('info'); },
+    guide: function () { show('guide'); },
     box: function () { renderBox(); show('box'); },
     armor: function () {
       var mon = state.mon, L = D.LINES[mon.line], A = L.armor[mon.species];
