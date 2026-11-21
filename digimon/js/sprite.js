@@ -167,7 +167,7 @@ var Sprite = (function (D, SHEETS) {
     return p;
   }
 
-  // 원작 크기 배율 (data.js 의 GIANT ×2 · LARGE ×1.5). 모든 화면이 이 크기를 기준으로 맞춘다
+  // 원작 크기 배율 (data.js 의 SIZES). 모든 화면이 이 크기를 기준으로 맞춘다
   function big(id) { var S = D.SPECIES[id]; return (S && S.scale) || 1; }
 
   function measure(id) {
@@ -197,6 +197,13 @@ var Sprite = (function (D, SHEETS) {
     var S = SHEETS[id], f = frameOf(id, o.anim, o.frame, o.index);
     var src = o.silhouette ? tint(id, 'sil') : o.dark ? tint(id, 'dark') : sheet(id);
     var k = big(id), w = Math.round(S.w * k) * scale, h = Math.round(S.h * k) * scale;
+    /* 고해상도 캔버스(ctx.px 칸 = 1)에서는 그림 한 점이 정수 칸이 되게 맞춘다. 한 점이 4.8칸 같은 소수면
+     * 어떤 점은 4칸 · 어떤 점은 5칸이 되어 도트가 들쭉날쭉해진다. 줄어든 만큼은 가운데 · 바닥에 맞춘다. */
+    var n = k * scale * (ctx.px || 1);
+    if (n >= 1 && Math.abs(n - Math.round(n)) > 1e-6) {
+      var u = Math.round(n) / (ctx.px || 1), ws = S.w * u, hs = S.h * u;
+      x0 += (w - ws) / 2; y0 += h - hs; w = ws; h = hs;
+    } else if (ctx.px) { w = S.w * k * scale; h = S.h * k * scale; } // 반올림한 크기 대신 정확한 크기
     ctx.save();
     ctx.imageSmoothingEnabled = false;
     if (o.flip) {

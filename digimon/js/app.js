@@ -90,15 +90,28 @@
     if (h) return h + '시간 ' + m + '분';
     return m + '분';
   }
+  /* 디지몬이 나오는 캔버스는 PX 배 해상도로 그린다. 좌표는 그대로 HTML 에 적힌 크기(c.W × c.H)로 쓰고,
+   * 그림 한 점은 PX 칸이 된다. 그래서 원작 크기 배율(×1.25 · ×1.5 …)도 한 점이 정수 칸(5 · 6 …)이라 도트가 고르다. */
+  var PX = 4;
+  function hires(c) {
+    var x = c.getContext('2d');
+    if (c.W) return x;
+    c.W = c.width; c.H = c.height;
+    c.width = c.W * PX; c.height = c.H * PX;
+    x.setTransform(PX, 0, 0, PX, 0, 0);
+    x.imageSmoothingEnabled = false;
+    x.px = PX; // Sprite.draw 가 한 점을 정수 칸으로 맞출 때 쓴다
+    return x;
+  }
   // 캔버스 가운데에 정수 배율로 크게 그린다
   var pictures = [];
   function picture(c, id, o) {
     pictures = pictures.filter(function (p) { return p[0] !== c; }).concat([[c, id, o]]);
-    var x = c.getContext('2d'), m = Sprite.measure(id);
-    var fit = (c.width - 8) / Math.max(m.w, m.h);
+    var x = hires(c), m = Sprite.measure(id);
+    var fit = (c.W - 8) / Math.max(m.w, m.h);
     var sc = fit >= 1 ? Math.floor(fit) : fit; // 칸보다 큰 보스는 줄여서 그린다
-    x.clearRect(0, 0, c.width, c.height);
-    Sprite.draw(x, id, Math.floor((c.width - m.w * sc) / 2), Math.floor((c.height - m.h * sc) / 2), sc, o);
+    x.clearRect(0, 0, c.W, c.H);
+    Sprite.draw(x, id, Math.floor((c.W - m.w * sc) / 2), Math.floor((c.H - m.h * sc) / 2), sc, o);
   }
   function vibrate(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { } }
 
@@ -357,7 +370,7 @@
   }
 
   /* ---------- 화면(LCD) 그리기 ---------- */
-  var lcd = $('lcd'), lx = lcd.getContext('2d'), LCD_FLOOR = 124; // 208x128 화면의 바닥 줄 (거대 디지몬 ×2 도 들어가게 크게 잡았다)
+  var lcd = $('lcd'), lx = hires(lcd), LCD_FLOOR = 124; // 208x128 화면의 바닥 줄 (×2 디지몬도 들어가게 크게 잡았다)
   var walk = { x: 60, dir: -1, frame: 0, rest: 0 }, effect = null, lastFrame = 0, lastStep = 0;
   // 배변 도트 (24x24, 위쪽 검은 선은 냄새). 좌우로 번갈아 뒤집어 냄새가 일렁이게 한다.
   var poopImg = new Image();
@@ -391,7 +404,7 @@
     lastFrame = ts;
     var mon = state.mon;
     if (!mon || mon.dead || $('home').hidden || stack.length) return;
-    var W = lcd.width, Hh = lcd.height, dark = !mon.lights;
+    var W = lcd.W, Hh = lcd.H, dark = !mon.lights;
     lx.fillStyle = dark ? '#1a1f2a' : lcdColor;
     lx.fillRect(0, 0, W, Hh);
     lx.fillStyle = dark ? 'rgba(255,255,255,.03)' : 'rgba(0,0,0,.04)';
@@ -594,7 +607,7 @@
   function feedFx(kind, refuse) {
     var fw = foodSize(kind).w + 4, m = Sprite.measure(E.form(state.mon));
     if (walk.dir < 0 && walk.x < fw) walk.dir = 1;
-    else if (walk.dir > 0 && walk.x + m.w + fw > lcd.width) walk.dir = -1;
+    else if (walk.dir > 0 && walk.x + m.w + fw > lcd.W) walk.dir = -1;
     walk.rest = 0;
     var t0 = performance.now();
     effect = {
@@ -838,7 +851,7 @@
       if (react) hop = react.ok ? 12 : 0;
     } else if (react) o = react.ok ? { anim: 'attack', frame: 0 } : { anim: 'idle', frame: 0 };
     else o = { anim: 'idle', frame: Math.floor(ts / 260) };
-    var c = $('trainPic'), x = c.getContext('2d'), m = Sprite.measure(id), W = c.width, H = c.height;
+    var c = $('trainPic'), x = hires(c), m = Sprite.measure(id), W = c.W, H = c.H;
     x.clearRect(0, 0, W, H);
     x.fillStyle = lcdInk;
     if (tr.kind === 'guard') return drawGuard(x, id, m, o, ts, W, H);
@@ -1161,7 +1174,7 @@
   /* 상대 등장 연출: (보스·전설은 경고) → 느낌표 → 빛줄기 속에서 실루엣이 다가옴 → 번쩍! 정체 공개 → 이름 */
   var ENC_COLOR = { normal: '#7fd3ff', rare: '#8ea6ff', boss: '#ff4d5e', legend: '#f5c242' };
   function encounter(w, done) {
-    var el = $('encounter'), cv = $('encCv'), x = cv.getContext('2d'), W = cv.width, H = cv.height;
+    var el = $('encounter'), cv = $('encCv'), x = hires(cv), W = cv.W, H = cv.H;
     var big = w.grade === 'boss' || w.grade === 'legend', col = ENC_COLOR[w.grade];
     var pre = big ? 1100 : 0, REVEAL = pre + 1300, END = pre + 2700;
     var sp = D.SPECIES[w.id], m = Sprite.measure(w.id);
@@ -1181,11 +1194,11 @@
       if (fin) return;
       var t = ts - t0;
       if (t >= END) { finish(); return; }
-      x.setTransform(1, 0, 0, 1, 0, 0);
+      x.setTransform(PX, 0, 0, PX, 0, 0);
       // 정체가 드러날 때 화면이 흔들린다
       if (t > REVEAL && t < REVEAL + 450) {
         var k = (1 - (t - REVEAL) / 450) * (big ? 9 : 5);
-        x.setTransform(1, 0, 0, 1, (Math.random() - .5) * k * 2, (Math.random() - .5) * k * 2);
+        x.setTransform(PX, 0, 0, PX, (Math.random() - .5) * k * 2 * PX, (Math.random() - .5) * k * 2 * PX);
       }
       var g = x.createRadialGradient(W / 2, 170, 10, W / 2, 170, 300);
       g.addColorStop(0, t > pre ? col + '33' : '#000'); g.addColorStop(1, '#050608');
@@ -1289,7 +1302,7 @@
   function gradeTag(g) { return g === 'normal' ? '' : ' (' + D.GRADE_NAMES[g] + ')'; }
 
   /* ---------- 배틀 ---------- */
-  var battle = null, arena = $('arena'), ax = arena.getContext('2d');
+  var battle = null, arena = $('arena'), ax = hires(arena);
   var CMD_NAMES = { attack: '공격', special: '필살기', guard: '방어' };
   var view = null; // 화면에 그리는 두 디지몬 (배틀이 끝나도 결과 화면에 남는다)
   var turn = null; // 지금 재생 중인 한 턴의 연출
@@ -1327,7 +1340,7 @@
    * 맞으면 깜빡이며 흔들리고, 머리 위로 피해 숫자가 떠오른다. 방어는 앞에 방패를 세운다.
    */
   var INTRO = { walk: 900, end: 1800 };
-  var AW = arena.width, AH = arena.height; // 보스(레이드 128px)도 들어가게 크게 잡는다
+  var AW = arena.W, AH = arena.H; // 보스(레이드 128px)도 들어가게 크게 잡는다
   var T = { pGo: 0, pHit: 280, pBack: 460, eGo: 600, eHit: 880, eBack: 1060, end: 1500 };
   var SHOT = { vaccine: ['#fff4b0', '#ffb43a', '#e0602a'], data: ['#e6f6ff', '#5ab4ff', '#2a5fd0'],
     virus: ['#ffe0ff', '#c46aff', '#6a2aa8'], free: ['#f0ffe0', '#7ad05a', '#2f8a3a'],
@@ -1399,13 +1412,14 @@
   // 내 디지몬 위에 같은 모양의 빨간 막을 덮는다 (폭주 연출)
   var rageCv = document.createElement('canvas');
   function rageTint(id, x, y, anim, frame, alpha) {
-    var m = Sprite.measure(id); rageCv.width = m.w; rageCv.height = m.h;
+    var m = Sprite.measure(id); rageCv.width = m.w * PX; rageCv.height = m.h * PX; // 화면과 같은 해상도
     var c = rageCv.getContext('2d');
+    c.setTransform(PX, 0, 0, PX, 0, 0); c.imageSmoothingEnabled = false; c.px = PX;
     c.clearRect(0, 0, m.w, m.h);
     Sprite.draw(c, id, 0, 0, 1, { flip: true, anim: anim, frame: frame });
     c.globalCompositeOperation = 'source-atop'; c.fillStyle = '#ff1e1e'; c.fillRect(0, 0, m.w, m.h);
     c.globalCompositeOperation = 'source-over';
-    ax.globalAlpha = alpha; ax.drawImage(rageCv, x, y); ax.globalAlpha = 1;
+    ax.globalAlpha = alpha; ax.drawImage(rageCv, x, y, m.w, m.h); ax.globalAlpha = 1;
   }
 
   function arenaLoop(ts) {
@@ -1665,10 +1679,10 @@
   function startDexAnim(id) {
     stopDexAnim();
     var moves = MOVES.filter(function (mv) { return !SHEETS[id] || Sprite.has(id, mv[0]); });
-    var box = $('dcAnims'), c = $('dcStage'), x = c.getContext('2d');
+    var box = $('dcAnims'), c = $('dcStage'), x = hires(c);
     var m = Sprite.measure(id), FLOOR = 68;
-    var sc = Math.min(1, (FLOOR - 4) / m.h, (c.width - 8) / m.w);
-    var a = dexAnim = { id: id, auto: true, i: 0, t: 0, pos: (c.width - m.w * sc) / 2, dir: -1 };
+    var sc = Math.min(1, (FLOOR - 4) / m.h, (c.W - 8) / m.w);
+    var a = dexAnim = { id: id, auto: true, i: 0, t: 0, pos: (c.W - m.w * sc) / 2, dir: -1 };
     box.innerHTML = '';
     function chip(label, on, fn) {
       var b = document.createElement('button'); b.type = 'button'; b.textContent = label;
@@ -1682,16 +1696,16 @@
     }
     chip('자동', true, function () { a.auto = true; a.t = 0; paintChips(); });
     moves.forEach(function (mv, k) {
-      chip(mv[1], false, function () { a.auto = false; a.i = k; a.t = 0; a.pos = (c.width - m.w * sc) / 2; paintChips(); });
+      chip(mv[1], false, function () { a.auto = false; a.i = k; a.t = 0; a.pos = (c.W - m.w * sc) / 2; paintChips(); });
     });
     var TICK = 125;
     function advance() {
       a.t++;
-      if (a.auto && a.t >= 24) { a.t = 0; a.i = (a.i + 1) % moves.length; a.pos = (c.width - m.w * sc) / 2; paintChips(); }
+      if (a.auto && a.t >= 24) { a.t = 0; a.i = (a.i + 1) % moves.length; a.pos = (c.W - m.w * sc) / 2; paintChips(); }
       var mv = moves[a.i][0];
       if (mv === 'walk' || mv === 'run') { // 좌우로 오가며 걷는다. 시트는 왼쪽을 본다
         a.pos += a.dir * (mv === 'run' ? 2 : 1);
-        var maxX = c.width - m.w * sc - 4;
+        var maxX = c.W - m.w * sc - 4;
         if (a.pos <= 4) { a.pos = 4; a.dir = 1; }
         if (a.pos >= maxX) { a.pos = maxX; a.dir = -1; }
       }
@@ -1699,8 +1713,8 @@
     function paint() {
       var mv = moves[a.i][0], fast = mv === 'run' || mv === 'attack';
       var frame = Math.floor(a.t / (fast ? 2 : 4));
-      x.fillStyle = lcdColor; x.fillRect(0, 0, c.width, c.height);
-      x.fillStyle = lcdInk; x.globalAlpha = 0.25; x.fillRect(0, FLOOR, c.width, 1); x.globalAlpha = 1;
+      x.fillStyle = lcdColor; x.fillRect(0, 0, c.W, c.H);
+      x.fillStyle = lcdInk; x.globalAlpha = 0.25; x.fillRect(0, FLOOR, c.W, 1); x.globalAlpha = 1;
       Sprite.draw(x, id, Math.round(a.pos), FLOOR - Math.round(m.h * sc), sc,
         { anim: mv, frame: frame, flip: (mv === 'walk' || mv === 'run') && a.dir > 0 });
       if (mv === 'sleep') { // 잠: 도트 z 가 떠오른다

@@ -641,8 +641,9 @@ var DigiData = (function () {
   });
 
   /* 원작 크기: 애니에서 사람보다 훨씬 큰 디지몬은 그림을 키워 그린다 (성숙기 이상만).
-   * 거대 ×1.5 는 건물·배만 한 것, 대형 ×1.2 는 사람보다 확실히 큰 공룡·짐승형.
-   * 레이드 큰 그림(보스·전설)은 이미 커서 그대로 둔다. Sprite.measure/draw 가 이 배율을 곱한다. */
+   * 거대 ×1.5 는 건물·배만 한 것, 대형 ×1.25 는 사람보다 확실히 큰 공룡·짐승형.
+   * 레이드 큰 그림(보스·전설)은 이미 커서 그대로 둔다. Sprite.measure/draw 가 이 배율을 곱한다.
+   * 화면은 4배 해상도라 배율은 0.25 단위(×1.25 · ×1.5 · ×1.75 · ×2)여야 도트가 고르게 나온다. */
   var GIANT = [
     'seadramon', 'gesomon', 'octmon', 'megaseadramon', 'parrotmon', 'chimairamon', 'dagomon', 'marindevimon',
     'waruseadramon', 'orochimon', 'locomon', 'gusokumon', 'marinchimairamon', 'mugendramon', 'metalseadramon',
@@ -658,8 +659,8 @@ var DigiData = (function () {
     'atlurballistamon', 'vermillimon', 'majiramon', 'lavogaritamon', 'scorpiomon', 'anomalocarimon', 'cannondramon',
     'dinorexmon', 'skullmammon', 'frosvelgrmon'
   ];
-  GIANT.forEach(function (id) { SPECIES[id].scale = 1.5; });
-  LARGE.forEach(function (id) { SPECIES[id].scale = 1.2; });
+  var SIZES = [[GIANT, 1.5], [LARGE, 1.25]];
+  SIZES.forEach(function (g) { g[0].forEach(function (id) { SPECIES[id].scale = g[1]; }); });
 
   /* 엔딩: 더 진화할 데가 없는 모습에 붙는다 (LCD 오른쪽 위 · 도감)
    *   true   최종 변신 (모드 체인지 · 조그레스)

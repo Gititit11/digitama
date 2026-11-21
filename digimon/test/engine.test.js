@@ -808,16 +808,17 @@ test('디지 칩: 쓰면 그 단계 진화 시간의 10% 만큼 진화가 앞당
   assert.equal(E.useChip(u).ok, false, '궁극체는 진화 시간이 없다'); assert.equal(u.meta.items.chip, 1);
 });
 
-test('원작 크기: 거대 ×1.5 · 대형 ×1.2 는 그림 크기에 곱해지고 성장기는 그대로', () => {
+test('원작 크기: 거대 ×1.5 · 대형 ×1.25 는 그림 크기에 곱해지고 성장기는 그대로', () => {
   const Sprite = require('../js/sprite.js');
   const SHEETS = require('../js/sheets.js');
   assert.equal(D.SPECIES.megidramon.scale, 1.5);
-  assert.equal(D.SPECIES.greymon.scale, 1.2);
+  assert.equal(D.SPECIES.greymon.scale, 1.25);
   assert.equal(Sprite.measure('megidramon').w, Math.round(SHEETS.megidramon.w * 1.5));
   assert.deepEqual(Sprite.measure('agumon'), { w: SHEETS.agumon.w, h: SHEETS.agumon.h });
   for (const id in D.SPECIES) {
     if (!D.SPECIES[id].scale) continue;
     assert.ok(['adult', 'perfect', 'ultimate'].includes(D.SPECIES[id].stage), id);
+    assert.equal(D.SPECIES[id].scale * 4 % 1, 0, id + ' 배율은 0.25 단위여야 4배 화면에서 한 점이 정수 칸이 된다');
     const m = Sprite.measure(id);
     assert.ok(m.w <= 128 && m.h <= 128, id + ' 은 홈(208×128)·배틀(320×140) 화면에 들어가야 한다');
   }
