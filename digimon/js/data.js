@@ -433,7 +433,7 @@ var DigiData = (function () {
   sp('blackwargreymon', '블랙워그레이몬', 'ultimate', 'virus', { boss: true });
   sp('diablomon', '디아블로몬', 'ultimate', 'free', { boss: true });
   sp('cherubimon_vice', '케루비몬(악)', 'ultimate', 'virus', { boss: true });
-  sp('lucemon_falldown', '루체몬 폴다운 모드', 'ultimate', 'virus', { boss: true });
+  sp('lucemon_falldown', '루체몬 폴다운 모드', 'ultimate', 'virus', { legend: true });
   sp('omegamon_zwart', '오메가몬 즈왈트', 'ultimate', 'virus', { boss: true });
   sp('chaosdramon', '카오스드라몬', 'ultimate', 'virus', { boss: true });
   sp('chaosdukemon', '카오스듀크몬', 'ultimate', 'virus', { boss: true });
@@ -442,7 +442,7 @@ var DigiData = (function () {
   sp('apocalymon', '아포카리몬', 'ultimate', 'virus', { legend: true });
   sp('millenniumon', '밀레니엄몬', 'ultimate', 'virus', { legend: true });
   sp('reaper', '리퍼', 'ultimate', 'free', { legend: true });
-  sp('susanoomon', '스사노오몬', 'ultimate', 'free', { legend: true });
+  sp('susanoomon', '스사노오몬', 'ultimate', 'free', { boss: true });
 
   /* 진화 조건 (기획안 번호). 엔진이 키로 판정하고, 화면은 hint 를 도감에 보여 준다. */
   var RULE_HINTS = {
@@ -632,9 +632,10 @@ var DigiData = (function () {
     perfect: ['vamdemon', 'mummymon', 'archnemon', 'chimairamon', 'dagomon', 'marindevimon', 'pumpmon', 'makuramon',
       'sinduramon', 'pajiramon', 'duskmon', 'mercuremon'],
     ultimate: ['piemon', 'mugendramon', 'metalseadramon', 'venomvamdemon', 'neovamdemon', 'blackwargreymon', 'diablomon',
-      'cherubimon_vice', 'lucemon_falldown', 'omegamon_zwart', 'chaosdramon', 'chaosdukemon', 'gulfmon', 'jyureimon']
+      'cherubimon_vice', 'susanoomon', 'omegamon_zwart', 'chaosdramon', 'chaosdukemon', 'gulfmon', 'jyureimon']
   };
-  var LEGENDS = ['apocalymon', 'millenniumon', 'reaper', 'susanoomon'];
+  // 전설은 이야기의 마지막에 나오는 악역. 스사노오몬은 주인공 편이라 궁극체 보스로 둔다
+  var LEGENDS = ['apocalymon', 'millenniumon', 'reaper', 'lucemon_falldown'];
   // 보스·전설은 속성을 알 수 없다: 상성이 없어서 어떤 속성으로 키워도 같은 조건으로 싸운다
   BOSSES.perfect.concat(BOSSES.ultimate, LEGENDS).forEach(function (id) {
     SPECIES[id].attr = 'unknown'; SPECIES[id].color = ATTR_COLOR.unknown;
