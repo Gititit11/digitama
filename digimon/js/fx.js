@@ -147,16 +147,37 @@ var Fx = (function () {
         if (v < .15) star2(S.tx, S.ty, 6, AIR[0]); }
     } },
     beast: { hit: 700, shake: [700, 950, 3], draw: function (t, S) {
-      var cols = ['#fff6c8', '#ffc94a', '#e08a1a'];
-      if (t < 250) alpha(t / 250 * .5, function () { disc(S.ax, FLOOR - S.ah / 2, S.ah / 2 + 4, cols[1]); });
-      shooter(t, S, 250, 700, function (x, y, u) { var s = .8 + u * .6, f = Math.floor(t / 60) % 2;
-        alpha(.85, function () {
-          for (var k = 0; k < 10; k++) { var a = k * .628 + f * .3; disc(x + Math.cos(a) * 14 * s, y + Math.sin(a) * 14 * s, 5 * s, cols[2]); }
-          disc(x, y, 12 * s, cols[1]); disc(x + 4 * s, y + 4 * s, 6 * s, cols[0]);
-          R(x - 2 * s, y - 6 * s, 3 * s, 2 * s, '#7a3a0a'); R(x + 5 * s, y - 6 * s, 3 * s, 2 * s, '#7a3a0a');
-          R(x + 2 * s, y + 3 * s, 8 * s, (f ? 5 : 2) * s, '#7a3a0a'); });
-        for (k = 1; k <= 4; k++) alpha(.4 - k * .08, function () { disc(x - k * 10, y, (12 - k * 2) * s, cols[1]); }); });
-      boom(S.tx, S.ty, seg(t, 700, 1050), cols, 2);
+      // 사자 모양 기운 (레오몬 수왕권): 옆을 보고 포효하는 사자 머리. 갈기는 불꽃처럼 일렁인다
+      var C = { Y: '#fff2a0', M: '#ffb43a', m: '#e07a1a', o: '#6a3008', f: '#ffd86a', F: '#fff2b0', s: '#e8a83a',
+        e: '#ffffff', p: '#2a1000', n: '#3a1804', k: '#8a1a24', t: '#ffffff' };
+      // 옆을 보는(오른쪽) 사자 머리. cx·cy 는 갈기 가운데, s 는 크기
+      function lion(cx, cy, s, fr) {
+        var R0 = 14 * s, k, d;
+        for (k = 0; k < 16; k++) { // 불꽃 갈기: 사방으로 뻗은 가시, 뒤쪽이 더 길다
+          var a = k / 16 * 6.283 + .2, back = Math.cos(a) < .2 ? 1 : .55, len = (8 + hash(k * 7 + fr) * 7) * s * back;
+          for (d = 0; d <= len; d += 1) disc(cx + Math.cos(a) * (R0 - 3 + d), cy + Math.sin(a) * (R0 - 3 + d) * .9, Math.max(.5, (1 - d / len) * 4 * s), d < len * .45 ? C.M : C.Y);
+        }
+        disc(cx, cy, R0, C.m); disc(cx - s, cy, R0 - 2 * s, C.M);
+        var fx = cx + 5 * s, fy = cy + s;
+        disc(fx - 4 * s, fy - 9 * s, 3.5 * s, C.o); disc(fx - 4 * s, fy - 9 * s, 2.5 * s, C.s);           // 귀
+        disc(fx, fy, 10 * s, C.o); disc(fx, fy, 9 * s, C.f);                                          // 얼굴
+        disc(fx + 9 * s, fy + 1 * s, 5 * s, C.o); disc(fx + 9 * s, fy + 1 * s, 4 * s, C.f); R(fx + 2 * s, fy - 3 * s, 8 * s, 8 * s, C.f); // 주둥이
+        R(fx + 11 * s, fy - 3 * s, 3.5 * s, 2.5 * s, C.n);                                               // 코
+        for (var y = 0; y < 7 * s; y++) R(fx + 2 * s + y * .5, fy + 5 * s + y, Math.max(1, 12 * s - y * 1.3), 1, y < 1 ? C.o : C.k); // 벌린 입
+        R(fx + 2 * s, fy + 11 * s, 9 * s, 2.5 * s, C.f); R(fx + 2 * s, fy + 13 * s, 9 * s, 1, C.o);      // 아래턱
+        R(fx + 11 * s, fy + 5 * s, 1.6 * s, 3 * s, C.t); R(fx + 7 * s, fy + 5 * s, 1.6 * s, 2.5 * s, C.t); // 윗송곳니
+        R(fx + 9 * s, fy + 8.5 * s, 1.6 * s, 2.5 * s, C.t);                                              // 아랫송곳니
+        lineP(fx - 1 * s, fy - 7 * s, fx + 6 * s, fy - 4 * s, Math.max(2, 1.6 * s), C.o);                  // 찌푸린 눈썹
+        R(fx + 2 * s, fy - 4 * s, 3.5 * s, 2 * s, C.e); R(fx + 4 * s, fy - 4 * s, 1.5 * s, 2 * s, C.p);   // 눈
+        R(fx + 1 * s, fy - 1 * s, 4 * s, 1, C.F);                                                        // 눈 밑 하이라이트
+      }
+      if (t < 250) { alpha(t / 250 * .5, function () { disc(S.ax, FLOOR - S.ah / 2, S.ah / 2 + 4, '#ffc94a'); });
+        for (var i = 0; i < 5; i++) R(S.ax + (hash(i + Math.floor(t / 50)) - .5) * S.aw, FLOOR - hash(i * 3 + Math.floor(t / 50)) * S.ah, 2, 4, '#ffb43a'); }
+      shooter(t, S, 250, 700, function (x, y, u) { var s = 1 + ease(Math.min(1, u * 2)) * .5, fr = Math.floor(t / 60);
+        for (var k = 1; k <= 5; k++) alpha(.45 - k * .08, function () { disc(x - 18 - k * 8, y + (hash(k + fr) - .5) * 10, 9 - k, k % 2 ? '#ffb43a' : '#e07a1a'); });
+        lion(x, y, s, fr); });
+      var v = seg(t, 700, 1050);
+      if (v > 0 && v < 1) { alpha((1 - v) * .5, function () { lion(S.tx, S.ty, 1.5 + v * .8, 0); }); boom(S.tx, S.ty, v, ['#fff6c8', '#ffc94a', '#e08a1a'], 2); }
     } },
     /* ---------- 무기 ---------- */
     missile: { hit: 600, shake: [600, 950, 3], draw: function (t, S) {
@@ -541,7 +562,7 @@ var Fx = (function () {
     gorb: '거대 에너지구',
     eshot: '에너지탄',
     airpuff: '공기탄',
-    beast: '짐승 기운',
+    beast: '사자 기운',
     missile: '미사일',
     barrage: '미사일 일제 사격',
     bullet: '총탄 연사',
