@@ -173,7 +173,7 @@ var Fx = (function () {
     drill: { hit: 520, draw: function (t, S) {
       function drill(x, y, ph) { for (var c = 0; c < 26; c++) { var h = Math.round((26 - c) * .5); R(x + c, y - h, 1, h * 2 + 1, (Math.floor((c + ph) / 4) % 2) ? '#c3cad6' : '#6d7686'); } R(x - 6, y - 14, 6, 29, '#5d6470'); R(x - 6, y - 14, 6, 2, '#8d96a6'); }
       var ph = Math.floor(t / 30) % 8;
-      if (t >= 200 && t < 520) { var u = seg(t, 200, 520); drill(lerp(S.sx, S.ex - 14, u), S.ty, ph); }
+      if (t >= 200 && t < 520) { var u = seg(t, 200, 520); drill(lerp(S.sx, S.ex - 14, u), lerp(S.sy, S.ty, u), ph); }
       if (t >= 520 && t < 950) { drill(S.ex - 14 + (Math.floor(t / 30) % 2), S.ty, ph);
         for (var k = 0; k < 6; k++) { var a = hash(k + Math.floor(t / 40)) * 3.14 - 1.57; R(S.ex + 6 + Math.cos(a) * 12, S.ty + Math.sin(a) * 12, 2, 2, k % 2 ? '#fff4b0' : '#ffffff'); } }
     } },
@@ -282,7 +282,7 @@ var Fx = (function () {
         var v = seg(t, t0 + 340, t0 + 700); if (v > 0 && v < 1) { var a = k * .8 + v * 6, r = 10 + v * 12; R(S.tx + Math.cos(a) * r, S.ty + Math.sin(a) * r * .7, 5, 3, c); } }
     } },
     needle: { hit: 500, draw: function (t, S) {
-      for (var i = 0; i < 7; i++) { var ang = (i - 3) * .035, t0 = 250 + (i % 2) * 40, u = seg(t, t0, t0 + 250), L = S.tx - 6 - S.sx, m = t >= t0 + 250 ? 1 : u;
+      for (var i = 0; i < 7; i++) { var ang = Math.atan2(S.ty - S.sy, S.tx - 6 - S.sx) + (i - 3) * .035, t0 = 250 + (i % 2) * 40, u = seg(t, t0, t0 + 250), L = Math.hypot(S.tx - 6 - S.sx, S.ty - S.sy), m = t >= t0 + 250 ? 1 : u;
         var hx = S.sx + Math.cos(ang) * L * m, hy = S.sy + Math.sin(ang) * L * m;
         if (t >= t0 && t < 1000) { var dx = Math.cos(ang), dy = Math.sin(ang); lineP(hx - dx * 14, hy - dy * 14, hx, hy, 2, '#5d6470'); R(hx, hy - 1, 3, 2, '#e6e9f0'); R(hx - dx * 14 - 2, hy - dy * 14 - 2, 4, 4, '#c46aff'); } }
       var v = seg(t, 520, 1000); if (v > 0 && v < 1) for (var k = 0; k < 5; k++) alpha(1 - v, function () { disc(S.tx - 8 + (hash(k) - .5) * 20, S.ty - v * 20 + (hash(k * 3) - .5) * 20, 2 + v * 3, '#b56ae0'); });
@@ -302,9 +302,10 @@ var Fx = (function () {
     slash: { hit: 560, draw: function (t, S) {
       if (t < 250) { var c = t / 250; lineP(S.sx - 2, S.sy - 10 * c, S.sx + 4, S.sy + 10 * c, 2, '#ffffff'); }
       var u = seg(t, 250, 560);
-      if (t >= 250 && u < 1) { var x = lerp(S.sx, S.tx, u);
-        for (var k = 2; k >= 0; k--) alpha(k ? .35 / k : 1, function () { ring(x - k * 12, S.ty, 18, k ? '#7fd3ff' : '#ffffff', 3, -1.1, 1.1); });
-        ring(x - 2, S.ty, 15, '#c8f0ff', 2, -.9, .9); }
+      if (t >= 250 && u < 1) { // 다른 탄처럼 내 입 높이에서 나가 상대 가운데로 (큰 상대면 비스듬히 위로)
+        for (var k = 2; k >= 0; k--) { var uk = Math.max(0, u - k * .07), xk = lerp(S.sx, S.tx, uk), yk = lerp(S.sy, S.ty, uk);
+          alpha(k ? .35 / k : 1, function () { ring(xk, yk, 18, k ? '#7fd3ff' : '#ffffff', 3, -1.1, 1.1); }); }
+        ring(lerp(S.sx, S.tx, u) - 2, lerp(S.sy, S.ty, u), 15, '#c8f0ff', 2, -.9, .9); }
       var v = seg(t, 560, 860);
       if (v > 0 && v < 1) alpha(1 - v, function () { var L = 30 * Math.min(1, v * 4); lineP(S.tx + 18, S.ty - 22, S.tx + 18 - L * 1.2, S.ty - 22 + L * 1.5, 3, '#ffffff'); lineP(S.tx + 18, S.ty - 22, S.tx + 18 - L * 1.2, S.ty - 22 + L * 1.5, 1, '#7fd3ff'); });
     } },
