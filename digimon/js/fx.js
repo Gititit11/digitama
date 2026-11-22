@@ -239,11 +239,41 @@ var Fx = (function () {
       flash(t, 480, 530, '#fffbe0', .55);
     } },
     /* ---------- 물 · 얼음 ---------- */
-    ice: { hit: 600, draw: function (t, S) {
-      for (var i = 0; i < 5; i++) { var t0 = 250 + i * 50, u = seg(t, t0, t0 + 300), dy = (i - 2) * 6;
-        if (t >= t0 && u < 1) { var x = lerp(S.sx, S.tx, u), y = lerp(S.sy, S.ty + dy, u);
-          R(x - 6, y, 12, 1, '#9ad8ff'); R(x - 4, y - 1, 8, 3, '#9ad8ff'); R(x - 2, y - 2, 4, 5, '#e6f6ff'); R(x - 14, y + (hash(i + Math.floor(t / 40)) - .5) * 6, 2, 2, '#ffffff'); }
-        var v = seg(t, t0 + 300, t0 + 450); if (v > 0 && v < 1) star2(S.tx, S.ty + dy, 3 + v * 4, '#e6f6ff'); }
+    ice: { hit: 540, shake: [540, 760, 2], draw: function (t, S) {
+      var ICE = ['#ffffff', '#d8f2ff', '#8fd0f4', '#3f86c8'], cx = S.sx + 6, cy = S.sy, k;
+      // 얼음 송곳: (x, y) 가 뾰족한 끝. 윗면은 밝고 아랫면은 어둡고 가운데 결이 하얗다
+      function shard(x, y, ang, L) {
+        var dx = Math.cos(ang), dy = Math.sin(ang), nx = -dy, ny = dx;
+        for (var q = 0; q <= L; q++) {
+          var w = q < L * .2 ? .8 + q / (L * .2) * 1.7 : 2.5 * (1 - (q - L * .2) / (L * .8)), px = x - dx * (L - q), py = y - dy * (L - q), m = Math.round(w);
+          for (var j = -m; j <= m; j++) R(px + nx * j, py + ny * j, 1.2, 1.2, j === 0 ? ICE[0] : j < 0 ? ICE[1] : j === m ? ICE[3] : ICE[2]);
+        }
+      }
+      function flake(x, y, r, c) { star(x, y, r, c); for (var d = 1; d <= r * .7; d++) { R(x - d, y - d, 1, 1, c); R(x + d, y - d, 1, 1, c); R(x - d, y + d, 1, 1, c); R(x + d, y + d, 1, 1, c); } }
+      // 냉기 모으기: 찬 기운이 소용돌이치며 빨려 들고 눈꽃 결정이 커진다
+      if (t < 300) { var c = t / 300;
+        for (k = 0; k < 10; k++) { var a = k * .628 + t / 70, d = 28 * (1 - c) * (.6 + hash(k) * .4) + 3; R(cx + Math.cos(a) * d, cy + Math.sin(a) * d * .8, 2, 2, k % 2 ? ICE[1] : ICE[0]); }
+        alpha(.5, function () { disc(cx, cy, 2 + c * 6, ICE[1]); }); flake(cx, cy, 2 + Math.round(c * 5), Math.floor(t / 80) % 2 ? ICE[0] : ICE[2]); }
+      // 얼음 송곳 7개가 차례로 부채꼴로
+      for (var i = 0; i < 7; i++) {
+        var t0 = 250 + i * 35, u = seg(t, t0, t0 + 260), x2 = S.tx + (hash(i * 5) - .5) * 12, y2 = S.ty + (i - 3) * Math.min(9, S.eh / 8), y0 = cy + (i - 3) * 4;
+        var ang = Math.atan2(y2 - y0, x2 - cx);
+        if (t >= t0 && u < 1) { var x = lerp(cx, x2, u), y = lerp(y0, y2, u);
+          for (k = 1; k <= 4; k++) R(x - Math.cos(ang) * (18 + k * 6) + (hash(k + i * 9 + Math.floor(t / 40)) - .5) * 4, y - Math.sin(ang) * (18 + k * 6), 2, 2, k % 2 ? ICE[0] : ICE[1]);
+          shard(x, y, ang, 22); }
+        var v = seg(t, t0 + 260, t0 + 480);
+        if (v > 0 && v < 1) { alpha(1 - v, function () { flake(x2, y2, 3 + Math.round(v * 5), ICE[0]);
+            for (var f = 0; f < 5; f++) { var a2 = hash(f * 7 + i) * 6.28, d2 = 4 + v * 16; shard(x2 + Math.cos(a2) * d2, y2 + Math.sin(a2) * d2, a2, 6); } }); }
+      }
+      // 서리: 상대 앞쪽에 결정이 돋고 몸이 잠깐 푸르스름해진다
+      var fz = seg(t, 540, 1050);
+      if (fz > 0 && fz < 1) {
+        alpha(.32 * (1 - fz), function () { disc(S.ex + S.ew / 2, FLOOR - S.eh / 2, Math.max(S.ew, S.eh) * .5, ICE[2]); });
+        alpha(fz < .7 ? 1 : (1 - fz) / .3, function () {
+          for (var y = FLOOR - S.eh * .9; y < FLOOR - 2; y += 6) { var hgt = 3 + hash(Math.round(y)) * 4, xx = S.ex + 2 + hash(Math.round(y) * 3) * 6;
+            R(xx, y, 3, hgt, ICE[1]); R(xx - 2, y + 1, 2, hgt - 2, ICE[0]); R(xx + 3, y + 2, 1, hgt - 3, ICE[3]); } });
+        for (k = 0; k < 6; k++) { var sx2 = S.ex + hash(k * 3) * S.ew, sy2 = FLOOR - S.eh - 6 + ((fz * 60 + k * 17) % (S.eh + 6)); flake(sx2, sy2, 2, k % 2 ? ICE[0] : ICE[1]); }
+      }
     } },
     freeze: { hit: 450, draw: function (t, S) {
       for (var k = 0; k < 30; k++) { var t0 = 230 + k * 14, u = (t - t0) / 240; if (u < 0 || u >= 1) continue;
@@ -496,7 +526,7 @@ var Fx = (function () {
     bolt: 650,
     skybolt: 1100,
     spear: 1150,
-    ice: 800,
+    ice: 1050,
     freeze: 1200,
     jet: 800,
     bubble: 1000,
