@@ -836,7 +836,7 @@ test('필살기 연출: 배틀에 나오는 디지몬은 모두 52가지 중 하
   }
   assert.deepEqual([...used].sort(), [...Fx.TYPES].sort());
   assert.equal(D.SPECIES.beelzebumon_blast.special, 'cannon');
-  assert.equal(D.SPECIES.apocalymon.special, 'annihilate');
+  D.LEGENDS.forEach(function (id) { assert.equal(D.SPECIES[id].special, 'annihilate', id + ' 는 전설이라 전멸기'); });
   assert.equal(D.SPECIES.patamon.special, 'airpuff'); // 공기팡
   assert.equal(D.SPECIES.omegamon.special, 'cannon'); assert.equal(D.SPECIES.omegamon.specialTint, 'blue'); // 푸른 가루루 캐논
 });

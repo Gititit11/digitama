@@ -725,12 +725,12 @@ var DigiData = (function () {
     stars: ['angoramon', 'starmon'],
     hearts: ['monzaemon', 'warumonzaemon', 'pucchiemon'],
     talisman: ['taomon', 'doumon', 'sakuyamon', 'sakuyamon_x', 'kuzuhamon', 'sakuyamon_miko', 'kuzuhamon_miko'],
-    circle: ['baalmon', 'wisemon', 'hexblaumon', 'lucemon_falldown'],
+    circle: ['baalmon', 'wisemon', 'hexblaumon'],
     cards: ['jokermon', 'piemon'],
     sound: ['plotmon', 'parasaurmon', 'etemon', 'metaletemon', 'plesiomon'],
     rings: ['aquilamon', 'mercuremon'],
     filth: ['sukamon'],
-    annihilate: ['apocalymon', 'millenniumon', 'reaper']
+    annihilate: ['apocalymon', 'millenniumon', 'reaper', 'lucemon_falldown']
   };
   Object.keys(SPECIAL_FX).forEach(function (fx) { SPECIAL_FX[fx].forEach(function (id) { SPECIES[id].special = fx; }); });
   // 같은 연출이라도 그 디지몬만 색을 바꾼다 (오메가몬의 가루루 캐논은 푸른 포)
