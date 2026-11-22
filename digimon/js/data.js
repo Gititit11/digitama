@@ -662,7 +662,7 @@ var DigiData = (function () {
   var SIZES = [[GIANT, 1.5], [LARGE, 1.25]];
   SIZES.forEach(function (g) { g[0].forEach(function (id) { SPECIES[id].scale = g[1]; }); });
 
-  /* 필살기 연출: 원작에서 쓰는 대표 필살기를 보고 51가지 중 하나를 골랐다 (그리는 건 js/fx.js).
+  /* 필살기 연출: 원작에서 쓰는 대표 필살기를 보고 52가지 중 하나를 골랐다 (그리는 건 js/fx.js).
    * 배틀에 나오는 모든 디지몬(성장기 이상: 키우는 라인 · 야생 · 보스 · 전설)이 하나씩 갖는다. */
   var SPECIAL_FX = {
     fireball: ['agumon', 'impmon', 'guilmon', 'piyomon', 'agumon_black', 'vorvomon', 'greymon', 'lynxmon', 'meramon',
@@ -679,7 +679,8 @@ var DigiData = (function () {
     xv: ['exveemon', 'veedramon', 'aeroveedramon', 'goldveedramon', 'ulforceveedramon'],
     gorb: ['mamemon', 'bigmamemon', 'metalmamemon', 'pumpmon', 'wargreymon', 'zekegreymon', 'noblepumpmon',
       'blackwargreymon'],
-    eshot: ['patamon', 'gammamon', 'gorimon', 'valvemon', 'makuramon'],
+    eshot: ['gammamon', 'gorimon', 'valvemon', 'makuramon'],
+    airpuff: ['patamon'],
     beast: ['leomon', 'heavyleomon', 'kaisergreymon'],
     missile: ['ballistamon', 'metalgreymon', 'skullgreymon', 'metaltyranomon', 'andromon', 'metalgreymon_virus',
       'metalgreymon_2010'],

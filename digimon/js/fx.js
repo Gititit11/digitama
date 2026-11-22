@@ -1,4 +1,4 @@
-/* 필살기 연출 51가지. data.js 의 SPECIAL_FX 가 디지몬마다 하나를 고른다.
+/* 필살기 연출 52가지. data.js 의 SPECIAL_FX 가 디지몬마다 하나를 고른다.
  *
  * 모든 연출은 "왼쪽 디지몬이 오른쪽 디지몬에게 쓴다"고 보고 그린다. 상대가 쓸 때는 화면을 좌우로 뒤집어 그린다.
  * 시각 t 는 그 디지몬이 필살기를 시작한 뒤의 ms. hit 은 맞는 순간, end 는 연출이 끝나고 제자리로 돌아온 순간.
@@ -128,6 +128,23 @@ var Fx = (function () {
       for (var i = 0; i < 6; i++) { var t0 = 230 + i * 60, u = seg(t, t0, t0 + 240), dy = (hash(i * 5) - .5) * 20;
         if (t >= t0 && u < 1) { var x = lerp(S.sx, S.tx, u), y = lerp(S.sy, S.ty + dy, u) + Math.sin(u * 10) * 3; alpha(.5, function () { disc(x, y, 5, GOLD[1]); }); disc(x, y, 3, GOLD[1]); disc(x, y, 1, GOLD[0]); }
         var v = seg(t, t0 + 240, t0 + 400); if (v > 0 && v < 1) alpha(1 - v, function () { ring(S.tx, S.ty + dy, 3 + v * 8, GOLD[1], 2); }); }
+    } },
+    airpuff: { hit: 620, push: 6, draw: function (t, S) {
+      // 공기팡: 볼에 공기를 모았다가 반투명한 공기 덩어리 한 방을 뱉고, 맞으면 '팡' 터진다
+      var AIR = ['#ffffff', '#d8f0ff', '#9fd0f0'];
+      if (t < 300) { var c = t / 300;
+        for (var k = 0; k < 3; k++) { var r = (1 - ((c + k / 3) % 1)) * 18 + 3; alpha(.5 * (1 - r / 21), function () { ring(S.sx + 4, S.sy, r, AIR[2], 1); }); }
+        alpha(.55, function () { disc(S.sx, S.sy, 2 + c * 5, AIR[1]); }); ring(S.sx, S.sy, 2 + c * 5, AIR[0], 1); }
+      var u = seg(t, 300, 620);
+      if (t >= 300 && u < 1) { var x = lerp(S.sx + 4, S.tx, u), y = lerp(S.sy, S.ty, u), r2 = 8 + u * 3, sq = Math.floor(t / 70) % 2 ? .85 : 1.12;
+        for (var j = 0; j < 3; j++) R(x - r2 - 8 - j * 5, y - 4 + j * 4, 6 + j * 2, 1, AIR[0]);
+        alpha(.45, function () { for (var yy = -r2; yy <= r2; yy++) { var hw = Math.round(Math.sqrt(r2 * r2 - yy * yy) / sq); R(x - hw, y + yy * sq, hw * 2 || 1, 1, AIR[1]); } });
+        ring(x, y, r2 + 1.5, '#5f9fcc', 1, 0, 6.29, sq); ring(x, y, r2, AIR[0], 2, 0, 6.29, sq); ring(x, y, r2 * .55, '#6fb0dc', 1, t / 60, t / 60 + 3.6, sq);
+        R(x - r2 * .45, y - r2 * .5 * sq, 3, 2, AIR[0]); }
+      var v = seg(t, 620, 900);
+      if (v > 0 && v < 1) { alpha(1 - v, function () { ring(S.tx, S.ty, 11.5 + ease(v) * 24, '#5f9fcc', 1); ring(S.tx, S.ty, 10 + ease(v) * 24, AIR[0], 3); ring(S.tx, S.ty, 6 + ease(v) * 14, '#6fb0dc', 2);
+          for (var k2 = 0; k2 < 8; k2++) { var a = k2 * .785 + .4, d = 8 + ease(v) * 22; disc(S.tx + Math.cos(a) * d, S.ty + Math.sin(a) * d, 3 - v * 2, AIR[1]); } });
+        if (v < .15) star2(S.tx, S.ty, 6, AIR[0]); }
     } },
     beast: { hit: 700, shake: [700, 950, 3], draw: function (t, S) {
       var cols = ['#fff6c8', '#ffc94a', '#e08a1a'];
@@ -469,6 +486,7 @@ var Fx = (function () {
     xv: 900,
     gorb: 1150,
     eshot: 850,
+    airpuff: 950,
     beast: 1050,
     missile: 1000,
     barrage: 1000,
@@ -522,6 +540,7 @@ var Fx = (function () {
     xv: 'X·V 광선',
     gorb: '거대 에너지구',
     eshot: '에너지탄',
+    airpuff: '공기탄',
     beast: '짐승 기운',
     missile: '미사일',
     barrage: '미사일 일제 사격',

@@ -824,9 +824,9 @@ test('원작 크기: 거대 ×1.5 · 대형 ×1.25 는 그림 크기에 곱해�
   }
 });
 
-test('필살기 연출: 배틀에 나오는 디지몬은 모두 51가지 중 하나를 갖고, 51가지 모두 쓰인다', () => {
+test('필살기 연출: 배틀에 나오는 디지몬은 모두 52가지 중 하나를 갖고, 52가지 모두 쓰인다', () => {
   const Fx = require('../js/fx.js');
-  assert.equal(Fx.TYPES.length, 51);
+  assert.equal(Fx.TYPES.length, 52);
   const used = new Set();
   for (const id in D.SPECIES) {
     const s = D.SPECIES[id];
@@ -837,9 +837,10 @@ test('필살기 연출: 배틀에 나오는 디지몬은 모두 51가지 중 하
   assert.deepEqual([...used].sort(), [...Fx.TYPES].sort());
   assert.equal(D.SPECIES.beelzebumon_blast.special, 'cannon');
   assert.equal(D.SPECIES.apocalymon.special, 'annihilate');
+  assert.equal(D.SPECIES.patamon.special, 'airpuff'); // 공기팡
 });
 
-test('필살기 연출: 51가지 모두 양쪽 방향으로 처음부터 끝까지 오류 없이 그려진다', () => {
+test('필살기 연출: 52가지 모두 양쪽 방향으로 처음부터 끝까지 오류 없이 그려진다', () => {
   const Fx = require('../js/fx.js');
   let calls = 0;
   const ctx = { fillStyle: '', strokeStyle: '', lineWidth: 1, globalAlpha: 1,
