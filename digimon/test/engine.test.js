@@ -838,6 +838,7 @@ test('필살기 연출: 배틀에 나오는 디지몬은 모두 52가지 중 하
   assert.equal(D.SPECIES.beelzebumon_blast.special, 'cannon');
   assert.equal(D.SPECIES.apocalymon.special, 'annihilate');
   assert.equal(D.SPECIES.patamon.special, 'airpuff'); // 공기팡
+  assert.equal(D.SPECIES.omegamon.special, 'cannon'); assert.equal(D.SPECIES.omegamon.specialTint, 'blue'); // 푸른 가루루 캐논
 });
 
 test('필살기 연출: 52가지 모두 양쪽 방향으로 처음부터 끝까지 오류 없이 그려진다', () => {
@@ -850,7 +851,7 @@ test('필살기 연출: 52가지 모두 양쪽 방향으로 처음부터 끝까�
     assert.ok(f.hit > 0 && f.hit < f.end && f.end <= 1300, type + ' 시간표');
     for (const dir of [1, -1]) {
       for (let t = 0; t <= f.end; t += 20) {
-        const S = Fx.stage(type, t, { W: 320, H: 140, floor: 134, aw: 64, ah: 56, ew: 96, eh: 84, ax0: 10, ex: 214 });
+        const S = Fx.stage(type, t, { W: 320, H: 140, floor: 134, aw: 64, ah: 56, ew: 96, eh: 84, ax0: 10, ex: 214, tint: dir < 0 ? 'blue' : undefined });
         assert.ok(Number.isFinite(S.off), type);
         Fx.draw(ctx, type, t, S, dir);
         assert.ok(Number.isFinite(Fx.shake(type, t)) && Number.isFinite(Fx.push(type, t)), type);

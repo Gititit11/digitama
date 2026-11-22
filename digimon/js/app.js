@@ -1509,7 +1509,7 @@
       } else if (t >= go && t < back) { // 필살기: 그 디지몬의 연출. 쓰는 쪽이 왼쪽에 있다고 보고 그리고, 상대가 쓰면 뒤집는다
         var type = D.SPECIES[dir > 0 ? a : b].special, tl = t - go;
         var S = Fx.stage(type, tl, { W: AW, H: AH, floor: floor, aw: mm.w, ah: mm.h, ew: fm.w, eh: fm.h,
-          ax0: dir > 0 ? px0 : AW - ex0 - mb.w, ex: dir > 0 ? ex0 : AW - px0 - ma.w });
+          ax0: dir > 0 ? px0 : AW - ex0 - mb.w, ex: dir > 0 ? ex0 : AW - px0 - ma.w, tint: D.SPECIES[dir > 0 ? a : b].specialTint });
         me.x += dir * S.off;
         foe.x += dir * Fx.push(type, tl);
         shake = Math.max(shake, Fx.shake(type, tl));

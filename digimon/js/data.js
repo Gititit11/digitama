@@ -683,11 +683,11 @@ var DigiData = (function () {
     airpuff: ['patamon'],
     beast: ['leomon', 'heavyleomon'],
     missile: ['ballistamon', 'metalgreymon', 'skullgreymon', 'metaltyranomon', 'andromon', 'metalgreymon_virus',
-      'metalgreymon_2010'],
+      'metalgreymon_2010', 'saintgalgomon'],
     barrage: ['atlurballistamon', 'mailbirdramon', 'rapidmon', 'zdgarurumon', 'magnagarurumon'],
     bullet: ['galgomon', 'paildramon', 'astamon', 'rebellimon', 'mummymon', 'beelzebumon',
       'beelzebumon_2010'],
-    shell: ['cannondramon', 'saintgalgomon', 'mugendramon', 'chaosdramon'],
+    shell: ['cannondramon', 'mugendramon', 'chaosdramon'],
     drill: ['digmon', 'drimogemon', 'dorulumon', 'jaegerdorulumon'],
     bolt: ['tentomon', 'pulsemon', 'jellymon', 'kokuwamon', 'kokabuterimon', 'raidramon', 'kabuterimon',
       'blitzmon', 'parrotmon', 'megaseadramon', 'atlurkabuterimon', 'justimon'],
@@ -732,6 +732,9 @@ var DigiData = (function () {
     annihilate: ['apocalymon', 'millenniumon', 'reaper']
   };
   Object.keys(SPECIAL_FX).forEach(function (fx) { SPECIAL_FX[fx].forEach(function (id) { SPECIES[id].special = fx; }); });
+  // 같은 연출이라도 그 디지몬만 색을 바꾼다 (오메가몬의 가루루 캐논은 푸른 포)
+  var SPECIAL_TINT = { omegamon: 'blue' };
+  Object.keys(SPECIAL_TINT).forEach(function (id) { SPECIES[id].specialTint = SPECIAL_TINT[id]; });
 
   /* 엔딩: 더 진화할 데가 없는 모습에 붙는다 (LCD 오른쪽 위 · 도감)
    *   true   최종 변신 (모드 체인지 · 조그레스)

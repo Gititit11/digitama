@@ -4,7 +4,8 @@
  * 시각 t 는 그 디지몬이 필살기를 시작한 뒤의 ms. hit 은 맞는 순간, end 는 연출이 끝나고 제자리로 돌아온 순간.
  * 좌표는 배틀 화면(320x140) 기준이고, 고해상도 캔버스라도 논리 좌표로 그린다.
  *
- * S (무대): W·H 화면 크기, floor 바닥 줄, ax0 내 디지몬 제자리 x, aw·ah 내 크기, ex·ew·eh 상대 자리와 크기.
+ * S (무대): W·H 화면 크기, floor 바닥 줄, ax0 내 디지몬 제자리 x, aw·ah 내 크기, ex·ew·eh 상대 자리와 크기,
+ *   tint 그 디지몬만의 색 (data.js 의 SPECIAL_TINT. 지금은 포격 레이저의 'blue' 하나).
  *   stage() 가 여기에 돌진 거리(off)와 지금 자리(axp), 입 위치(sx·sy), 상대 가운데(tx·ty)를 채운다.
  */
 var Fx = (function () {
@@ -84,7 +85,7 @@ var Fx = (function () {
     } },
     /* ---------- 에너지 ---------- */
     cannon: { hit: 420, recoil: [380, 800, 4], shake: [380, 820, 3], draw: function (t, S) {
-      var cols = ['#ffffff', '#ffe07a', '#ff7a2a', '#c43a1a'];
+      var cols = S.tint === 'blue' ? ['#ffffff', '#c8f0ff', '#5ab4ff', '#2a5fd0'] : ['#ffffff', '#ffe07a', '#ff7a2a', '#c43a1a']; // 푸른 포 (오메가몬 가루루 캐논)
       if (t < 380) { var c = t / 380; disc(S.sx + 4, S.sy, 2 + c * 7, cols[2]); disc(S.sx + 4, S.sy, 1 + c * 4, cols[1]); disc(S.sx + 4, S.sy, c * 2, cols[0]);
         for (var i = 0; i < 6; i++) { var a = i * 1.05 + t / 70, d = 26 * (1 - c) + 6; R(S.sx + 4 + Math.cos(a) * d, S.sy + Math.sin(a) * d, 2, 2, cols[1]); } }
       if (t >= 380 && t < 900) {
