@@ -662,6 +662,76 @@ var DigiData = (function () {
   var SIZES = [[GIANT, 1.5], [LARGE, 1.25]];
   SIZES.forEach(function (g) { g[0].forEach(function (id) { SPECIES[id].scale = g[1]; }); });
 
+  /* 필살기 연출: 원작에서 쓰는 대표 필살기를 보고 51가지 중 하나를 골랐다 (그리는 건 js/fx.js).
+   * 배틀에 나오는 모든 디지몬(성장기 이상: 키우는 라인 · 야생 · 보스 · 전설)이 하나씩 갖는다. */
+  var SPECIAL_FX = {
+    fireball: ['agumon', 'impmon', 'guilmon', 'piyomon', 'agumon_black', 'vorvomon', 'greymon', 'lynxmon', 'meramon',
+      'monochromon', 'greymon_blue', 'shadramon', 'deathmeramon', 'aldamon'],
+    flame: ['growmon', 'growmon_orange', 'tyranomon', 'darktyranomon', 'lavorvomon', 'orochimon', 'majiramon',
+      'mastertyranomon', 'lavogaritamon', 'vermillimon', 'megidramon', 'dinorexmon', 'hydramon'],
+    bluefire: ['gabumon', 'gabumon_black', 'garurumon', 'kyubimon', 'youkomon', 'garurumon_black', 'cerberumon'],
+    firebird: ['saberdramon', 'garudamon', 'sinduramon'],
+    meteor: ['birdramon', 'volcamon', 'volcanicdramon'],
+    firedash: ['flamon', 'flamedramon', 'agnimon', 'flaremon'],
+    cannon: ['megalogrowmon', 'megalogrowmon_orange', 'lilimon', 'blitzgreymon', 'imperialdramon_dm',
+      'imperialdramon', 'beelzebumon_blast', 'metalseadramon', 'diablomon'],
+    mbeam: ['cockatrimon', 'sunflowmon', 'extyranomon', 'chimairamon'],
+    xv: ['exveemon', 'veedramon', 'aeroveedramon', 'goldveedramon', 'ulforceveedramon'],
+    gorb: ['mamemon', 'bigmamemon', 'metalmamemon', 'pumpmon', 'wargreymon', 'zekegreymon', 'noblepumpmon',
+      'blackwargreymon'],
+    eshot: ['patamon', 'gammamon', 'gorimon', 'valvemon', 'makuramon'],
+    beast: ['leomon', 'heavyleomon', 'kaisergreymon'],
+    missile: ['ballistamon', 'metalgreymon', 'skullgreymon', 'metaltyranomon', 'andromon', 'metalgreymon_virus',
+      'metalgreymon_2010'],
+    barrage: ['atlurballistamon', 'mailbirdramon', 'rapidmon', 'zdgarurumon', 'magnagarurumon'],
+    bullet: ['galgomon', 'paledramon', 'paildramon', 'astamon', 'rebellimon', 'mummymon', 'beelzebumon',
+      'beelzebumon_2010'],
+    shell: ['cannondramon', 'saintgalgomon', 'mugendramon', 'chaosdramon'],
+    drill: ['digmon', 'drimogemon', 'dorulumon', 'jaegerdorulumon'],
+    bolt: ['tentomon', 'gazimon', 'pulsemon', 'jellymon', 'kokuwamon', 'kokabuterimon', 'raidramon', 'kabuterimon',
+      'blitzmon', 'parrotmon', 'megaseadramon', 'atlurkabuterimon', 'justimon'],
+    skybolt: ['wizarmon', 'kumbhiramon', 'kongoumon', 'cherubimon_vice'],
+    spear: ['dukemon', 'dukemon_x', 'medievaldukemon', 'cherubimon_virtue'],
+    ice: ['blucomon', 'snowgoblimon', 'icedevimon', 'yukidarumon', 'hyougamon', 'chackmon', 'panjyamon',
+      'cryspaledramon', 'daipenmon'],
+    freeze: ['seadramon', 'waruseadramon', 'frozomon', 'metalgarurumon', 'frosvelgrmon', 'metalgarurumon_black'],
+    jet: ['coelamon', 'shellmon', 'gesomon', 'tobiumon', 'octmon', 'mermaimon'],
+    bubble: ['sangomon', 'rukamon'],
+    wave: ['neptunemon', 'regalecusmon'],
+    tornado: ['terriermon', 'sunarizamon', 'fairimon', 'vulturemon'],
+    rock: ['gotsumon', 'ankylomon', 'golemon', 'vikaralamon', 'groundramon'],
+    vine: ['palmon', 'vegimon', 'jyureimon'],
+    petal: ['renamon', 'blossomon', 'bloomlordmon'],
+    needle: ['hawkmon', 'togemon', 'tortamon', 'stingmon', 'anomalocarimon', 'jewelbeemon', 'scorpiomon'],
+    web: ['wormmon', 'dokugumon', 'archnemon'],
+    gas: ['raremon', 'rareraremon', 'marindevimon', 'rafflesimon'],
+    slash: ['hagurumon', 'ryudamon', 'gizamon', 'snimon', 'mojyamon', 'wolfmon', 'ginryumon', 'fantomon', 'vajramon',
+      'duskmon', 'cresgarurumon', 'gaioumon', 'grankuwagamon'],
+    sword: ['omegamon', 'victorygreymon', 'imperialdramon_pm', 'omegamon_zwart', 'susanoomon'],
+    claw: ['devidramon', 'tailmon', 'strikedramon', 'gryzmon', 'cyberdramon'],
+    charge: ['veemon', 'armadimon', 'monodramon', 'liollmon', 'ogremon', 'siesamon', 'rhinomon', 'machmon',
+      'moosemon', 'namakemon', 'wendimon', 'mihiramon', 'sandiramon', 'indaramon', 'caturamon', 'mammon',
+      'loaderliomon', 'locomon', 'gusokumon', 'triceramon', 'pajiramon', 'grandlocomon', 'marsmon', 'skullmammon'],
+    flurry: ['bearmon', 'strabimon', 'bulkmon', 'turuiemon', 'weregarurumon', 'dinobeemon', 'weregarurumon_black',
+      'pandamon', 'andiramon', 'asuramon', 'banchostingmon'],
+    dark: ['ghostmon', 'algomon_adult', 'digitamamon', 'skullsatamon', 'marinchimairamon', 'dagomon', 'nidhoggmon',
+      'deathmon', 'murmukusmon', 'pharaohmon', 'venomvamdemon', 'chaosdukemon', 'gulfmon'],
+    bats: ['vamdemon', 'neovamdemon'],
+    dhand: ['bakemon', 'devimon', 'neodevimon', 'donedevimon', 'parasimon'],
+    pillar: ['angemon', 'holyangemon', 'magnamon', 'dukemon_crimson'],
+    arrow: ['sagittarimon', 'angewomon', 'weregarurumon_sm', 'crescemon'],
+    stars: ['angoramon', 'starmon'],
+    hearts: ['monzaemon', 'warumonzaemon', 'pucchiemon'],
+    talisman: ['taomon', 'doumon', 'sakuyamon', 'sakuyamon_x', 'kuzuhamon', 'sakuyamon_miko', 'kuzuhamon_miko'],
+    circle: ['baalmon', 'wisemon', 'hexblaumon', 'lucemon_falldown'],
+    cards: ['jokermon', 'piemon'],
+    sound: ['plotmon', 'parasaurmon', 'etemon', 'metaletemon', 'plesiomon'],
+    rings: ['aquilamon', 'mercuremon'],
+    filth: ['sukamon'],
+    annihilate: ['apocalymon', 'millenniumon', 'reaper']
+  };
+  Object.keys(SPECIAL_FX).forEach(function (fx) { SPECIAL_FX[fx].forEach(function (id) { SPECIES[id].special = fx; }); });
+
   /* 엔딩: 더 진화할 데가 없는 모습에 붙는다 (LCD 오른쪽 위 · 도감)
    *   true   최종 변신 (모드 체인지 · 조그레스)
    *   hidden 숨은 궁극체 (⑮), 아머 루트의 끝(매그너몬)
@@ -689,7 +759,7 @@ var DigiData = (function () {
     STAGES: STAGES, STAGE_NAMES: STAGE_NAMES, ATTR_NAMES: ATTR_NAMES, GRADE_NAMES: GRADE_NAMES, RULES: RULES,
     SPECIES: SPECIES, RULE_HINTS: RULE_HINTS, RULE_KIND: RULE_KIND,
     LINES: LINES, LINE_ORDER: LINE_ORDER, DIGIMENTALS: DIGIMENTALS,
-    WILD: WILD, BOSSES: BOSSES, LEGENDS: LEGENDS
+    WILD: WILD, BOSSES: BOSSES, LEGENDS: LEGENDS, SPECIAL_FX: SPECIAL_FX
   };
 })();
 

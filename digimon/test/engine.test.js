@@ -823,3 +823,40 @@ test('원작 크기: 거대 ×1.5 · 대형 ×1.25 는 그림 크기에 곱해�
     assert.ok(m.w <= 128 && m.h <= 128, id + ' 은 홈(208×128)·배틀(320×140) 화면에 들어가야 한다');
   }
 });
+
+test('필살기 연출: 배틀에 나오는 디지몬은 모두 51가지 중 하나를 갖고, 51가지 모두 쓰인다', () => {
+  const Fx = require('../js/fx.js');
+  assert.equal(Fx.TYPES.length, 51);
+  const used = new Set();
+  for (const id in D.SPECIES) {
+    const s = D.SPECIES[id];
+    if (!['child', 'adult', 'perfect', 'ultimate'].includes(s.stage)) continue;
+    assert.ok(Fx.TYPES.includes(s.special), id + ' 의 필살기 연출 ' + s.special);
+    used.add(s.special);
+  }
+  assert.deepEqual([...used].sort(), [...Fx.TYPES].sort());
+  assert.equal(D.SPECIES.beelzebumon_blast.special, 'cannon');
+  assert.equal(D.SPECIES.apocalymon.special, 'annihilate');
+});
+
+test('필살기 연출: 51가지 모두 양쪽 방향으로 처음부터 끝까지 오류 없이 그려진다', () => {
+  const Fx = require('../js/fx.js');
+  let calls = 0;
+  const ctx = { fillStyle: '', strokeStyle: '', lineWidth: 1, globalAlpha: 1,
+    fillRect() { calls++; }, save() {}, restore() {}, translate() {}, scale() {}, beginPath() {}, arc() {}, fill() {}, stroke() {} };
+  for (const type of Fx.TYPES) {
+    const f = Fx.info(type);
+    assert.ok(f.hit > 0 && f.hit < f.end && f.end <= 1300, type + ' 시간표');
+    for (const dir of [1, -1]) {
+      for (let t = 0; t <= f.end; t += 20) {
+        const S = Fx.stage(type, t, { W: 320, H: 140, floor: 134, aw: 64, ah: 56, ew: 96, eh: 84, ax0: 10, ex: 214 });
+        assert.ok(Number.isFinite(S.off), type);
+        Fx.draw(ctx, type, t, S, dir);
+        assert.ok(Number.isFinite(Fx.shake(type, t)) && Number.isFinite(Fx.push(type, t)), type);
+      }
+      // 끝나면 제자리로 돌아와 있다
+      assert.ok(Math.abs(Fx.stage(type, f.end, { W: 320, H: 140, floor: 134, aw: 64, ah: 56, ew: 96, eh: 84, ax0: 10, ex: 214 }).off) < 0.5, type + ' 제자리');
+    }
+  }
+  assert.ok(calls > 10000);
+});

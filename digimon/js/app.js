@@ -1310,7 +1310,7 @@
   function startBattle(w) {
     E.tick(state, now());
     battle = E.startBattle(state, w);
-    view = { me: battle.me, foe: w.id, meAttr: D.SPECIES[battle.me].attr, foeAttr: w.attr, php: 100, ehp: 100,
+    view = { me: battle.me, foe: w.id, php: 100, ehp: 100,
       grade: w.grade, intro: performance.now() };
     turn = null;
     $('pName').textContent = name(battle.me);
@@ -1336,15 +1336,22 @@
   }
 
   /* ----- 배틀 연출 -----
-   * 한 턴 = 내 행동 → 상대 행동. 공격은 상대 쪽으로 튀어나갔다 돌아오고, 필살기는 속성 색 탄을 쏜다.
+   * 한 턴 = 내 행동 → 상대 행동. 공격은 상대 쪽으로 튀어나갔다 돌아오고, 필살기는 디지몬마다 정해진 연출(js/fx.js)을 쓴다.
    * 맞으면 깜빡이며 흔들리고, 머리 위로 피해 숫자가 떠오른다. 방어는 앞에 방패를 세운다.
    */
   var INTRO = { walk: 900, end: 1800 };
   var AW = arena.W, AH = arena.H; // 보스(레이드 128px)도 들어가게 크게 잡는다
-  var T = { pGo: 0, pHit: 280, pBack: 460, eGo: 600, eHit: 880, eBack: 1060, end: 1500 };
-  var SHOT = { vaccine: ['#fff4b0', '#ffb43a', '#e0602a'], data: ['#e6f6ff', '#5ab4ff', '#2a5fd0'],
-    virus: ['#ffe0ff', '#c46aff', '#6a2aa8'], free: ['#f0ffe0', '#7ad05a', '#2f8a3a'],
-    unknown: ['#ffe8e8', '#ff5a5a', '#8a1a2a'] }; // 보스·전설
+  /* 한 턴의 시간표. 공격·방어는 늘 같고(맞는 순간 280ms, 돌아옴 460ms), 필살기는 그 디지몬 연출의 길이를 따른다.
+   * 내 행동이 끝나고 140ms 뒤에 상대가 움직이고, 상대가 돌아온 뒤 440ms 쉬고 턴이 끝난다. */
+  function turnTimes(r) {
+    function len(cmd, id) {
+      if (cmd !== 'special') return { hit: 280, back: 460 };
+      var f = Fx.info(D.SPECIES[id].special);
+      return { hit: f.hit, back: f.end };
+    }
+    var p = len(r.pCmd, view.me), e = len(r.eCmd, view.foe), eGo = p.back + 140;
+    return { pGo: 0, pHit: p.hit, pBack: p.back, eGo: eGo, eHit: eGo + e.hit, eBack: eGo + e.back, end: eGo + e.back + 440 };
+  }
   // 3x5 도트 글꼴 (피해 숫자용)
   var FONT = {
     0: ['111', '101', '101', '101', '111'], 1: ['010', '110', '010', '010', '111'], 2: ['111', '001', '111', '100', '111'],
@@ -1392,16 +1399,6 @@
     }
     ax.fillStyle = cols[0]; ax.fillRect(cx - 3, cy - 3, 6, 6);
   }
-  function shot(x, y, dir, cols, big) { // 필살기 탄: 가운데가 밝은 도트 공 + 꼬리
-    for (var i = 3; i >= 1; i--) {
-      ax.fillStyle = cols[2]; var s = (big ? 3 : 2) * (4 - i) / 2 + 1;
-      ax.fillRect(Math.round(x - dir * i * 6 - s / 2), Math.round(y - s / 2), s, s);
-    }
-    var R = big ? 6 : 4;
-    ax.fillStyle = cols[2]; ax.fillRect(x - R, y - R + 2, R * 2, R * 2 - 4); ax.fillRect(x - R + 2, y - R, R * 2 - 4, R * 2);
-    ax.fillStyle = cols[1]; ax.fillRect(x - R + 2, y - R + 2, R * 2 - 4, R * 2 - 4);
-    ax.fillStyle = cols[0]; ax.fillRect(x - 2, y - 2, 4, 4);
-  }
   function shield(x, y, h, dir, hit) { // 방어: 앞쪽에 세운 도트 방패
     ax.fillStyle = hit ? '#ffffff' : 'rgba(120,200,255,.85)';
     ax.fillRect(x, y + 4, 3, h - 8);
@@ -1437,7 +1434,7 @@
     var gap = Math.max(0, ex0 - (px0 + ma.w)), reach = Math.min(gap - 4, 70);
     var idleF = Math.floor(ts / 420);
     var P = { x: px0, anim: 'idle', frame: idleF, hide: false }, Q = { x: ex0, anim: 'idle', frame: idleF, hide: false };
-    var fx = [];
+    var fx = [], shake = 0; // shake: 필살기가 화면을 흔드는 세기
 
     // 시작 연출: 양쪽에서 걸어 들어온 뒤 VS (보스·전설이면 경고 글자도)
     if (view.intro) {
@@ -1460,11 +1457,11 @@
     }
 
     if (turn) {
-      var t = ts - turn.t0, r = turn.r;
+      var t = ts - turn.t0, r = turn.r, T = turn.T;
       // 내 차례
-      act(t, r.pCmd, r.pDmg, P, Q, 1, T.pGo, T.pHit, T.pBack, view.meAttr, '#ffd23f');
+      act(t, r.pCmd, r.pDmg, P, Q, 1, T.pGo, T.pHit, T.pBack, '#ffd23f');
       // 상대 차례
-      act(t, r.eCmd, r.eDmg, Q, P, -1, T.eGo, T.eHit, T.eBack, view.foeAttr, '#ff5f6d');
+      act(t, r.eCmd, r.eDmg, Q, P, -1, T.eGo, T.eHit, T.eBack, '#ff5f6d');
       // 폭주해서 말을 안 들으면: 몸이 붉게 번쩍이며 좌우로 흔들린다 (뒤쪽에 흔들림 선)
       if (r.ignored && t < 700) {
         P.rage = t < 600 && Math.floor(t / 100) % 2 === 0 ? 0.55 : 0.25;
@@ -1481,8 +1478,8 @@
       if (t >= T.end) { var done = turn.done; turn = null; done(); }
     }
 
-    function act(t, cmd, dmg, me, foe, dir, go, hit, back, attr, numCol) {
-      var mm = dir > 0 ? ma : mb, fm = dir > 0 ? mb : ma, cols = SHOT[attr] || SHOT.free;
+    function act(t, cmd, dmg, me, foe, dir, go, hit, back, numCol) {
+      var mm = dir > 0 ? ma : mb, fm = dir > 0 ? mb : ma;
       var fy = floor - fm.h, cy = fy + fm.h / 2;
       if (cmd === 'guard') {
         // 방어는 자기 차례와 상관없이 턴 내내 방패를 든다. 공격을 막으면 그 순간 반격한다.
@@ -1509,14 +1506,15 @@
       if (cmd === 'attack') {
         me.x += dir * reach * k;
         if (t >= go && t < back) { me.anim = t < hit ? 'run' : 'attack'; me.frame = Math.floor(t / 90); }
-      } else { // 필살기: 살짝 물러섰다 쏜다
-        me.x -= dir * 6 * k;
-        if (t >= go && t < back) { me.anim = 'attack'; me.frame = 0; }
-        if (t >= go + 80 && t < hit) {
-          var p = ease((t - go - 80) / (hit - go - 80));
-          var sx = dir > 0 ? px0 + ma.w : ex0, tx = dir > 0 ? ex0 + mb.w / 2 : px0 + ma.w / 2;
-          fx.push(function () { shot(Math.round(sx + (tx - sx) * p), Math.round(floor - mm.h * 0.55), dir, cols, true); });
-        }
+      } else if (t >= go && t < back) { // 필살기: 그 디지몬의 연출. 쓰는 쪽이 왼쪽에 있다고 보고 그리고, 상대가 쓰면 뒤집는다
+        var type = D.SPECIES[dir > 0 ? a : b].special, tl = t - go;
+        var S = Fx.stage(type, tl, { W: AW, H: AH, floor: floor, aw: mm.w, ah: mm.h, ew: fm.w, eh: fm.h,
+          ax0: dir > 0 ? px0 : AW - ex0 - mb.w, ex: dir > 0 ? ex0 : AW - px0 - ma.w });
+        me.x += dir * S.off;
+        foe.x += dir * Fx.push(type, tl);
+        shake = Math.max(shake, Fx.shake(type, tl));
+        if (t < hit + 120) { me.anim = Fx.runs(type) && t < hit ? 'run' : 'attack'; me.frame = Math.floor(tl / 120); }
+        fx.push(function () { Fx.draw(ax, type, tl, S, dir); });
       }
       // 맞는 순간
       if (t >= hit && t < hit + 260) {
@@ -1525,7 +1523,7 @@
           foe.x += (Math.floor(t / 40) % 2 ? 2 : -2) + dir * 3 * (1 - e);
           foe.hide = Math.floor(t / 70) % 2 === 1;
           foe.anim = 'idle';
-          if (e < 0.6) fx.push(function () { burst(Math.round(foe.x + fm.w / 2), Math.round(cy), e, cmd === 'special' ? cols : ['#ffffff', '#ffd23f']); });
+          if (e < 0.6 && cmd !== 'special') fx.push(function () { burst(Math.round(foe.x + fm.w / 2), Math.round(cy), e, ['#ffffff', '#ffd23f']); });
         }
       }
       // 피해 숫자는 머리 위로 떠오르며 사라진다
@@ -1539,6 +1537,8 @@
       }
     }
 
+    ax.save();
+    if (shake) ax.translate((Math.random() - .5) * 2 * shake, (Math.random() - .5) * 2 * shake);
     // 내 디지몬은 왼쪽에서 오른쪽을 본다 (그림은 왼쪽을 보므로 뒤집는다)
     if (!P.hide) {
       Sprite.draw(ax, a, Math.round(P.x), floor - ma.h, 1, { flip: true, anim: P.anim, frame: P.frame });
@@ -1546,6 +1546,7 @@
     }
     if (!Q.hide) Sprite.draw(ax, b, Math.round(Q.x), floor - mb.h, 1, { anim: Q.anim, frame: Q.frame });
     fx.forEach(function (f) { f(); });
+    ax.restore();
   }
   function setCmds(on) {
     Array.prototype.forEach.call(document.querySelectorAll('[data-cmd]'), function (b) {
@@ -1573,7 +1574,7 @@
       $('blog').textContent = lines.join(' · ');
       setCmds(false);
       turn = {
-        t0: performance.now(), r: r, php: battle.php, ehp: battle.ehp,
+        t0: performance.now(), r: r, T: turnTimes(r), php: battle.php, ehp: battle.ehp,
         done: function () { gauges(); if (battle && battle.over) finishBattle(false); else setCmds(true); }
       };
     });
