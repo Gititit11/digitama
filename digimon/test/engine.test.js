@@ -515,7 +515,7 @@ test('아머진화: 디지멘탈이 있어야만 한 단계씩 올라간다', fu
   E.armor(s, MORNING + 301 * H, 'miracle');
   assert.equal(s.mon.species, 'magnamon'); assert.equal(s.mon.stage, 'ultimate');
   assert.equal(E.battleStage(s.mon), E.STAGE_IDX.ultimate);
-  assert.equal(D.SPECIES.magnamon.mult, 1.25);
+  assert.equal(D.SPECIES.magnamon.mult, 1.15);
   assert.equal(E.canArmor(s, MORNING + 302 * H), false, '매그너몬이 끝');
   assert.equal(s.meta.items.thunder, true, '디지멘탈은 닳지 않는다');
 });

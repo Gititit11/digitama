@@ -164,7 +164,7 @@ var DigiData = (function () {
   sp('dinobeemon', '다이노몬', 'perfect', 'free', END);
   sp('aeroveedramon', '에어로브이드라몬', 'perfect', 'vaccine');
   sp('goldveedramon', '골드브이드라몬', 'perfect', 'vaccine', END);
-  sp('magnamon', '매그너몬', 'ultimate', 'free', { armor: true, mult: 1.25 }); // 디지멘탈 4개를 다 거친 끝이라 최종 변신들처럼 1.25배
+  sp('magnamon', '매그너몬', 'ultimate', 'free', { armor: true, mult: 1.15 }); // 아머 루트의 끝: 숨은 궁극체(HIDDEN END)들과 같은 1.15배
   sp('ulforceveedramon', '알포스브이드라몬', 'ultimate', 'vaccine');
   sp('imperialdramon_dm', '황제드라몬 드래곤 모드', 'ultimate', 'free');
   sp('imperialdramon', '황제드라몬 파이터 모드', 'ultimate', 'free', { mult: 1.25 });
