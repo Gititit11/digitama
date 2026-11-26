@@ -40,7 +40,7 @@ var DigiData = (function () {
     chipSpeedup: 0.1,          // 디지 칩 하나가 앞당기는 진화 시간 (그 단계 진화 시간의 비율)
     digimentalDrop: 0.3,       // 보스를 이겼을 때 디지멘탈이 나올 확률 (안 나오면 디지 칩)
     jogressBossWins: 5,        // ⑩ ⑲ ㉓ 에 필요한 보스 격파 수 (서로 다른 보스·전설만 센다)
-    slots: 6,                  // 한 번에 데리고 있을 수 있는 디지몬 (키우는 하나 + 보관함)
+    slots: 12,                 // 한 번에 데리고 있을 수 있는 디지몬 (키우는 하나 + 보관함)
     scansPerDay: 5,            // 디지몬마다 하루 배틀 횟수 (바코드 찍기는 무제한). 0 이면 배틀도 무제한 (테스트용)
     hpMax: 100,
     stagePower: { child: 10, adult: 20, perfect: 34, ultimate: 52 },

@@ -307,8 +307,9 @@ test('보관함: 여러 마리를 두고, 보관한 동안은 시간이 멈춘�
   assert.equal(a.stageEnd - later, stageLeft);
   assert.equal(a.lastTick, later);
 
-  // 슬롯은 6칸
-  for (var i = 0; i < 4; i++) assert.ok(E.hatch(s, 'veemon', later));
+  // 슬롯은 12칸 (지금 둘이 있으니 10마리 더)
+  assert.equal(D.RULES.slots, 12);
+  for (var i = 0; i < D.RULES.slots - 2; i++) assert.ok(E.hatch(s, 'veemon', later));
   assert.equal(E.slotsLeft(s), 0);
   assert.equal(E.hatch(s, 'veemon', later), null);
   var n = s.box.length;
