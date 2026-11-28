@@ -129,7 +129,7 @@ var DigiData = (function () {
   sp('wargreymon', '워그레이몬', 'ultimate', 'vaccine');
   sp('blitzgreymon', '블리츠그레이몬', 'ultimate', 'vaccine', HIDDEN); // 크레스가루몬과 짝인 숨은 궁극체
   sp('donedevimon', '던데블몬', 'ultimate', 'virus');
-  sp('omegamon', '오메가몬', 'ultimate', 'vaccine', { mult: 1.25 });
+  sp('omegamon', '오메가몬', 'ultimate', 'vaccine', { mult: 1.3 }); // 두 라인을 다 키워야 해서 다른 최종 변신(1.25)보다 세고, 팔라딘 모드(1.35)보다는 약하다
 
   // 파피몬 라인 (4 - Gabumon EX)
   sp('egg_gabumon', '디지타마', 'egg', 'free');

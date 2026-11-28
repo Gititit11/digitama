@@ -250,6 +250,7 @@ test('⑩ 오메가몬: 짝을 키워 본 적 있고 서로 다른 보스 5종 �
   win(s, 5);
   assert.equal(s.mon.species, 'imperialdramon_pm', '⑲ 다음 ㉓ 팔라딘 모드 (파이터 모드에서 새로 5종)');
   assert.equal(D.SPECIES.imperialdramon_pm.mult, 1.35);
+  assert.equal(D.SPECIES.omegamon.mult, 1.3); // 최종 변신(1.25) < 오메가몬 < 팔라딘 모드
   assert.ok(D.SPECIES.skullgreymon.ignores && D.SPECIES.megidramon.ignores && !D.SPECIES.blitzgreymon.ignores, '폭주는 스컬그레이몬·메기드라몬');
   assert.equal(D.SPECIES.megidramon.mult, 1.2); assert.equal(D.SPECIES.skullgreymon.mult, 1.2);
   ['andromon', 'digitamamon', 'weregarurumon_black', 'majiramon', 'metaltyranomon'].forEach(function (id) { assert.equal(D.SPECIES[id].mult, 1, id + ' 막다른 진화는 보너스 없음'); });
